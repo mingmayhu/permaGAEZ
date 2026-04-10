@@ -604,7 +604,7 @@ class CropWatCalc(object):
             elif rhmn3 >80.:
                 rhmn3 = 80.
             else:
-                rhmn3 = 45.;
+                rhmn = 45.;
 
             
             u23 = wd3_sum/ (wd_d3.shape[0] * 86.4)

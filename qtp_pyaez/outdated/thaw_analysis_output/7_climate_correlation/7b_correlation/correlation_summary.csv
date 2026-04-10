@@ -1,0 +1,21 @@
+crop,variable,n_pixels,pearson_r,pearson_p,spearman_r,spearman_p
+Winter Barley,temperature,1768,-0.1226,0.0,-0.1428,0.0
+Winter Barley,precipitation,1768,0.0091,0.700702,-0.017,0.475828
+Spring Barley,temperature,1768,-0.0801,0.000754,-0.0912,0.000122
+Spring Barley,precipitation,1768,-0.0154,0.518249,-0.026,0.273738
+Winter Wheat,temperature,1768,-0.1211,0.0,-0.1428,0.0
+Winter Wheat,precipitation,1768,0.01,0.67525,-0.0169,0.476833
+Spring Wheat,temperature,1768,-0.0904,0.00014,-0.1005,2.3e-05
+Spring Wheat,precipitation,1768,-0.0211,0.374259,-0.0325,0.171631
+Silage Maize,temperature,1768,-0.1469,0.0,-0.0453,0.0569
+Silage Maize,precipitation,1768,-0.0429,0.071392,0.0478,0.044266
+White Potato,temperature,1768,-0.0528,0.02647,-0.1311,0.0
+White Potato,precipitation,1768,0.0425,0.073785,0.0941,7.4e-05
+Oat,temperature,1768,-0.1484,0.0,-0.1746,0.0
+Oat,precipitation,1768,-0.0329,0.167374,-0.0512,0.031434
+Dry Pea,temperature,1768,-0.079,0.000891,-0.0501,0.035212
+Dry Pea,precipitation,1768,-0.0152,0.523934,0.0034,0.885694
+Winter Rape,temperature,1768,0.1367,0.0,0.1542,0.0
+Winter Rape,precipitation,1768,0.0953,6e-05,0.1159,1e-06
+Spring Rape,temperature,1768,-0.0223,0.347784,-0.1764,0.0
+Spring Rape,precipitation,1768,0.082,0.000556,0.097,4.4e-05

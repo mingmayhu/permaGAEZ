@@ -1,0 +1,12 @@
+crop,cum_final,p_value,significant
+Winter Barley,0.3056,0.471,False
+Spring Barley,0.1763,0.042,True
+Winter Wheat,0.2971,0.469,False
+Spring Wheat,0.1836,0.04,True
+Silage Maize,0.2814,0.007,True
+White Potato,0.8068,0.0,True
+Oat,1.0278,0.061,False
+Dry Pea,0.1449,0.102,False
+Winter Rape,-0.2126,0.243,False
+Spring Rape,1.471,0.002,True
+OVERALL,0.4482,0.024,True

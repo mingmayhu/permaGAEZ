@@ -1,0 +1,41 @@
+quadrant,label,n_pixels,mean_delta_yield,std_delta_yield,crop
+1,Warmer & Wetter,1437,0.47848489767799485,7.797266407775251,Winter Barley
+2,Warmer & Drier,14,0.0,0.0,Winter Barley
+3,Cooler & Wetter,313,6.268606922954036,31.17575489293668,Winter Barley
+4,Cooler & Drier,4,-28.857494068145748,32.56879514263791,Winter Barley
+1,Warmer & Wetter,1437,0.0,0.0,Spring Barley
+2,Warmer & Drier,14,0.0,0.0,Spring Barley
+3,Cooler & Wetter,313,1.2336171244660885,12.655054107718401,Spring Barley
+4,Cooler & Drier,4,0.0,0.0,Spring Barley
+1,Warmer & Wetter,1437,0.47422635191441376,7.767223798029162,Winter Wheat
+2,Warmer & Drier,14,0.0,0.0,Winter Wheat
+3,Cooler & Wetter,313,6.14642710560046,30.963569337542427,Winter Wheat
+4,Cooler & Drier,4,-28.802687835693362,32.47149685097661,Winter Wheat
+1,Warmer & Wetter,1437,0.0,0.0,Spring Wheat
+2,Warmer & Drier,14,0.0,0.0,Spring Wheat
+3,Cooler & Wetter,313,1.4020105837252195,12.419777642465823,Spring Wheat
+4,Cooler & Drier,4,0.0,0.0,Spring Wheat
+1,Warmer & Wetter,1437,0.029459609699287983,0.284269561243574,Silage Maize
+2,Warmer & Drier,14,0.0,0.0,Silage Maize
+3,Cooler & Wetter,313,2.4285896319360396,10.6902617486763,Silage Maize
+4,Cooler & Drier,4,0.0,0.0,Silage Maize
+1,Warmer & Wetter,1437,0.17572027993600403,1.0301701428476322,White Potato
+2,Warmer & Drier,14,-0.017835286685398646,0.06430604065680498,White Potato
+3,Cooler & Wetter,313,0.001829156850854415,1.6419026964719843,White Potato
+4,Cooler & Drier,4,-0.0010580003261568827,0.007199739016276305,White Potato
+1,Warmer & Wetter,1437,0.14138653064649084,1.1288822350147747,Oat
+2,Warmer & Drier,14,0.0,0.0,Oat
+3,Cooler & Wetter,313,0.5645115989906679,1.7348556217347701,Oat
+4,Cooler & Drier,4,-1.924925231933594,1.926196810708347,Oat
+1,Warmer & Wetter,1437,0.0,0.0,Dry Pea
+2,Warmer & Drier,14,0.0,0.0,Dry Pea
+3,Cooler & Wetter,313,0.08859985415547039,0.9494948926400549,Dry Pea
+4,Cooler & Drier,4,0.0,0.0,Dry Pea
+1,Warmer & Wetter,1437,-0.0005072192560489923,0.04651684697699884,Winter Rape
+2,Warmer & Drier,14,0.0,0.0,Winter Rape
+3,Cooler & Wetter,313,-0.1849198741272996,0.8596132339464345,Winter Rape
+4,Cooler & Drier,4,-0.2020094394683838,0.34989061276775035,Winter Rape
+1,Warmer & Wetter,1437,0.4279975859174815,2.313554486752691,Spring Rape
+2,Warmer & Drier,14,-0.038260092054094585,0.13794872370501038,Spring Rape
+3,Cooler & Wetter,313,-0.3544827305851652,2.908482359939982,Spring Rape
+4,Cooler & Drier,4,0.0006661176681515002,0.0011537496450577034,Spring Rape

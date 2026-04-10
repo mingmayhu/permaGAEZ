@@ -1,0 +1,155 @@
+crop,variable,bin_lo,bin_hi,bin_mid,mean_delta,n_pixels
+Winter Barley,elevation,2000.0,2500.0,2250.0,0.01667,3
+Winter Barley,elevation,2500.0,3000.0,2750.0,-0.02059,85
+Winter Barley,elevation,3000.0,3500.0,3250.0,0.02882,498
+Winter Barley,elevation,3500.0,4000.0,3750.0,-0.0,240
+Winter Barley,elevation,4000.0,4500.0,4250.0,0.0,2
+Winter Barley,elevation,4500.0,5000.0,4750.0,,0
+Winter Barley,elevation,5000.0,5500.0,5250.0,,0
+Spring Barley,elevation,2000.0,2500.0,2250.0,0.0,3
+Spring Barley,elevation,2500.0,3000.0,2750.0,0.01059,85
+Spring Barley,elevation,3000.0,3500.0,3250.0,0.01104,498
+Spring Barley,elevation,3500.0,4000.0,3750.0,0.00375,240
+Spring Barley,elevation,4000.0,4500.0,4250.0,0.0,2
+Spring Barley,elevation,4500.0,5000.0,4750.0,,0
+Spring Barley,elevation,5000.0,5500.0,5250.0,,0
+Winter Wheat,elevation,2000.0,2500.0,2250.0,0.01667,3
+Winter Wheat,elevation,2500.0,3000.0,2750.0,-0.02059,85
+Winter Wheat,elevation,3000.0,3500.0,3250.0,0.02811,498
+Winter Wheat,elevation,3500.0,4000.0,3750.0,0.0,240
+Winter Wheat,elevation,4000.0,4500.0,4250.0,0.0,2
+Winter Wheat,elevation,4500.0,5000.0,4750.0,,0
+Winter Wheat,elevation,5000.0,5500.0,5250.0,,0
+Spring Wheat,elevation,2000.0,2500.0,2250.0,0.0,3
+Spring Wheat,elevation,2500.0,3000.0,2750.0,0.01118,85
+Spring Wheat,elevation,3000.0,3500.0,3250.0,0.01165,498
+Spring Wheat,elevation,3500.0,4000.0,3750.0,0.00354,240
+Spring Wheat,elevation,4000.0,4500.0,4250.0,0.0,2
+Spring Wheat,elevation,4500.0,5000.0,4750.0,,0
+Spring Wheat,elevation,5000.0,5500.0,5250.0,,0
+Silage Maize,elevation,2000.0,2500.0,2250.0,0.0,3
+Silage Maize,elevation,2500.0,3000.0,2750.0,0.01,85
+Silage Maize,elevation,3000.0,3500.0,3250.0,0.02118,498
+Silage Maize,elevation,3500.0,4000.0,3750.0,0.00104,240
+Silage Maize,elevation,4000.0,4500.0,4250.0,0.0,2
+Silage Maize,elevation,4500.0,5000.0,4750.0,,0
+Silage Maize,elevation,5000.0,5500.0,5250.0,,0
+White Potato,elevation,2000.0,2500.0,2250.0,0.0,3
+White Potato,elevation,2500.0,3000.0,2750.0,0.03176,85
+White Potato,elevation,3000.0,3500.0,3250.0,0.04157,498
+White Potato,elevation,3500.0,4000.0,3750.0,0.04167,240
+White Potato,elevation,4000.0,4500.0,4250.0,0.0,2
+White Potato,elevation,4500.0,5000.0,4750.0,,0
+White Potato,elevation,5000.0,5500.0,5250.0,,0
+Oat,elevation,2000.0,2500.0,2250.0,0.05,3
+Oat,elevation,2500.0,3000.0,2750.0,0.03706,85
+Oat,elevation,3000.0,3500.0,3250.0,0.06135,498
+Oat,elevation,3500.0,4000.0,3750.0,0.03625,240
+Oat,elevation,4000.0,4500.0,4250.0,0.0,2
+Oat,elevation,4500.0,5000.0,4750.0,,0
+Oat,elevation,5000.0,5500.0,5250.0,,0
+Dry Pea,elevation,2000.0,2500.0,2250.0,0.0,3
+Dry Pea,elevation,2500.0,3000.0,2750.0,0.00941,85
+Dry Pea,elevation,3000.0,3500.0,3250.0,0.00924,498
+Dry Pea,elevation,3500.0,4000.0,3750.0,0.0025,240
+Dry Pea,elevation,4000.0,4500.0,4250.0,0.0,2
+Dry Pea,elevation,4500.0,5000.0,4750.0,,0
+Dry Pea,elevation,5000.0,5500.0,5250.0,,0
+Winter Rape,elevation,2000.0,2500.0,2250.0,-0.08333,3
+Winter Rape,elevation,2500.0,3000.0,2750.0,-0.04353,85
+Winter Rape,elevation,3000.0,3500.0,3250.0,-0.00994,498
+Winter Rape,elevation,3500.0,4000.0,3750.0,0.00042,240
+Winter Rape,elevation,4000.0,4500.0,4250.0,0.0,2
+Winter Rape,elevation,4500.0,5000.0,4750.0,,0
+Winter Rape,elevation,5000.0,5500.0,5250.0,,0
+Spring Rape,elevation,2000.0,2500.0,2250.0,0.0,3
+Spring Rape,elevation,2500.0,3000.0,2750.0,0.05824,85
+Spring Rape,elevation,3000.0,3500.0,3250.0,0.06998,498
+Spring Rape,elevation,3500.0,4000.0,3750.0,0.08792,240
+Spring Rape,elevation,4000.0,4500.0,4250.0,0.0,2
+Spring Rape,elevation,4500.0,5000.0,4750.0,,0
+Spring Rape,elevation,5000.0,5500.0,5250.0,,0
+OVERALL,elevation,2000.0,2500.0,2250.0,0.0,3
+OVERALL,elevation,2500.0,3000.0,2750.0,0.00835,85
+OVERALL,elevation,3000.0,3500.0,3250.0,0.0273,498
+OVERALL,elevation,3500.0,4000.0,3750.0,0.01771,240
+OVERALL,elevation,4000.0,4500.0,4250.0,0.0,2
+OVERALL,elevation,4500.0,5000.0,4750.0,,0
+OVERALL,elevation,5000.0,5500.0,5250.0,,0
+Winter Barley,slope,0.0,11.13,5.56,0.05064,235
+Winter Barley,slope,11.13,22.26,16.69,0.00878,222
+Winter Barley,slope,22.26,33.39,27.82,-0.00719,167
+Winter Barley,slope,33.39,44.52,38.95,0.0,107
+Winter Barley,slope,44.52,55.64,50.08,0.0,58
+Winter Barley,slope,55.64,66.77,61.21,0.0,30
+Winter Barley,slope,66.77,76.9,71.83,0.0,9
+Spring Barley,slope,0.0,11.13,5.56,0.00106,235
+Spring Barley,slope,11.13,22.26,16.69,0.01667,222
+Spring Barley,slope,22.26,33.39,27.82,0.02006,167
+Spring Barley,slope,33.39,44.52,38.95,0.0,107
+Spring Barley,slope,44.52,55.64,50.08,0.0,58
+Spring Barley,slope,55.64,66.77,61.21,0.0,30
+Spring Barley,slope,66.77,76.9,71.83,0.0,9
+Winter Wheat,slope,0.0,11.13,5.56,0.04936,235
+Winter Wheat,slope,11.13,22.26,16.69,0.00878,222
+Winter Wheat,slope,22.26,33.39,27.82,-0.00749,167
+Winter Wheat,slope,33.39,44.52,38.95,0.0,107
+Winter Wheat,slope,44.52,55.64,50.08,0.0,58
+Winter Wheat,slope,55.64,66.77,61.21,0.0,30
+Winter Wheat,slope,66.77,76.9,71.83,0.0,9
+Spring Wheat,slope,0.0,11.13,5.56,0.00191,235
+Spring Wheat,slope,11.13,22.26,16.69,0.01667,222
+Spring Wheat,slope,22.26,33.39,27.82,0.02066,167
+Spring Wheat,slope,33.39,44.52,38.95,0.0,107
+Spring Wheat,slope,44.52,55.64,50.08,0.0,58
+Spring Wheat,slope,55.64,66.77,61.21,0.0,30
+Spring Wheat,slope,66.77,76.9,71.83,0.0,9
+Silage Maize,slope,0.0,11.13,5.56,0.02277,235
+Silage Maize,slope,11.13,22.26,16.69,0.01532,222
+Silage Maize,slope,22.26,33.39,27.82,0.01737,167
+Silage Maize,slope,33.39,44.52,38.95,0.0,107
+Silage Maize,slope,44.52,55.64,50.08,0.0,58
+Silage Maize,slope,55.64,66.77,61.21,0.0,30
+Silage Maize,slope,66.77,76.9,71.83,0.0,9
+White Potato,slope,0.0,11.13,5.56,0.02553,235
+White Potato,slope,11.13,22.26,16.69,0.09212,222
+White Potato,slope,22.26,33.39,27.82,0.04162,167
+White Potato,slope,33.39,44.52,38.95,0.0,107
+White Potato,slope,44.52,55.64,50.08,0.0,58
+White Potato,slope,55.64,66.77,61.21,0.0,30
+White Potato,slope,66.77,76.9,71.83,0.0,9
+Oat,slope,0.0,11.13,5.56,0.06213,235
+Oat,slope,11.13,22.26,16.69,0.09932,222
+Oat,slope,22.26,33.39,27.82,0.03533,167
+Oat,slope,33.39,44.52,38.95,0.0,107
+Oat,slope,44.52,55.64,50.08,0.0,58
+Oat,slope,55.64,66.77,61.21,0.0,30
+Oat,slope,66.77,76.9,71.83,0.0,9
+Dry Pea,slope,0.0,11.13,5.56,-0.00234,235
+Dry Pea,slope,11.13,22.26,16.69,0.01509,222
+Dry Pea,slope,22.26,33.39,27.82,0.01916,167
+Dry Pea,slope,33.39,44.52,38.95,0.0,107
+Dry Pea,slope,44.52,55.64,50.08,0.0,58
+Dry Pea,slope,55.64,66.77,61.21,0.0,30
+Dry Pea,slope,66.77,76.9,71.83,0.0,9
+Winter Rape,slope,0.0,11.13,5.56,-0.01106,235
+Winter Rape,slope,11.13,22.26,16.69,-0.01149,222
+Winter Rape,slope,22.26,33.39,27.82,-0.02186,167
+Winter Rape,slope,33.39,44.52,38.95,0.0,107
+Winter Rape,slope,44.52,55.64,50.08,0.0,58
+Winter Rape,slope,55.64,66.77,61.21,0.0,30
+Winter Rape,slope,66.77,76.9,71.83,0.0,9
+Spring Rape,slope,0.0,11.13,5.56,0.05489,235
+Spring Rape,slope,11.13,22.26,16.69,0.17117,222
+Spring Rape,slope,22.26,33.39,27.82,0.05988,167
+Spring Rape,slope,33.39,44.52,38.95,0.0,107
+Spring Rape,slope,44.52,55.64,50.08,0.0,58
+Spring Rape,slope,55.64,66.77,61.21,0.0,30
+Spring Rape,slope,66.77,76.9,71.83,0.0,9
+OVERALL,slope,0.0,11.13,5.56,0.02549,235
+OVERALL,slope,11.13,22.26,16.69,0.04324,222
+OVERALL,slope,22.26,33.39,27.82,0.01775,167
+OVERALL,slope,33.39,44.52,38.95,0.0,107
+OVERALL,slope,44.52,55.64,50.08,0.0,58
+OVERALL,slope,55.64,66.77,61.21,0.0,30
+OVERALL,slope,66.77,76.9,71.83,0.0,9

@@ -1,0 +1,61 @@
+crop,x_var,split_var,tercile,slope,r,p,n
+Winter Barley,temperature,precipitation,Low ΔPrecip (<P33),-4.65445,-0.0436,0.29298,584
+Winter Barley,temperature,precipitation,Mid ΔPrecip (P33–P67),-24.19727,-0.2295,0.0,600
+Winter Barley,temperature,precipitation,High ΔPrecip (>P67),-11.09231,-0.1897,0.0,584
+Winter Barley,precipitation,temperature,Low ΔTemp (<P33),0.1654,0.1806,1e-05,584
+Winter Barley,precipitation,temperature,Mid ΔTemp (P33–P67),2e-05,0.0066,0.87163,600
+Winter Barley,precipitation,temperature,High ΔTemp (>P67),0.0,,,584
+Spring Barley,temperature,precipitation,Low ΔPrecip (<P33),-2.69121,-0.0562,0.1752,584
+Spring Barley,temperature,precipitation,Mid ΔPrecip (P33–P67),-4.08906,-0.1589,9e-05,600
+Spring Barley,temperature,precipitation,High ΔPrecip (>P67),-0.8387,-0.1112,0.00715,584
+Spring Barley,precipitation,temperature,Low ΔTemp (<P33),0.00722,0.0222,0.5917,584
+Spring Barley,precipitation,temperature,Mid ΔTemp (P33–P67),0.0,,,600
+Spring Barley,precipitation,temperature,High ΔTemp (>P67),0.0,,,584
+Winter Wheat,temperature,precipitation,Low ΔPrecip (<P33),-4.4067,-0.0416,0.31582,584
+Winter Wheat,temperature,precipitation,Mid ΔPrecip (P33–P67),-23.96002,-0.2286,0.0,600
+Winter Wheat,temperature,precipitation,High ΔPrecip (>P67),-11.05358,-0.1897,0.0,584
+Winter Wheat,precipitation,temperature,Low ΔTemp (<P33),0.16495,0.1812,1e-05,584
+Winter Wheat,precipitation,temperature,Mid ΔTemp (P33–P67),2e-05,0.0055,0.8929,600
+Winter Wheat,precipitation,temperature,High ΔTemp (>P67),0.0,,,584
+Spring Wheat,temperature,precipitation,Low ΔPrecip (<P33),-3.30128,-0.0701,0.09074,584
+Spring Wheat,temperature,precipitation,Mid ΔPrecip (P33–P67),-4.01864,-0.1599,8e-05,600
+Spring Wheat,temperature,precipitation,High ΔPrecip (>P67),-0.85357,-0.1112,0.00715,584
+Spring Wheat,precipitation,temperature,Low ΔTemp (<P33),0.00513,0.0161,0.69821,584
+Spring Wheat,precipitation,temperature,Mid ΔTemp (P33–P67),0.0,,,600
+Spring Wheat,precipitation,temperature,High ΔTemp (>P67),0.0,,,584
+Silage Maize,temperature,precipitation,Low ΔPrecip (<P33),-5.1898,-0.1746,2e-05,584
+Silage Maize,temperature,precipitation,Mid ΔPrecip (P33–P67),-1.20334,-0.1082,0.00801,600
+Silage Maize,temperature,precipitation,High ΔPrecip (>P67),-7.18429,-0.1669,5e-05,584
+Silage Maize,precipitation,temperature,Low ΔTemp (<P33),0.00597,0.0215,0.60326,584
+Silage Maize,precipitation,temperature,Mid ΔTemp (P33–P67),0.00123,0.1251,0.00215,600
+Silage Maize,precipitation,temperature,High ΔTemp (>P67),0.0,,,584
+White Potato,temperature,precipitation,Low ΔPrecip (<P33),-0.00152,-0.0002,0.99546,584
+White Potato,temperature,precipitation,Mid ΔPrecip (P33–P67),-0.61755,-0.0704,0.08511,600
+White Potato,temperature,precipitation,High ΔPrecip (>P67),-1.73817,-0.2677,0.0,584
+White Potato,precipitation,temperature,Low ΔTemp (<P33),0.00692,0.1485,0.00032,584
+White Potato,precipitation,temperature,Mid ΔTemp (P33–P67),0.00191,0.0517,0.20637,600
+White Potato,precipitation,temperature,High ΔTemp (>P67),1e-05,0.0084,0.83971,584
+Oat,temperature,precipitation,Low ΔPrecip (<P33),-0.89813,-0.1432,0.00052,584
+Oat,temperature,precipitation,Mid ΔPrecip (P33–P67),-1.73081,-0.1707,3e-05,600
+Oat,temperature,precipitation,High ΔPrecip (>P67),-0.71723,-0.0995,0.01617,584
+Oat,precipitation,temperature,Low ΔTemp (<P33),0.00396,0.0737,0.07519,584
+Oat,precipitation,temperature,Mid ΔTemp (P33–P67),-4e-05,-0.0009,0.9821,600
+Oat,precipitation,temperature,High ΔTemp (>P67),0.0,,,584
+Dry Pea,temperature,precipitation,Low ΔPrecip (<P33),-0.2338,-0.0614,0.13807,584
+Dry Pea,temperature,precipitation,Mid ΔPrecip (P33–P67),-0.26498,-0.1829,1e-05,600
+Dry Pea,temperature,precipitation,High ΔPrecip (>P67),-0.0427,-0.1112,0.00715,584
+Dry Pea,precipitation,temperature,Low ΔTemp (<P33),0.00049,0.02,0.62925,584
+Dry Pea,precipitation,temperature,Mid ΔTemp (P33–P67),0.0,,,600
+Dry Pea,precipitation,temperature,High ΔTemp (>P67),0.0,,,584
+Winter Rape,temperature,precipitation,Low ΔPrecip (<P33),0.61085,0.1739,2e-05,584
+Winter Rape,temperature,precipitation,Mid ΔPrecip (P33–P67),-0.02461,-0.0197,0.63052,600
+Winter Rape,temperature,precipitation,High ΔPrecip (>P67),0.02085,0.0432,0.29747,584
+Winter Rape,precipitation,temperature,Low ΔTemp (<P33),0.00285,0.1273,0.00205,584
+Winter Rape,precipitation,temperature,Mid ΔTemp (P33–P67),0.0,,,600
+Winter Rape,precipitation,temperature,High ΔTemp (>P67),0.0,,,584
+Spring Rape,temperature,precipitation,Low ΔPrecip (<P33),0.8178,0.0747,0.0711,584
+Spring Rape,temperature,precipitation,Mid ΔPrecip (P33–P67),-0.79634,-0.0444,0.27781,600
+Spring Rape,temperature,precipitation,High ΔPrecip (>P67),-5.25953,-0.3019,0.0,584
+Spring Rape,precipitation,temperature,Low ΔTemp (<P33),0.02355,0.2525,0.0,584
+Spring Rape,precipitation,temperature,Mid ΔTemp (P33–P67),0.00588,0.0733,0.0729,600
+Spring Rape,precipitation,temperature,High ΔTemp (>P67),5e-05,0.0353,0.3944,584

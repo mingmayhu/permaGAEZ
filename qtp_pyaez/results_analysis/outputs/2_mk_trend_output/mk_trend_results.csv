@@ -1,0 +1,11 @@
+crop,tau,p_value,slope_sen,trend,significant,n_years
+Winter Barley,0.095,0.5813,0.2887,no trend,False,20
+Spring Barley,-0.084,0.6234,-0.0046,no trend,False,20
+Winter Wheat,0.095,0.5813,0.3016,no trend,False,20
+Spring Wheat,-0.063,0.7188,-0.0018,no trend,False,20
+Silage Maize,-0.026,0.8967,-0.0004,no trend,False,20
+White Potato,-0.074,0.6732,-0.0051,no trend,False,20
+Oat,0.011,0.9741,0.0022,no trend,False,20
+Dry Pea,-0.137,0.4152,-0.0014,no trend,False,20
+Winter Rape,-0.3,0.0691,-0.0053,no trend,False,20
+Spring Rape,-0.189,0.2561,-0.0191,no trend,False,20

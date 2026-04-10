@@ -1,0 +1,21 @@
+crop,scenario,slope_kg_ha_yr,p_value,significant
+Winter Barley,Observed,0.145,0.0,True
+Winter Barley,No-thaw CF,0.064,0.2333,False
+Spring Barley,Observed,0.06,0.0,True
+Spring Barley,No-thaw CF,0.006,0.2841,False
+Winter Wheat,Observed,0.145,0.0,True
+Winter Wheat,No-thaw CF,0.064,0.2333,False
+Spring Wheat,Observed,0.058,0.0,True
+Spring Wheat,No-thaw CF,0.011,0.2086,False
+Silage Maize,Observed,0.029,0.0,True
+Silage Maize,No-thaw CF,0.011,0.2598,False
+White Potato,Observed,0.01,0.0004,True
+White Potato,No-thaw CF,0.005,0.3859,False
+Oat,Observed,0.013,0.0079,True
+Oat,No-thaw CF,0.003,0.6771,False
+Dry Pea,Observed,0.005,0.0,True
+Dry Pea,No-thaw CF,0.001,0.4223,False
+Winter Rape,Observed,0.002,0.0004,True
+Winter Rape,No-thaw CF,0.0,0.1163,False
+Spring Rape,Observed,0.015,0.0,True
+Spring Rape,No-thaw CF,0.011,0.0855,False

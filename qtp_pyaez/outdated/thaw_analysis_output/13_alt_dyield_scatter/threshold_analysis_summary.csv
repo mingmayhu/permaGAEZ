@@ -1,0 +1,11 @@
+crop,n_pixels,linear_r,linear_p,quad_r2,quad_threshold_m,concave_down
+Winter Barley,1768,0.1217,0.0,0.0228,-0.114,False
+Spring Barley,1768,-0.0131,0.5808,0.0019,0.014,True
+Winter Wheat,1768,0.1203,0.0,0.0222,-0.114,False
+Spring Wheat,1768,-0.0095,0.6883,0.002,0.026,True
+Silage Maize,1768,-0.0128,0.5906,0.0008,-0.009,True
+White Potato,1768,-0.0012,0.9595,0.0089,0.054,False
+Oat,1768,0.1528,0.0,0.0278,-0.229,False
+Dry Pea,1768,-0.0152,0.5239,0.0025,0.014,True
+Winter Rape,1768,-0.081,0.0007,0.0074,-0.289,True
+Spring Rape,1768,-0.0625,0.0085,0.018,0.117,False

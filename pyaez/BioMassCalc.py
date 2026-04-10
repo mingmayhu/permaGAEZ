@@ -253,8 +253,8 @@ class BioMassCalc(object):
             bgm = (f_day_clouded * (.8 + (0.01 * iPm)) * bo_mean) + ((1-f_day_clouded) * (.5 + (.025 * iPm)) * bc_mean);
         elif iPm < 20:
             bgm = (f_day_clouded * (.5 + (.025 * iPm)) * bo_mean) + ((1-f_day_clouded) * .05 * iPm * bc_mean);
-        else:
-        # elif iPm == 20:
+        # else:
+        elif iPm == 20:
             bgm = (f_day_clouded*bo_mean) + ((1 - f_day_clouded)*bc_mean);
 
         '''net biomass production '''

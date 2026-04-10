@@ -1,0 +1,7 @@
+metric,period,obs_tau,obs_p,obs_slope,obs_significant,cf_tau,cf_p,cf_slope,cf_significant,slope_difference
+normalized_yield,1979-2018,0.21,0.0575,0.0039,False,0.228,0.0392,0.0044,True,-0.0005
+total_yield_tonnes,1979-2018,0.6,0.0,12008.1411,True,0.549,0.0,9436.0461,True,2572.095
+total_area_km2,1979-2018,0.554,0.0,947.8793,True,0.471,0.0,696.1712,True,251.7081
+normalized_yield,1999-2018,0.189,0.2561,0.0069,False,0.168,0.3145,0.0068,False,0.0001
+total_yield_tonnes,1999-2018,0.305,0.0644,14111.1375,False,0.211,0.2058,8612.3818,False,5498.7557
+total_area_km2,1999-2018,0.184,0.2697,502.125,False,0.116,0.4957,351.9286,False,150.1964

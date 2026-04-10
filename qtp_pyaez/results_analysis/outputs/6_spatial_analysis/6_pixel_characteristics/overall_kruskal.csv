@@ -1,0 +1,13 @@
+variable,kruskal_H,kruskal_p,kruskal_sig,net+_vs_neutral,net+_vs_net-
+Elevation (m),21.366,0.0,True,0.0002,0.0716
+Slope (°),23.528,0.0,True,0.0,0.4345
+Mean ALT (m),43.832,0.0,True,0.0,0.2417
+ΔALT (m),19.719,0.0001,True,0.0,0.098
+Mean Soil Moisture,37.548,0.0,True,0.0,0.0
+ΔSoil Moisture,48.596,0.0,True,0.0,0.8263
+Mean TempMax (°C),29.335,0.0,True,0.0,0.002
+ΔTempMax (°C),1.621,0.4446,False,0.5071,0.1602
+Mean TempMin (°C),35.912,0.0,True,0.0,0.0079
+ΔTempMin (°C),2.164,0.3389,False,0.4691,0.5429
+Mean Precip (mm),4.985,0.0827,False,0.0747,0.5429
+ΔPrecip (mm),9.638,0.0081,True,0.0497,0.0007

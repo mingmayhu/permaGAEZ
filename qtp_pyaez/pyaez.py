@@ -27,7 +27,7 @@ SA = 100.
 D  = 1.
 
 # Set to True to run the "no permafrost thaw" counterfactual
-NO_THAW_BASELINE_RUN = True
+NO_THAW_BASELINE_RUN = False
 RUN_TAG = '_nothaw' if NO_THAW_BASELINE_RUN else ''
 
 # --- Crops -------------------------------------------------------------------
@@ -231,18 +231,12 @@ CROPS = [
     #     'terrain_crop_group': 'annuals 1',
     #     'no_t_climate'   : [1, 2, 12],
     # },
-    #     {
-    #     'crop_name'      : 'spring_oat_129',
-    #     'soil_rain_excel': r'./data_input/soil_inputs/oat_soil_reduction.xlsx',
-    #     'terrain_crop_group': 'annuals 1',
-    #     'no_t_climate'   : [1, 2, 12],
-    # },
-    #     {
-    #     'crop_name'      : 'spring_oat_129',
-    #     'soil_rain_excel': r'./data_input/soil_inputs/oat_soil_reduction.xlsx',
-    #     'terrain_crop_group': 'annuals 1',
-    #     'no_t_climate'   : [1, 2, 12],
-    # },
+        {
+        'crop_name'      : 'spring_oat_130',
+        'soil_rain_excel': r'./data_input/soil_inputs/oat_soil_reduction.xlsx',
+        'terrain_crop_group': 'annuals 1',
+        'no_t_climate'   : [1, 2, 12],
+    },
     #         {
     #     'crop_name'      : 'dry_pea_189',
     #     'soil_rain_excel': r'./data_input/soil_inputs/dry_pea_soil_reduction.xlsx',
@@ -761,15 +755,17 @@ def combine_crop_maps(year, varieties, output_tag=None):
         print(f"Skipping year {year} for combined map since it's not included in the no-thaw baseline run.")
         return
 
+    mask_arr = gdal.Open(MASK_PATH).ReadAsArray().astype(bool)
+
     stacked = []
     for variety in varieties:
-        # Load raw yield from module 5, NOT the classified tif
         path = f'./data_output/module5{RUN_TAG}/{variety}/{year}/yield_terrain.tif'
         if not os.path.exists(path):
             print(f"    ⚠ Missing yield map for {variety} in {year} — skipping.")
             continue
         arr = gdal.Open(path).ReadAsArray().astype(float)
-        arr[arr < 0] = 0
+        arr[arr == -999] = 0        # screened-out pixels → 0, not nodata
+        arr[~mask_arr] = np.nan     # outside mask → NaN for plotting only
         stacked.append(arr)
 
     stacked = np.stack(stacked, axis=0)       # (n_varieties, rows, cols)
@@ -944,7 +940,7 @@ if __name__ == '__main__':
     # run_from_module4()
     # main()
     # run_all_module1()
-    varieties = ["spring_oat_128", "spring_oat_129"]
-    for year in YEARS:
-        combine_crop_maps(year, varieties, output_tag='combined_oat')
-    plot_final_classification("combined_oat")
+    # varieties = ["dry_pea_189", "dry_pea_190", "dry_pea_191"]
+    # for year in YEARS:
+    #     combine_crop_maps(year, varieties, output_tag='combined_dry_pea')
+    plot_final_classification("combined_silage_maize")

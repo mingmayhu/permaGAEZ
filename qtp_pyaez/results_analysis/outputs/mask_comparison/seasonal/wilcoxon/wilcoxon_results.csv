@@ -1,0 +1,11 @@
+crop,median_delta,pct_years_positive,p_two_sided,p_greater_zero,significant
+Winter Barley,0.01751,55.0,0.3702,0.1851,False
+Spring Barley,0.00604,55.0,0.0554,0.0277,True
+Winter Wheat,0.01751,55.0,0.3884,0.1942,False
+Spring Wheat,0.00543,55.0,0.0535,0.0267,True
+Silage Maize,0.00966,75.0,0.0113,0.0056,True
+White Potato,0.04046,85.0,0.0013,0.0006,True
+Oat,0.02657,70.0,0.024,0.012,True
+Dry Pea,0.00725,60.0,0.0877,0.0439,True
+Winter Rape,-0.00181,35.0,0.4203,0.7898,False
+Spring Rape,0.09481,85.0,0.0028,0.0014,True

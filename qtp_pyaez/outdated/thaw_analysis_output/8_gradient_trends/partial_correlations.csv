@@ -1,0 +1,11 @@
+partial_r_yield_temperature_ctrl_precipitation,partial_p_yield_temperature_ctrl_precipitation,partial_r_yield_precipitation_ctrl_temperature,partial_p_yield_precipitation_ctrl_temperature,crop
+-0.1441,0.0,0.0769,0.00122,Winter Barley
+-0.0826,0.00051,0.0257,0.281,Spring Barley
+-0.1428,0.0,0.077,0.0012,Winter Wheat
+-0.0913,0.00012,0.0247,0.29914,Spring Wheat
+-0.1439,0.0,0.0306,0.19856,Silage Maize
+-0.0829,0.00049,0.0768,0.00124,White Potato
+-0.1509,0.0,0.043,0.07095,Oat
+-0.0815,0.0006,0.0253,0.28774,Dry Pea
+0.1044,1e-05,0.0351,0.14062,Winter Rape
+-0.0697,0.00337,0.1051,1e-05,Spring Rape

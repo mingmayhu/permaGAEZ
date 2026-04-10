@@ -1,0 +1,101 @@
+crop,step,pixels_annual,area_km2,direction
+Winter Barley,-5,0.65,50.7,degradation
+Winter Barley,-4,1.75,136.5,degradation
+Winter Barley,-3,5.85,456.3,degradation
+Winter Barley,-2,2.1,163.8,degradation
+Winter Barley,-1,6.9,538.2,degradation
+Winter Barley,1,4.15,323.7,improvement
+Winter Barley,2,3.95,308.1,improvement
+Winter Barley,3,6.45,503.1,improvement
+Winter Barley,4,3.5,273.0,improvement
+Winter Barley,5,1.4,109.2,improvement
+Spring Barley,-5,0.0,0.0,degradation
+Spring Barley,-4,1.4,109.2,degradation
+Spring Barley,-3,0.65,50.7,degradation
+Spring Barley,-2,0.35,27.3,degradation
+Spring Barley,-1,0.15,11.7,degradation
+Spring Barley,1,0.75,58.5,improvement
+Spring Barley,2,1.55,120.9,improvement
+Spring Barley,3,1.95,152.1,improvement
+Spring Barley,4,0.75,58.5,improvement
+Spring Barley,5,0.1,7.8,improvement
+Winter Wheat,-5,0.65,50.7,degradation
+Winter Wheat,-4,1.7,132.6,degradation
+Winter Wheat,-3,5.9,460.2,degradation
+Winter Wheat,-2,1.8,140.4,degradation
+Winter Wheat,-1,7.15,557.7,degradation
+Winter Wheat,1,4.7,366.6,improvement
+Winter Wheat,2,3.5,273.0,improvement
+Winter Wheat,3,6.45,503.1,improvement
+Winter Wheat,4,3.4,265.2,improvement
+Winter Wheat,5,1.4,109.2,improvement
+Spring Wheat,-5,0.0,0.0,degradation
+Spring Wheat,-4,1.0,78.0,degradation
+Spring Wheat,-3,0.45,35.1,degradation
+Spring Wheat,-2,0.85,66.3,degradation
+Spring Wheat,-1,0.25,19.5,degradation
+Spring Wheat,1,1.05,81.9,improvement
+Spring Wheat,2,1.35,105.3,improvement
+Spring Wheat,3,1.9,148.2,improvement
+Spring Wheat,4,0.6,46.8,improvement
+Spring Wheat,5,0.2,15.6,improvement
+Silage Maize,-5,0.35,27.3,degradation
+Silage Maize,-4,0.2,15.6,degradation
+Silage Maize,-3,0.25,19.5,degradation
+Silage Maize,-2,0.15,11.7,degradation
+Silage Maize,-1,0.5,39.0,degradation
+Silage Maize,1,3.1,241.8,improvement
+Silage Maize,2,1.25,97.5,improvement
+Silage Maize,3,1.9,148.2,improvement
+Silage Maize,4,0.7,54.6,improvement
+Silage Maize,5,0.55,42.9,improvement
+White Potato,-5,0.0,0.0,degradation
+White Potato,-4,2.15,167.7,degradation
+White Potato,-3,1.05,81.9,degradation
+White Potato,-2,4.05,315.9,degradation
+White Potato,-1,10.9,850.2,degradation
+White Potato,1,29.6,2308.8,improvement
+White Potato,2,10.75,838.5,improvement
+White Potato,3,3.15,245.7,improvement
+White Potato,4,1.05,81.9,improvement
+White Potato,5,0.4,31.2,improvement
+Oat,-5,1.05,81.9,degradation
+Oat,-4,2.65,206.7,degradation
+Oat,-3,3.1,241.8,degradation
+Oat,-2,3.1,241.8,degradation
+Oat,-1,2.05,159.9,degradation
+Oat,1,7.0,546.0,improvement
+Oat,2,7.65,596.7,improvement
+Oat,3,9.1,709.8,improvement
+Oat,4,5.45,425.1,improvement
+Oat,5,1.5,117.0,improvement
+Dry Pea,-5,0.15,11.7,degradation
+Dry Pea,-4,1.3,101.4,degradation
+Dry Pea,-3,0.45,35.1,degradation
+Dry Pea,-2,0.1,7.8,degradation
+Dry Pea,-1,0.25,19.5,degradation
+Dry Pea,1,0.8,62.4,improvement
+Dry Pea,2,0.8,62.4,improvement
+Dry Pea,3,1.85,144.3,improvement
+Dry Pea,4,0.45,35.1,improvement
+Dry Pea,5,0.4,31.2,improvement
+Winter Rape,-5,0.15,11.7,degradation
+Winter Rape,-4,1.2,93.6,degradation
+Winter Rape,-3,2.0,156.0,degradation
+Winter Rape,-2,2.05,159.9,degradation
+Winter Rape,-1,1.65,128.7,degradation
+Winter Rape,1,0.35,27.3,improvement
+Winter Rape,2,0.95,74.1,improvement
+Winter Rape,3,0.9,70.2,improvement
+Winter Rape,4,0.75,58.5,improvement
+Winter Rape,5,0.1,7.8,improvement
+Spring Rape,-5,7.35,573.3,degradation
+Spring Rape,-4,1.85,144.3,degradation
+Spring Rape,-3,3.25,253.5,degradation
+Spring Rape,-2,3.0,234.0,degradation
+Spring Rape,-1,2.65,206.7,degradation
+Spring Rape,1,6.85,534.3,improvement
+Spring Rape,2,10.1,787.8,improvement
+Spring Rape,3,17.7,1380.6,improvement
+Spring Rape,4,9.25,721.5,improvement
+Spring Rape,5,2.75,214.5,improvement

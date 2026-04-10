@@ -1,0 +1,121 @@
+crop,elev_band,alt_metric,spearman_r,spearman_p,n
+Winter Barley,2500-3000m,alt_mean_comp,0.06,0.58524,85
+Winter Barley,3000-3500m,alt_mean_comp,0.1745,5e-05,535
+Winter Barley,3500-4000m,alt_mean_comp,0.0393,0.34485,579
+Winter Barley,4000-4500m,alt_mean_comp,0.0758,0.09617,483
+Winter Barley,2500-3000m,delta_alt,-0.0092,0.93336,85
+Winter Barley,3000-3500m,delta_alt,0.2078,0.0,535
+Winter Barley,3500-4000m,delta_alt,0.0408,0.3268,579
+Winter Barley,4000-4500m,delta_alt,0.0784,0.0852,483
+Winter Barley,2500-3000m,alt_trend,0.0795,0.46967,85
+Winter Barley,3000-3500m,alt_trend,0.0841,0.05198,535
+Winter Barley,3500-4000m,alt_trend,0.0363,0.38269,579
+Winter Barley,4000-4500m,alt_trend,0.0784,0.0852,483
+Spring Barley,2500-3000m,alt_mean_comp,0.2215,0.04161,85
+Spring Barley,3000-3500m,alt_mean_comp,0.2485,0.0,535
+Spring Barley,3500-4000m,alt_mean_comp,0.0443,0.28705,579
+Spring Barley,4000-4500m,alt_mean_comp,,,483
+Spring Barley,2500-3000m,delta_alt,-0.2416,0.0259,85
+Spring Barley,3000-3500m,delta_alt,-0.0167,0.70067,535
+Spring Barley,3500-4000m,delta_alt,0.0227,0.58558,579
+Spring Barley,4000-4500m,delta_alt,,,483
+Spring Barley,2500-3000m,alt_trend,0.0778,0.47925,85
+Spring Barley,3000-3500m,alt_trend,0.0246,0.56967,535
+Spring Barley,3500-4000m,alt_trend,0.05,0.22967,579
+Spring Barley,4000-4500m,alt_trend,,,483
+Winter Wheat,2500-3000m,alt_mean_comp,0.0605,0.582,85
+Winter Wheat,3000-3500m,alt_mean_comp,0.1741,5e-05,535
+Winter Wheat,3500-4000m,alt_mean_comp,0.0393,0.34485,579
+Winter Wheat,4000-4500m,alt_mean_comp,0.0758,0.09617,483
+Winter Wheat,2500-3000m,delta_alt,-0.0101,0.92679,85
+Winter Wheat,3000-3500m,delta_alt,0.2077,0.0,535
+Winter Wheat,3500-4000m,delta_alt,0.0408,0.3268,579
+Winter Wheat,4000-4500m,delta_alt,0.0784,0.0852,483
+Winter Wheat,2500-3000m,alt_trend,0.0798,0.4676,85
+Winter Wheat,3000-3500m,alt_trend,0.0835,0.05358,535
+Winter Wheat,3500-4000m,alt_trend,0.0363,0.38269,579
+Winter Wheat,4000-4500m,alt_trend,0.0784,0.0852,483
+Spring Wheat,2500-3000m,alt_mean_comp,0.2635,0.01481,85
+Spring Wheat,3000-3500m,alt_mean_comp,0.2484,0.0,535
+Spring Wheat,3500-4000m,alt_mean_comp,0.0443,0.28705,579
+Spring Wheat,4000-4500m,alt_mean_comp,,,483
+Spring Wheat,2500-3000m,delta_alt,-0.2195,0.04353,85
+Spring Wheat,3000-3500m,delta_alt,-0.017,0.69438,535
+Spring Wheat,3500-4000m,delta_alt,0.0227,0.58558,579
+Spring Wheat,4000-4500m,delta_alt,,,483
+Spring Wheat,2500-3000m,alt_trend,0.0599,0.58635,85
+Spring Wheat,3000-3500m,alt_trend,0.0241,0.57788,535
+Spring Wheat,3500-4000m,alt_trend,0.05,0.22967,579
+Spring Wheat,4000-4500m,alt_trend,,,483
+Silage Maize,2500-3000m,alt_mean_comp,0.0376,0.73281,85
+Silage Maize,3000-3500m,alt_mean_comp,0.1502,0.00049,535
+Silage Maize,3500-4000m,alt_mean_comp,-0.0287,0.48996,579
+Silage Maize,4000-4500m,alt_mean_comp,0.1954,2e-05,483
+Silage Maize,2500-3000m,delta_alt,-0.1486,0.17456,85
+Silage Maize,3000-3500m,delta_alt,-0.2184,0.0,535
+Silage Maize,3500-4000m,delta_alt,-0.1398,0.00075,579
+Silage Maize,4000-4500m,delta_alt,-0.1711,0.00016,483
+Silage Maize,2500-3000m,alt_trend,0.1263,0.24955,85
+Silage Maize,3000-3500m,alt_trend,0.0597,0.16817,535
+Silage Maize,3500-4000m,alt_trend,0.0879,0.03453,579
+Silage Maize,4000-4500m,alt_trend,-0.0083,0.85585,483
+White Potato,2500-3000m,alt_mean_comp,0.1047,0.34044,85
+White Potato,3000-3500m,alt_mean_comp,0.1196,0.00563,535
+White Potato,3500-4000m,alt_mean_comp,0.1845,1e-05,579
+White Potato,4000-4500m,alt_mean_comp,0.2052,1e-05,483
+White Potato,2500-3000m,delta_alt,-0.1871,0.08635,85
+White Potato,3000-3500m,delta_alt,-0.013,0.76353,535
+White Potato,3500-4000m,delta_alt,-0.0651,0.11763,579
+White Potato,4000-4500m,delta_alt,-0.1818,6e-05,483
+White Potato,2500-3000m,alt_trend,0.1272,0.24598,85
+White Potato,3000-3500m,alt_trend,0.0134,0.7565,535
+White Potato,3500-4000m,alt_trend,0.2146,0.0,579
+White Potato,4000-4500m,alt_trend,0.0614,0.17784,483
+Oat,2500-3000m,alt_mean_comp,0.0107,0.92264,85
+Oat,3000-3500m,alt_mean_comp,0.0957,0.02687,535
+Oat,3500-4000m,alt_mean_comp,0.1071,0.00992,579
+Oat,4000-4500m,alt_mean_comp,0.1022,0.0247,483
+Oat,2500-3000m,delta_alt,0.0998,0.36366,85
+Oat,3000-3500m,delta_alt,0.1266,0.00335,535
+Oat,3500-4000m,delta_alt,0.179,1e-05,579
+Oat,4000-4500m,delta_alt,0.0976,0.03207,483
+Oat,2500-3000m,alt_trend,-0.1204,0.27252,85
+Oat,3000-3500m,alt_trend,-0.0376,0.38586,535
+Oat,3500-4000m,alt_trend,0.1046,0.01175,579
+Oat,4000-4500m,alt_trend,0.0633,0.16512,483
+Dry Pea,2500-3000m,alt_mean_comp,0.2801,0.00942,85
+Dry Pea,3000-3500m,alt_mean_comp,0.2044,0.0,535
+Dry Pea,3500-4000m,alt_mean_comp,0.1006,0.01549,579
+Dry Pea,4000-4500m,alt_mean_comp,,,483
+Dry Pea,2500-3000m,delta_alt,-0.229,0.03502,85
+Dry Pea,3000-3500m,delta_alt,-0.0603,0.16381,535
+Dry Pea,3500-4000m,delta_alt,0.0519,0.21223,579
+Dry Pea,4000-4500m,delta_alt,,,483
+Dry Pea,2500-3000m,alt_trend,0.0076,0.94489,85
+Dry Pea,3000-3500m,alt_trend,0.007,0.87081,535
+Dry Pea,3500-4000m,alt_trend,0.0212,0.61069,579
+Dry Pea,4000-4500m,alt_trend,,,483
+Winter Rape,2500-3000m,alt_mean_comp,-0.1651,0.13104,85
+Winter Rape,3000-3500m,alt_mean_comp,-0.1708,7e-05,535
+Winter Rape,3500-4000m,alt_mean_comp,-0.0164,0.69362,579
+Winter Rape,4000-4500m,alt_mean_comp,,,483
+Winter Rape,2500-3000m,delta_alt,-0.0175,0.87341,85
+Winter Rape,3000-3500m,delta_alt,-0.1901,1e-05,535
+Winter Rape,3500-4000m,delta_alt,-0.0378,0.36347,579
+Winter Rape,4000-4500m,delta_alt,,,483
+Winter Rape,2500-3000m,alt_trend,0.1509,0.1679,85
+Winter Rape,3000-3500m,alt_trend,-0.0601,0.16501,535
+Winter Rape,3500-4000m,alt_trend,-0.0539,0.19492,579
+Winter Rape,4000-4500m,alt_trend,,,483
+Spring Rape,2500-3000m,alt_mean_comp,-0.0111,0.91944,85
+Spring Rape,3000-3500m,alt_mean_comp,0.1151,0.00771,535
+Spring Rape,3500-4000m,alt_mean_comp,0.2735,0.0,579
+Spring Rape,4000-4500m,alt_mean_comp,0.2194,0.0,483
+Spring Rape,2500-3000m,delta_alt,0.0002,0.99841,85
+Spring Rape,3000-3500m,delta_alt,0.0664,0.12527,535
+Spring Rape,3500-4000m,delta_alt,-0.0311,0.45514,579
+Spring Rape,4000-4500m,delta_alt,-0.2121,0.0,483
+Spring Rape,2500-3000m,alt_trend,-0.0069,0.95027,85
+Spring Rape,3000-3500m,alt_trend,0.0358,0.40805,535
+Spring Rape,3500-4000m,alt_trend,0.2777,0.0,579
+Spring Rape,4000-4500m,alt_trend,0.0614,0.17781,483

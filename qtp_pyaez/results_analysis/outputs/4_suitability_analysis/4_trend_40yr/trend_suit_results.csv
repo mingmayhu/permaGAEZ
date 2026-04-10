@@ -1,0 +1,21 @@
+crop,period,obs_tau,obs_p,obs_slope,obs_trend,obs_significant,cf_tau,cf_p,cf_slope,cf_trend,cf_significant,slope_difference
+Winter Barley,1979-2018,0.553,0.0,0.002285,increasing,True,0.528,0.0,0.001734,increasing,True,0.000551
+Winter Barley,1999-2018,0.274,0.098,0.002687,no trend,False,0.316,0.0556,0.002569,no trend,False,0.000118
+Spring Barley,1979-2018,0.465,0.0,0.000711,increasing,True,0.438,0.0001,0.00044,increasing,True,0.000271
+Spring Barley,1999-2018,0.095,0.5809,0.000542,no trend,False,0.1,0.559,0.00053,no trend,False,1.2e-05
+Winter Wheat,1979-2018,0.558,0.0,0.002285,increasing,True,0.528,0.0,0.001732,increasing,True,0.000553
+Winter Wheat,1999-2018,0.284,0.0855,0.002687,no trend,False,0.316,0.0556,0.002536,no trend,False,0.000151
+Spring Wheat,1979-2018,0.485,0.0,0.000707,increasing,True,0.459,0.0,0.000428,increasing,True,0.000279
+Spring Wheat,1999-2018,0.132,0.4355,0.000664,no trend,False,0.142,0.3982,0.000566,no trend,False,9.8e-05
+Silage Maize,1979-2018,0.447,0.0,0.000768,increasing,True,0.423,0.0001,0.000566,increasing,True,0.000202
+Silage Maize,1999-2018,-0.042,0.8202,-0.000131,no trend,False,0.121,0.4747,0.000343,no trend,False,-0.000474
+White Potato,1979-2018,0.412,0.0002,0.002492,increasing,True,0.308,0.0053,0.001772,increasing,True,0.00072
+White Potato,1999-2018,0.168,0.3145,0.002525,no trend,False,0.147,0.381,0.001822,no trend,False,0.000703
+Oat,1979-2018,0.441,0.0001,0.005161,increasing,True,0.377,0.0006,0.00373,increasing,True,0.001431
+Oat,1999-2018,0.095,0.5813,0.001991,no trend,False,-0.021,0.9225,-0.000338,no trend,False,0.002329
+Dry Pea,1979-2018,0.509,0.0,0.000792,increasing,True,0.453,0.0,0.000514,increasing,True,0.000278
+Dry Pea,1999-2018,0.084,0.6256,0.000448,no trend,False,0.047,0.7951,0.000283,no trend,False,0.000165
+Winter Rape,1979-2018,0.377,0.0006,0.000237,increasing,True,0.414,0.0001,0.000283,increasing,True,-4.6e-05
+Winter Rape,1999-2018,0.221,0.183,0.000296,no trend,False,0.347,0.0345,0.000823,increasing,True,-0.000527
+Spring Rape,1979-2018,0.492,0.0,0.003942,increasing,True,0.431,0.0001,0.00229,increasing,True,0.001652
+Spring Rape,1999-2018,0.068,0.6969,0.000519,no trend,False,0.005,1.0,0.000141,no trend,False,0.000378

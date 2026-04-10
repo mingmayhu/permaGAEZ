@@ -1,0 +1,12 @@
+crop,overall_wil_p,overall_wil_sig,overall_cum_final,overall_cum_p,overall_cum_sig,overall_slope_diff,overall_obs_sig,permafrost_wil_p,permafrost_wil_sig,permafrost_cum_final,permafrost_cum_p,permafrost_cum_sig,permafrost_slope_diff,permafrost_obs_sig,seasonal_wil_p,seasonal_wil_sig,seasonal_cum_final,seasonal_cum_p,seasonal_cum_sig,seasonal_slope_diff,seasonal_obs_sig
+Winter Barley,0.1658,False,0.1527,0.465,False,0.000551,True,0.0638,False,0.0185,0.178,False,0.0,True,0.1851,False,0.3056,0.471,False,0.001148,True
+Spring Barley,0.1359,False,0.0543,0.189,False,0.000271,True,,False,-0.0044,0.523,False,0.0,False,0.0277,True,0.1763,0.042,True,0.000568,True
+Winter Wheat,0.1841,False,0.1488,0.455,False,0.000553,True,0.0638,False,0.0185,0.178,False,0.0,True,0.1942,False,0.2971,0.469,False,0.001141,True
+Spring Wheat,0.0864,False,0.0628,0.162,False,0.000279,True,,False,-0.0033,0.746,False,0.0,False,0.0267,True,0.1836,0.04,True,0.000604,True
+Silage Maize,0.0043,True,0.1442,0.008,True,0.000202,True,0.0121,True,0.0283,0.034,True,0.0,False,0.0056,True,0.2814,0.007,True,0.000342,True
+White Potato,0.003,True,0.4072,0.004,True,0.00072,True,0.002,True,0.2168,0.015,True,0.000409,True,0.0006,True,0.8068,0.0,True,0.001173,True
+Oat,0.0119,True,0.5147,0.056,False,0.001431,True,0.1056,False,0.0643,0.137,False,6.5e-05,True,0.012,True,1.0278,0.061,False,0.003284,True
+Dry Pea,0.0812,False,0.0452,0.273,False,0.000278,True,,False,0.0,1.0,False,0.0,False,0.0439,True,0.1449,0.102,False,0.000587,True
+Winter Rape,0.7898,False,-0.1001,0.258,False,-4.6e-05,True,,False,-0.0011,1.0,False,0.0,False,0.7898,False,-0.2126,0.243,False,-9.8e-05,True
+Spring Rape,0.0032,True,0.7732,0.013,True,0.001652,True,0.0011,True,0.5719,0.002,True,0.000912,True,0.0014,True,1.471,0.002,True,0.003123,True
+OVERALL,,False,0.2203,0.025,True,,,,False,0.091,0.002,True,,,,False,0.4482,0.024,True,,

@@ -1,0 +1,3 @@
+period,obs_tau,obs_p,obs_slope,obs_significant,cf_tau,cf_p,cf_slope,cf_significant,slope_difference
+1979-2018,0.595,0.0,0.001849,True,0.531,0.0,0.001669,True,0.00018
+1999-2018,0.242,0.1443,0.001166,False,0.147,0.381,0.000887,False,0.000279

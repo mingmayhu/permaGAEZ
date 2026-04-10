@@ -1,0 +1,11 @@
+crop,mean_delta,median_delta,pct_positive,pct_negative,pct_zero,n_pixels
+Winter Barley,0.00764,0.0,5.2,3.05,91.74,1768
+Spring Barley,0.00271,0.0,1.98,1.02,97.0,1768
+Winter Wheat,0.00744,0.0,5.15,3.05,91.8,1768
+Spring Wheat,0.00314,0.0,1.98,1.02,97.0,1768
+Silage Maize,0.00721,0.0,5.03,0.85,94.12,1768
+White Potato,0.02036,0.0,10.52,6.9,82.58,1768
+Oat,0.02574,0.0,7.41,2.38,90.21,1768
+Dry Pea,0.00226,0.0,1.58,0.9,97.51,1768
+Winter Rape,-0.00501,0.0,1.02,3.34,95.64,1768
+Spring Rape,0.03866,0.0,10.86,7.52,81.62,1768

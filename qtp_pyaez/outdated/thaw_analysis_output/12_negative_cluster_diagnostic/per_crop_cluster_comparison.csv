@@ -1,0 +1,11 @@
+crop,cluster_mean_dy,other_mean_dy,mannwhitney_p,significant
+Winter Barley,-8.6557,1.9241,0.0,True
+Spring Barley,-4.8269,0.4638,0.0,True
+Winter Wheat,-8.6505,1.8976,0.0,True
+Spring Wheat,-4.1389,0.4616,0.0,True
+Silage Maize,-1.2135,0.535,0.0,True
+White Potato,-0.7895,0.1884,0.0,True
+Oat,0.2964,0.2063,0.04073,True
+Dry Pea,-0.3346,0.0327,0.0,True
+Winter Rape,-0.4977,-0.011,0.0,True
+Spring Rape,-1.3806,0.3658,0.05473,False
