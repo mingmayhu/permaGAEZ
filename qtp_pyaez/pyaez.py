@@ -39,12 +39,12 @@ RUN_TAG = '_nothaw' if NO_THAW_BASELINE_RUN else ''
 #   no_t_climate    : list of thermal climate classes to screen out
 # -----------------------------------------------------------------------------
 CROPS = [
-    # {
-    #     'crop_name'      : 'winter_barley_59',
-    #     'soil_rain_excel': r'./data_input/soil_inputs/barley_soil_reduction.xlsx',
-    #     'terrain_crop_group': 'annuals 1',
-    #     'no_t_climate'   : [1, 2, 9, 10, 11, 12],
-    # },
+    {
+        'crop_name'      : 'winter_barley_59',
+        'soil_rain_excel': r'./data_input/soil_inputs/barley_soil_reduction.xlsx',
+        'terrain_crop_group': 'annuals 1',
+        'no_t_climate'   : [1, 2, 9, 10, 11, 12],
+    },
     # {
     #     'crop_name'      : 'winter_barley_60',
     #     'soil_rain_excel': r'./data_input/soil_inputs/barley_soil_reduction.xlsx',
@@ -231,12 +231,12 @@ CROPS = [
     #     'terrain_crop_group': 'annuals 1',
     #     'no_t_climate'   : [1, 2, 12],
     # },
-        {
-        'crop_name'      : 'spring_oat_130',
-        'soil_rain_excel': r'./data_input/soil_inputs/oat_soil_reduction.xlsx',
-        'terrain_crop_group': 'annuals 1',
-        'no_t_climate'   : [1, 2, 12],
-    },
+    #     {
+    #     'crop_name'      : 'spring_oat_130',
+    #     'soil_rain_excel': r'./data_input/soil_inputs/oat_soil_reduction.xlsx',
+    #     'terrain_crop_group': 'annuals 1',
+    #     'no_t_climate'   : [1, 2, 12],
+    # },
     #         {
     #     'crop_name'      : 'dry_pea_189',
     #     'soil_rain_excel': r'./data_input/soil_inputs/dry_pea_soil_reduction.xlsx',
