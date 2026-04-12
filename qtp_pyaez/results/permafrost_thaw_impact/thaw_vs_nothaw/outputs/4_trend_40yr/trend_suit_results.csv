@@ -1,0 +1,45 @@
+crop,period,metric,obs_tau,obs_p,obs_slope,obs_trend,obs_significant,cf_tau,cf_p,cf_slope,cf_trend,cf_significant,slope_difference,boot_ci_lo,boot_ci_hi,boot_p,boot_sig,perm_ci_lo,perm_ci_hi,perm_p,perm_sig
+Winter Barley,1979-2018,mean_suit,0.524,0.0,0.001442,increasing,True,0.519,0.0,0.001052,increasing,True,0.00039,-0.000249,0.000215,0.011,True,-0.000482,0.00047,0.138,False
+Winter Barley,1979-2018,pct_ge2,0.514,0.0,0.069138,increasing,True,0.504,0.0,0.052216,increasing,True,0.016922,-0.013505,0.01284,0.024,True,-0.020384,0.020703,0.128,False
+Winter Barley,1999-2018,mean_suit,0.321,0.0515,0.002625,no trend,False,0.279,0.0914,0.00146,no trend,False,0.001165,-0.001858,0.001856,0.199,False,-0.002191,0.002137,0.346,False
+Winter Barley,1999-2018,pct_ge2,0.279,0.0906,0.118639,no trend,False,0.284,0.0852,0.077729,no trend,False,0.04091,-0.090788,0.087956,0.34,False,-0.098319,0.096842,0.378,False
+Spring Barley,1979-2018,mean_suit,0.468,0.0,0.000435,increasing,True,0.431,0.0001,0.000245,increasing,True,0.00019,-5e-05,5.7e-05,0.001,True,-0.000171,0.000171,0.009,True
+Spring Barley,1979-2018,pct_ge2,0.463,0.0,0.025819,increasing,True,0.427,0.0001,0.016845,increasing,True,0.008974,-0.003474,0.00358,0.0,True,-0.00747,0.007805,0.002,True
+Spring Barley,1999-2018,mean_suit,0.095,0.5805,0.00046,no trend,False,0.079,0.6487,0.000181,no trend,False,0.000279,-0.000423,0.000411,0.182,False,-0.000651,0.000672,0.577,False
+Spring Barley,1999-2018,pct_ge2,0.084,0.6253,0.012887,no trend,False,0.079,0.6487,0.013523,no trend,False,-0.000636,-0.020321,0.023038,0.773,False,-0.034364,0.034364,0.99,False
+Winter Wheat,1979-2018,mean_suit,0.526,0.0,0.001432,increasing,True,0.518,0.0,0.001029,increasing,True,0.000403,-0.000249,0.000201,0.007,True,-0.000468,0.000456,0.115,False
+Winter Wheat,1979-2018,pct_ge2,0.517,0.0,0.068023,increasing,True,0.505,0.0,0.052216,increasing,True,0.015807,-0.011455,0.013164,0.018,True,-0.020842,0.020352,0.157,False
+Winter Wheat,1999-2018,mean_suit,0.332,0.0442,0.002522,increasing,True,0.279,0.0914,0.001476,no trend,False,0.001046,-0.001718,0.001808,0.235,False,-0.002097,0.002139,0.358,False
+Winter Wheat,1999-2018,pct_ge2,0.284,0.0847,0.118639,no trend,False,0.284,0.0852,0.077729,no trend,False,0.04091,-0.086204,0.085777,0.331,False,-0.093341,0.089245,0.362,False
+Spring Wheat,1979-2018,mean_suit,0.464,0.0,0.000436,increasing,True,0.435,0.0001,0.000229,increasing,True,0.000207,-5.4e-05,4.8e-05,0.0,True,-0.00016,0.000157,0.005,True
+Spring Wheat,1979-2018,pct_ge2,0.441,0.0001,0.024546,increasing,True,0.421,0.0001,0.014318,increasing,True,0.010228,-0.003275,0.003505,0.0,True,-0.009852,0.009463,0.021,True
+Spring Wheat,1999-2018,mean_suit,0.142,0.3987,0.000573,no trend,False,0.116,0.4948,0.000277,no trend,False,0.000296,-0.000461,0.00044,0.167,False,-0.000566,0.000518,0.429,False
+Spring Wheat,1999-2018,pct_ge2,0.084,0.6254,0.020641,no trend,False,0.1,0.5576,0.014318,no trend,False,0.006323,-0.020323,0.021825,0.444,False,-0.030427,0.030307,0.738,False
+Silage Maize,1979-2018,mean_suit,0.521,0.0,0.00043,increasing,True,0.506,0.0,0.000344,increasing,True,8.6e-05,-7.5e-05,6.9e-05,0.026,True,-7.5e-05,7.3e-05,0.023,True
+Silage Maize,1979-2018,pct_ge2,0.514,0.0,0.021601,increasing,True,0.474,0.0,0.01697,increasing,True,0.004631,-0.003886,0.004298,0.039,True,-0.00451,0.004261,0.04,True
+Silage Maize,1999-2018,mean_suit,-0.174,0.2989,-0.000444,no trend,False,-0.042,0.8202,-8e-05,no trend,False,-0.000364,-0.000361,0.000391,0.056,False,-0.000427,0.00041,0.141,False
+Silage Maize,1999-2018,pct_ge2,-0.095,0.579,-0.011455,no trend,False,-0.058,0.7437,-0.002864,no trend,False,-0.008591,-0.019091,0.018137,0.275,False,-0.017372,0.017898,0.48,False
+White Potato,1979-2018,mean_suit,0.314,0.0045,0.001375,increasing,True,0.296,0.0073,0.001248,increasing,True,0.000127,-0.00018,0.000198,0.15,False,-0.00017,0.000173,0.179,False
+White Potato,1979-2018,pct_ge2,0.313,0.0046,0.114548,increasing,True,0.306,0.0055,0.101025,increasing,True,0.013523,-0.015932,0.016608,0.106,False,-0.013523,0.014318,0.051,False
+White Potato,1999-2018,mean_suit,0.174,0.2989,0.00241,no trend,False,0.237,0.1532,0.002434,no trend,False,-2.4e-05,-0.001007,0.001073,0.815,False,-0.001253,0.001362,0.97,False
+White Potato,1999-2018,pct_ge2,0.158,0.3463,0.164662,no trend,False,0.211,0.2058,0.218356,no trend,False,-0.053694,-0.077034,0.090941,0.204,False,-0.118997,0.10978,0.593,False
+Oat,1979-2018,mean_suit,0.424,0.0001,0.003427,increasing,True,0.376,0.0007,0.002686,increasing,True,0.000741,-0.000684,0.000657,0.038,True,-0.000772,0.000738,0.058,False
+Oat,1979-2018,pct_ge2,0.435,0.0001,0.157503,increasing,True,0.404,0.0003,0.118826,increasing,True,0.038677,-0.030743,0.030739,0.022,True,-0.036514,0.036223,0.028,True
+Oat,1999-2018,mean_suit,0.063,0.7212,0.001032,no trend,False,-0.021,0.9225,-0.000192,no trend,False,0.001224,-0.00289,0.002721,0.329,False,-0.003599,0.0033,0.52,False
+Oat,1999-2018,pct_ge2,0.095,0.5809,0.095729,no trend,False,0.058,0.7455,0.019004,no trend,False,0.076725,-0.135114,0.150312,0.25,False,-0.182607,0.178046,0.436,False
+Dry Pea,1979-2018,mean_suit,0.488,0.0,0.000415,increasing,True,0.441,0.0001,0.000274,increasing,True,0.000141,-6.2e-05,6.5e-05,0.005,True,-0.000122,0.000116,0.01,True
+Dry Pea,1979-2018,pct_ge2,0.497,0.0,0.024546,increasing,True,0.445,0.0001,0.016845,increasing,True,0.007701,-0.003442,0.00342,0.0,True,-0.00671,0.007108,0.027,True
+Dry Pea,1999-2018,mean_suit,0.005,1.0,0.0,no trend,False,0.032,0.871,8.9e-05,no trend,False,-8.9e-05,-0.000465,0.000475,0.581,False,-0.000451,0.000408,0.737,False
+Dry Pea,1999-2018,pct_ge2,0.042,0.8199,0.004909,no trend,False,0.042,0.82,0.007671,no trend,False,-0.002762,-0.019091,0.017739,0.65,False,-0.021069,0.023642,0.812,False
+Winter Rape,1979-2018,mean_suit,0.369,0.0007,0.000143,increasing,True,0.412,0.0001,0.000187,increasing,True,-4.4e-05,-5.7e-05,5.5e-05,0.086,False,-0.000137,0.000131,0.538,False
+Winter Rape,1979-2018,pct_ge2,0.353,0.0011,0.00743,increasing,True,0.362,0.0008,0.008182,increasing,True,-0.000752,-0.00234,0.002729,0.191,False,-0.006364,0.006393,0.814,False
+Winter Rape,1999-2018,mean_suit,0.232,0.1611,0.000273,no trend,False,0.353,0.0315,0.000573,increasing,True,-0.0003,-0.000481,0.000415,0.141,False,-0.000428,0.000459,0.348,False
+Winter Rape,1999-2018,pct_ge2,0.205,0.2127,0.007159,no trend,False,0.289,0.0775,0.026234,no trend,False,-0.019075,-0.021496,0.023864,0.08,False,-0.023647,0.023408,0.195,False
+Spring Rape,1979-2018,mean_suit,0.517,0.0,0.002913,increasing,True,0.431,0.0001,0.001658,increasing,True,0.001255,-0.000638,0.000662,0.002,True,-0.000765,0.000799,0.0,True
+Spring Rape,1979-2018,pct_ge2,0.486,0.0,0.095456,increasing,True,0.242,0.0284,0.029099,increasing,True,0.066357,-0.033812,0.032435,0.0,True,-0.042698,0.039544,0.0,True
+Spring Rape,1999-2018,mean_suit,0.095,0.5809,0.000481,no trend,False,-0.037,0.8454,-0.000123,no trend,False,0.000604,-0.002126,0.001985,0.451,False,-0.00321,0.003387,0.651,False
+Spring Rape,1999-2018,pct_ge2,0.063,0.7205,0.035592,no trend,False,-0.042,0.8197,-0.005467,no trend,False,0.041059,-0.11074,0.105738,0.376,False,-0.147058,0.142061,0.549,False
+OVERALL,1979-2018,mean_suit,0.579,0.0,0.001204,,True,0.538,0.0,0.001072,,True,0.000132,-0.000199,0.000222,0.169,False,-0.000201,0.000198,0.224,False
+OVERALL,1979-2018,pct_ge2,0.545,0.0,0.057274,,True,0.499,0.0,0.04891,,True,0.008364,-0.010538,0.011516,0.099,False,-0.011489,0.011194,0.178,False
+OVERALL,1999-2018,mean_suit,0.211,0.2058,0.000981,,False,0.158,0.3468,0.000574,,False,0.000407,-0.000907,0.000843,0.328,False,-0.001091,0.00102,0.487,False
+OVERALL,1999-2018,pct_ge2,0.179,0.2843,0.060495,,False,0.147,0.381,0.025057,,False,0.035438,-0.053881,0.048619,0.144,False,-0.054754,0.052334,0.282,False

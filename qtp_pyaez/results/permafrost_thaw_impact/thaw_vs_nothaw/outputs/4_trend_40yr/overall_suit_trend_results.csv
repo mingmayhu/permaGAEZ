@@ -1,0 +1,5 @@
+crop,period,metric,obs_tau,obs_p,obs_slope,obs_significant,cf_tau,cf_p,cf_slope,cf_significant,slope_difference,boot_ci_lo,boot_ci_hi,boot_p,boot_sig,perm_ci_lo,perm_ci_hi,perm_p,perm_sig
+OVERALL,1979-2018,mean_suit,0.579,0.0,0.001204,True,0.538,0.0,0.001072,True,0.000132,-0.000199,0.000222,0.169,False,-0.000201,0.000198,0.224,False
+OVERALL,1979-2018,pct_ge2,0.545,0.0,0.057274,True,0.499,0.0,0.04891,True,0.008364,-0.010538,0.011516,0.099,False,-0.011489,0.011194,0.178,False
+OVERALL,1999-2018,mean_suit,0.211,0.2058,0.000981,False,0.158,0.3468,0.000574,False,0.000407,-0.000907,0.000843,0.328,False,-0.001091,0.00102,0.487,False
+OVERALL,1999-2018,pct_ge2,0.179,0.2843,0.060495,False,0.147,0.381,0.025057,False,0.035438,-0.053881,0.048619,0.144,False,-0.054754,0.052334,0.282,False

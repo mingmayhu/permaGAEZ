@@ -944,9 +944,9 @@ def run_from_module4():
 
 if __name__ == '__main__':
     # run_from_module4()
-    main()
+    # main()
     # run_all_module1()
-    # varieties = ["winter_rape_216", "winter_rape_217", "winter_rape_218", "winter_rape_219"]
-    # for year in YEARS:
-    #     combine_crop_maps(year, varieties, output_tag='combined_winter_rape')
-    # plot_final_classification("combined_winter_rape")
+    varieties = ["spring_rape_220", "spring_rape_221", "spring_rape_222", "spring_rape_223"]
+    for year in YEARS:
+        combine_crop_maps(year, varieties, output_tag='combined_spring_rape')
+    plot_final_classification("combined_spring_rape")

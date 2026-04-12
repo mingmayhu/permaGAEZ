@@ -1,0 +1,11 @@
+variable,kruskal_H,kruskal_p,kruskal_sig,sig+_vs_Cons+,sig+_vs_Mixed,sig+_vs_Cons-,sig+_vs_Sig-
+Elevation (m),43.623,0.0,True,,,,
+Slope (degrees),57.18,0.0,True,,,,
+Mean ALT (m),74.495,0.0,True,,,,
+Delta ALT (m),3.151,0.2069,False,,,,
+Mean Soil Moisture,57.269,0.0,True,,,,
+Delta Soil Moisture,62.139,0.0,True,,,,
+Mean Temperature (C),64.066,0.0,True,,,,
+Delta Temperature (C),9.444,0.0089,True,,,,
+Mean Precip (mm),1.104,0.5757,False,,,,
+Delta Precip (mm),10.565,0.0051,True,,,,

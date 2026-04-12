@@ -1,0 +1,45 @@
+crop,scenario,metric,tau,p,slope,significant
+Winter Barley,obs,mean_suit,0.524,0.0,0.001442,True
+Winter Barley,obs,pct_ge2,0.514,0.0,0.069138,True
+Winter Barley,fao,mean_suit,0.473,0.0,0.002203,True
+Winter Barley,fao,pct_ge2,0.491,0.0,0.113593,True
+Spring Barley,obs,mean_suit,0.468,0.0,0.000435,True
+Spring Barley,obs,pct_ge2,0.463,0.0,0.025819,True
+Spring Barley,fao,mean_suit,0.518,0.0,0.000494,True
+Spring Barley,fao,pct_ge2,0.482,0.0,0.028637,True
+Winter Wheat,obs,mean_suit,0.526,0.0,0.001432,True
+Winter Wheat,obs,pct_ge2,0.517,0.0,0.068023,True
+Winter Wheat,fao,mean_suit,0.488,0.0,0.002345,True
+Winter Wheat,fao,pct_ge2,0.501,0.0,0.114548,True
+Spring Wheat,obs,mean_suit,0.464,0.0,0.000436,True
+Spring Wheat,obs,pct_ge2,0.441,0.0001,0.024546,True
+Spring Wheat,fao,mean_suit,0.51,0.0,0.000458,True
+Spring Wheat,fao,pct_ge2,0.5,0.0,0.028637,True
+Silage Maize,obs,mean_suit,0.521,0.0,0.00043,True
+Silage Maize,obs,pct_ge2,0.514,0.0,0.021601,True
+Silage Maize,fao,mean_suit,0.512,0.0,0.000382,True
+Silage Maize,fao,pct_ge2,0.5,0.0,0.022411,True
+White Potato,obs,mean_suit,0.314,0.0045,0.001375,True
+White Potato,obs,pct_ge2,0.313,0.0046,0.114548,True
+White Potato,fao,mean_suit,0.269,0.0149,0.001508,True
+White Potato,fao,pct_ge2,0.291,0.0084,0.114548,True
+Oat,obs,mean_suit,0.424,0.0001,0.003427,True
+Oat,obs,pct_ge2,0.435,0.0001,0.157503,True
+Oat,fao,mean_suit,0.422,0.0001,0.003088,True
+Oat,fao,pct_ge2,0.444,0.0001,0.171821,True
+Dry Pea,obs,mean_suit,0.488,0.0,0.000415,True
+Dry Pea,obs,pct_ge2,0.497,0.0,0.024546,True
+Dry Pea,fao,mean_suit,0.503,0.0,0.000404,True
+Dry Pea,fao,pct_ge2,0.472,0.0,0.02291,True
+Winter Rape,obs,mean_suit,0.369,0.0007,0.000143,True
+Winter Rape,obs,pct_ge2,0.353,0.0011,0.00743,True
+Winter Rape,fao,mean_suit,0.349,0.0015,0.000263,True
+Winter Rape,fao,pct_ge2,0.335,0.0024,0.0162,True
+Spring Rape,obs,mean_suit,0.517,0.0,0.002913,True
+Spring Rape,obs,pct_ge2,0.486,0.0,0.095456,True
+Spring Rape,fao,mean_suit,0.529,0.0,0.003116,True
+Spring Rape,fao,pct_ge2,0.576,0.0,0.158746,True
+OVERALL,obs,mean_suit,0.579,0.0,0.001204,True
+OVERALL,obs,pct_ge2,0.545,0.0,0.057274,True
+OVERALL,fao,mean_suit,0.554,0.0,0.001366,True
+OVERALL,fao,pct_ge2,0.553,0.0,0.074456,True

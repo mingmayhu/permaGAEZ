@@ -1,0 +1,45 @@
+crop,perm_var,metric,spearman_r,p_value,significant,n_pixels
+Winter Barley,ALT,mean,-0.1168,0.0,True,1746
+Spring Barley,ALT,mean,-0.1061,0.0,True,1746
+Winter Wheat,ALT,mean,-0.1643,0.0,True,1746
+Spring Wheat,ALT,mean,-0.1212,0.0,True,1746
+Silage Maize,ALT,mean,0.0371,0.1207,False,1746
+White Potato,ALT,mean,0.2516,0.0,True,1746
+Oat,ALT,mean,0.0145,0.5447,False,1746
+Dry Pea,ALT,mean,0.0,1.0,False,1746
+Winter Rape,ALT,mean,-0.1565,0.0,True,1746
+Spring Rape,ALT,mean,0.1612,0.0,True,1746
+OVERALL,ALT,mean,0.0721,0.0026,True,1746
+Winter Barley,ALT,change,0.0087,0.7175,False,1746
+Spring Barley,ALT,change,0.0098,0.6836,False,1746
+Winter Wheat,ALT,change,0.013,0.5862,False,1746
+Spring Wheat,ALT,change,0.0112,0.6413,False,1746
+Silage Maize,ALT,change,-0.0034,0.8865,False,1746
+White Potato,ALT,change,-0.04,0.0945,False,1746
+Oat,ALT,change,-0.035,0.1436,False,1746
+Dry Pea,ALT,change,0.0,1.0,False,1746
+Winter Rape,ALT,change,0.0144,0.5476,False,1746
+Spring Rape,ALT,change,-0.0453,0.0582,False,1746
+OVERALL,ALT,change,-0.0421,0.0787,False,1746
+Winter Barley,soil_moisture,mean,-0.1403,0.0,True,1746
+Spring Barley,soil_moisture,mean,-0.1355,0.0,True,1746
+Winter Wheat,soil_moisture,mean,-0.2029,0.0,True,1746
+Spring Wheat,soil_moisture,mean,-0.1533,0.0,True,1746
+Silage Maize,soil_moisture,mean,0.0532,0.0261,True,1746
+White Potato,soil_moisture,mean,0.2301,0.0,True,1746
+Oat,soil_moisture,mean,0.0559,0.0195,True,1746
+Dry Pea,soil_moisture,mean,0.0204,0.3946,False,1746
+Winter Rape,soil_moisture,mean,-0.2214,0.0,True,1746
+Spring Rape,soil_moisture,mean,0.1804,0.0,True,1746
+OVERALL,soil_moisture,mean,0.1023,0.0,True,1746
+Winter Barley,soil_moisture,change,-0.1335,0.0,True,1746
+Spring Barley,soil_moisture,change,-0.1009,0.0,True,1746
+Winter Wheat,soil_moisture,change,-0.1765,0.0,True,1746
+Spring Wheat,soil_moisture,change,-0.0963,0.0001,True,1746
+Silage Maize,soil_moisture,change,0.0341,0.1547,False,1746
+White Potato,soil_moisture,change,0.1811,0.0,True,1746
+Oat,soil_moisture,change,-0.009,0.7069,False,1746
+Dry Pea,soil_moisture,change,-0.0043,0.8588,False,1746
+Winter Rape,soil_moisture,change,-0.1385,0.0,True,1746
+Spring Rape,soil_moisture,change,0.109,0.0,True,1746
+OVERALL,soil_moisture,change,0.024,0.317,False,1746

@@ -1,0 +1,11 @@
+crop,tag,y_min,y_max,b20,b40,b60,b80,n_vals
+Winter Barley,combined_winter_barley,2.3273,981.704,198.2026,394.078,589.9533,785.8287,3189
+Spring Barley,combined_spring_barley,16.792,418.1163,97.0569,177.3217,257.5866,337.8514,619
+Winter Wheat,combined_winter_wheat,2.6358,997.9425,201.6972,400.7585,599.8198,798.8812,3189
+Spring Wheat,combined_spring_wheat,11.1999,424.1289,93.7857,176.3715,258.9573,341.5431,619
+Silage Maize,combined_silage_maize,0.3364,279.0008,56.0693,111.8022,167.535,223.2679,881
+White Potato,combined_white_potato,0.1771,52.4905,10.6398,21.1025,31.5652,42.0278,10113
+Oat,combined_oat,0.8914,59.9665,12.7065,24.5215,36.3365,48.1515,6781
+Dry Pea,combined_dry_pea,2.4925,32.5388,8.5018,14.511,20.5203,26.5295,576
+Winter Rape,combined_winter_rape,0.8207,49.6155,10.5796,20.3386,30.0976,39.8565,533
+Spring Rape,combined_spring_rape,1.195,48.7842,10.7129,20.2307,29.7485,39.2664,10318

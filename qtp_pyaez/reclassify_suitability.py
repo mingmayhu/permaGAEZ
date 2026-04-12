@@ -33,7 +33,8 @@ from osgeo import gdal
 # ── Configuration ─────────────────────────────────────────────────────────────
 WORK_DIR  = r'/Users/ming-mayhu/Desktop/毕业论文/qtp-pyaez/qtp_pyaez'
 MASK_PATH = r'./data_input/qilian mask.tif'
-OUT_ROOT  = './results_analysis/outputs/0_reclassification'
+# OUT_ROOT  = './results_analysis/outputs/0_reclassification'
+OUT_ROOT  = './results/permafrost_thaw_impact/permafrost_vs_fao/outputs/0_reclassification'
 
 YEARS_OBS = list(range(1979, 2019))   # observed: full 40 years
 YEARS_CF  = list(range(1999, 2019))   # counterfactual: 1999-2018 only
@@ -87,10 +88,10 @@ def load_mask():
     return arr.astype(bool)
 
 def obs_path(tag, year):
-    return f'./data_output/final_classification/{tag}/{year}_raw_yield.tif'
+    return f'./data_output/original/final_classification/{tag}/{year}_raw_yield.tif'
 
-def cf_path(tag, year):
-    return f'./data_output/final_classification_nothaw/{tag}/{year}_raw_yield.tif'
+# def cf_path(tag, year):
+#     return f'./data_output/final_classification_nothaw/{tag}/{year}_raw_yield.tif'
 
 def classify_fixed(arr, y_min, y_max, mask):
     """
@@ -137,11 +138,11 @@ def run(mask):
                 valid = arr[mask & np.isfinite(arr) & (arr > 0)]
                 all_vals.extend(valid.tolist())
 
-        for year in YEARS_CF:
-            arr, _ = load_raster(cf_path(tag, year))
-            if arr is not None:
-                valid = arr[mask & np.isfinite(arr) & (arr > 0)]
-                all_vals.extend(valid.tolist())
+        # for year in YEARS_CF:
+        #     arr, _ = load_raster(cf_path(tag, year))
+        #     if arr is not None:
+        #         valid = arr[mask & np.isfinite(arr) & (arr > 0)]
+        #         all_vals.extend(valid.tolist())
 
         if not all_vals:
             print(f'  ⚠ No valid yield data for {label} — skipping.')
@@ -166,7 +167,7 @@ def run(mask):
               f'(n={len(all_vals):,} pixel-years)')
 
         # ── Step 2: reclassify observed rasters ───────────────────────────────
-        out_obs_dir = f'./data_output/final_classification_fixed/{tag}'
+        out_obs_dir = f'./data_output/original/final_classification_fixed/{tag}'
         os.makedirs(out_obs_dir, exist_ok=True)
 
         for year in YEARS_OBS:
@@ -180,20 +181,20 @@ def run(mask):
 
         print(f'  ✓ Observed rasters reclassified ({len(YEARS_OBS)} years)')
 
-        # ── Step 3: reclassify counterfactual rasters ─────────────────────────
-        out_cf_dir = f'./data_output/final_classification_nothaw_fixed/{tag}'
-        os.makedirs(out_cf_dir, exist_ok=True)
+        # # ── Step 3: reclassify counterfactual rasters ─────────────────────────
+        # out_cf_dir = f'./data_output/final_classification_nothaw_fixed/{tag}'
+        # os.makedirs(out_cf_dir, exist_ok=True)
 
-        for year in YEARS_CF:
-            arr, geo_info = load_raster(cf_path(tag, year))
-            if arr is None:
-                print(f'  ⚠ Missing counterfactual {year}')
-                continue
-            cls = classify_fixed(arr, y_min, y_max, mask)
-            out_arr = np.where(np.isfinite(cls), cls, -9999.0)
-            save_raster(f'{out_cf_dir}/{year}_suitability_class.tif', out_arr, geo_info)
+        # for year in YEARS_CF:
+        #     arr, geo_info = load_raster(cf_path(tag, year))
+        #     if arr is None:
+        #         print(f'  ⚠ Missing counterfactual {year}')
+        #         continue
+        #     cls = classify_fixed(arr, y_min, y_max, mask)
+        #     out_arr = np.where(np.isfinite(cls), cls, -9999.0)
+        #     save_raster(f'{out_cf_dir}/{year}_suitability_class.tif', out_arr, geo_info)
 
-        print(f'  ✓ Counterfactual rasters reclassified ({len(YEARS_CF)} years)')
+        # print(f'  ✓ Counterfactual rasters reclassified ({len(YEARS_CF)} years)')
 
         # ── Step 4: quick visual check — mean class map for both scenarios ─────
         obs_stack = []
@@ -204,21 +205,22 @@ def run(mask):
                 arr[arr < 0] = np.nan
                 obs_stack.append(arr)
 
-        cf_stack = []
-        for year in YEARS_CF:
-            path = f'{out_cf_dir}/{year}_suitability_class.tif'
-            arr, _ = load_raster(path)
-            if arr is not None:
-                arr[arr < 0] = np.nan
-                cf_stack.append(arr)
+        # cf_stack = []
+        # for year in YEARS_CF:
+        #     path = f'{out_cf_dir}/{year}_suitability_class.tif'
+        #     arr, _ = load_raster(path)
+        #     if arr is not None:
+        #         arr[arr < 0] = np.nan
+        #         cf_stack.append(arr)
 
-        if obs_stack and cf_stack:
+        if obs_stack:
+        #and cf_stack:
             mean_obs = np.nanmean(obs_stack, axis=0)
-            mean_cf  = np.nanmean(cf_stack,  axis=0)
+            # mean_cf  = np.nanmean(cf_stack,  axis=0)
             # Use only 1999-2018 observed for fair comparison with CF
             obs_stack_post = obs_stack[20:]   # years 1999-2018
             mean_obs_post  = np.nanmean(obs_stack_post, axis=0)
-            delta          = mean_obs_post - mean_cf
+            # delta          = mean_obs_post - mean_cf
 
             fig, axes = plt.subplots(1, 3, figsize=(18, 5))
             cmap_suit = plt.get_cmap('RdYlGn', 6)
@@ -229,18 +231,18 @@ def run(mask):
             plt.colorbar(im0, ax=axes[0], shrink=0.75,
                          ticks=[0,1,2,3,4,5], label='Class')
 
-            im1 = axes[1].imshow(mean_cf, cmap=cmap_suit, vmin=0, vmax=5)
-            axes[1].set_title('Mean Suitability — No-Thaw CF\n(1999–2018)', fontsize=11)
-            axes[1].axis('off')
-            plt.colorbar(im1, ax=axes[1], shrink=0.75,
-                         ticks=[0,1,2,3,4,5], label='Class')
+            # im1 = axes[1].imshow(mean_cf, cmap=cmap_suit, vmin=0, vmax=5)
+            # axes[1].set_title('Mean Suitability — No-Thaw CF\n(1999–2018)', fontsize=11)
+            # axes[1].axis('off')
+            # plt.colorbar(im1, ax=axes[1], shrink=0.75,
+            #              ticks=[0,1,2,3,4,5], label='Class')
 
-            vlim = max(abs(np.nanpercentile(delta[mask], 2)),
-                       abs(np.nanpercentile(delta[mask], 98)))
-            im2 = axes[2].imshow(delta, cmap='RdBu', vmin=-vlim, vmax=vlim)
-            axes[2].set_title('ΔSuitability (Obs − CF)\n(Mean 1999–2018)', fontsize=11)
-            axes[2].axis('off')
-            plt.colorbar(im2, ax=axes[2], shrink=0.75, label='Δ Class')
+            # vlim = max(abs(np.nanpercentile(delta[mask], 2)),
+            #            abs(np.nanpercentile(delta[mask], 98)))
+            # im2 = axes[2].imshow(delta, cmap='RdBu', vmin=-vlim, vmax=vlim)
+            # axes[2].set_title('ΔSuitability (Obs − CF)\n(Mean 1999–2018)', fontsize=11)
+            # axes[2].axis('off')
+            # plt.colorbar(im2, ax=axes[2], shrink=0.75, label='Δ Class')
 
             fig.suptitle(f'{label} — Fixed-Boundary Suitability Classes',
                          fontsize=13, fontweight='bold')

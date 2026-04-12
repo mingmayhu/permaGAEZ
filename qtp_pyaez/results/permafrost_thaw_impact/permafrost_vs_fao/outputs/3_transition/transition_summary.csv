@@ -1,0 +1,12 @@
+crop,n_pixels,pct_agree,pct_obs_higher,pct_fao_higher
+Winter Barley,1746,97.4,0.3,2.3
+Spring Barley,1746,99.3,0.1,0.6
+Winter Wheat,1746,97.1,0.3,2.6
+Spring Wheat,1746,99.6,0.1,0.3
+Silage Maize,1746,99.5,0.5,0.0
+White Potato,1746,95.3,3.0,1.7
+Oat,1746,96.2,1.5,2.3
+Dry Pea,1746,99.4,0.2,0.3
+Winter Rape,1746,99.3,0.0,0.7
+Spring Rape,1746,92.4,4.4,3.2
+OVERALL,1746,97.6,1.0,1.4

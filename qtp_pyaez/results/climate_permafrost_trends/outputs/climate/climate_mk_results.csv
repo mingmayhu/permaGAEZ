@@ -1,0 +1,3 @@
+variable,tau,p,slope_per_yr,significant,trend
+TempMean,0.59,0.0,0.0489,True,increasing
+Precip,0.469,0.0,3.119,True,increasing

@@ -1009,8 +1009,9 @@ class CropSimulation(object):
                                 Sa_temp = self.Sa
                             obj_cropwat.setCropParameters(self.d_per, self.kc, self.kc_all, self.yloss_f,
                                                             self.yloss_f_all, est_yield_rainfed, self.D1, self.D2, Sa_temp, self.pc, self.plant_height)
-                            est_yield_moisture_limited = obj_cropwat.calculateMoistureLimitedYieldNew()
-                            #est_yield_moisture_limited = obj_cropwat.calculateMoistureLimitedYield()
+                            # CHANGE HERE
+                            # est_yield_moisture_limited = obj_cropwat.calculateMoistureLimitedYieldNew()
+                            est_yield_moisture_limited = obj_cropwat.calculateMoistureLimitedYield()
 
                             fc2_value = obj_cropwat.getfc2factormap()
 
