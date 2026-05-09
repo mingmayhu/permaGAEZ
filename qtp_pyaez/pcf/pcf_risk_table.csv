@@ -1,0 +1,6 @@
+Risk class,Pixels,Cropland area (km²),Cropland area (%),Exposed cropland (km²),Exposed cropland (%),% cropland disturbed
+None (0%),20324,9821.37,86.0,0.0,0.0,0.0
+Low (0-50%),2156,507.13,4.4,1.24,6.9,0.24
+Medium (50-80%),753,177.22,1.6,1.85,10.3,1.04
+High (>80%),3293,911.83,8.0,14.81,82.7,1.62
+Total,26526,11417.5595703125,100.0,17.9,100.0,0.16
