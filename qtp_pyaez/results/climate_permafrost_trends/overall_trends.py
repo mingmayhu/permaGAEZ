@@ -33,7 +33,7 @@ from matplotlib.gridspec import GridSpec
 
 # ── Configuration ─────────────────────────────────────────────────────────────
 WORK_DIR      = r'/Users/ming-mayhu/Desktop/毕业论文/qtp-pyaez/qtp_pyaez'
-MASK_PATH     = r'./data_input/qilian mask.tif'
+MASK_PATH     = r'./data_input/qilian_mask_new.tif'
 PERM_MAP_PATH = r'./data_input/permafrost_qilian.tif'
 PERM_DIR      = r'./data_input/permafrost_yearly'
 CLIM_DIR      = r'./data_input/climate_yearly'
@@ -154,6 +154,7 @@ def run_mk(series):
         'tau': round(mk.Tau, 3), 'p': round(mk.p, 4),
         'slope': round(mk.slope, 4), 'significant': mk.p < ALPHA,
         'trend': mk.trend, 'sen_line': line,
+        'intercept': round(mk.intercept, 4),   # ← add this
     }
 
 def plot_timeseries(ax, years, series, mk_result, ylabel, title,
@@ -303,6 +304,8 @@ def section_climate(mask):
          'slope_per_yr': mk_prec['slope'],  'significant': mk_prec['significant'],
          'trend': mk_prec['trend']},
     ]).to_csv(f'{out_dir}/climate_mk_results.csv', index=False)
+    print(f'  TempMean: slope={mk_tmean["slope"]}/yr, intercept={mk_tmean["intercept"]}')
+    print(f'  Precip:   slope={mk_prec["slope"]}/yr,  intercept={mk_prec["intercept"]}')
 
 
 # ── Section 4.2: Permafrost Thaw Trends ──────────────────────────────────────
@@ -421,6 +424,8 @@ def section_permafrost(mask):
                 dpi=DPI, bbox_inches='tight')
     plt.close()
     print('  ✓ Permafrost distribution map saved')
+    print(f'  ALT:      slope={mk_alt["slope"]} m/yr, intercept={mk_alt["intercept"]}')
+    print(f'  SM:       slope={mk_sm["slope"]}/yr,    intercept={mk_sm["intercept"]}')
 
     # ── Figure 8: Combined summary — 4 panel hotspot map ─────────────────────
     tmax_pre_h  = load_clim_spatial('TempMax.npy', YEARS_PRE,  mask, 'mean')
@@ -492,11 +497,11 @@ def section_permafrost(mask):
          'trend': mk_sm['trend']},
     ]).to_csv(f'{out_dir}/permafrost_mk_results.csv', index=False)
 
-
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 if __name__ == '__main__':
     mask = load_mask()
     section_climate(mask)
     section_permafrost(mask)
+    
     print(f'\n✓ All Chapter 4 figures saved to: {OUT_ROOT}/')
