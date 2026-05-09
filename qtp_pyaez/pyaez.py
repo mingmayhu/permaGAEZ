@@ -940,7 +940,7 @@ if __name__ == '__main__':
     # run_from_module4()
     # main()
     # run_all_module1()
-    # varieties = ["dry_pea_189", "dry_pea_190", "dry_pea_191"]
-    # for year in YEARS:
-    #     combine_crop_maps(year, varieties, output_tag='combined_dry_pea')
-    plot_final_classification("combined_silage_maize")
+    varieties = ["winter_barley_59", "winter_barley_60", "winter_barley_61", "winter_barley_62", "spring_barley_63", "spring_barley_64", "spring_barley_65", "spring_barley_66"]
+    for year in YEARS:
+        combine_crop_maps(year, varieties, output_tag='combined_dry_pea')
+    plot_final_classification("combined_barley")

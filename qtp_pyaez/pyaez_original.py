@@ -946,7 +946,7 @@ if __name__ == '__main__':
     # run_from_module4()
     # main()
     # run_all_module1()
-    varieties = ["spring_rape_220", "spring_rape_221", "spring_rape_222", "spring_rape_223"]
+    varieties = ["dry_pea_189", "dry_pea_190", "dry_pea_191"]
     for year in YEARS:
-        combine_crop_maps(year, varieties, output_tag='combined_spring_rape')
-    plot_final_classification("combined_spring_rape")
+        combine_crop_maps(year, varieties, output_tag='combined_dry_pea')
+    plot_final_classification("combined_dry_pea")
