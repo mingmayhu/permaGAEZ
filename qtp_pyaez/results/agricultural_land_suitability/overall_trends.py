@@ -41,7 +41,7 @@ from matplotlib.colors import LinearSegmentedColormap
 
 # ── Configuration ─────────────────────────────────────────────────────────────
 WORK_DIR  = r'/Users/ming-mayhu/Desktop/毕业论文/qtp-pyaez/qtp_pyaez'
-MASK_PATH = r'./data_input/qilian mask.tif'
+MASK_PATH = r'./data_input/qilian_mask_new.tif'
 OUT_ROOT  = r'./results/agricultural_land_suitability/outputs'
 SUPP_DIR  = r'./results/agricultural_land_suitability/outputs/supplementary'
 
@@ -301,9 +301,9 @@ def section_trends(mask):
 
     for ax, metric, all_data, agg_data, ylabel, title in [
         (axes[0], 'mean_suit', all_mean, obs_mean_agg,
-         'Mean Suitability Score (1–5)', 'Mean Suitability — All Crops'),
+         'Mean Suitability Score (1–5)', '(a) Mean suitability across all crops'),
         (axes[1], 'pct_ge2',  all_ge2,  obs_ge2_agg,
-         '% Pixels with Class ≥ 2',     '% Any Suitable Land — All Crops'),
+         '% Land with Class ≥ 2',     '(b) Percent of suitable land across all crops'),
     ]:
         ax.set_title(title, fontsize=FONTSIZE_TITLE, fontweight='bold')
         ax.set_xlabel('Year', fontsize=FONTSIZE_LABEL)

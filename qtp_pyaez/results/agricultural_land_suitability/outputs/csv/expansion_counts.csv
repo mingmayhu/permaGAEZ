@@ -1,0 +1,11 @@
+crop,newly_suitable_px,lost_suitable_px,net_expansion_px,intensification_delta_class
+Winter Barley,51,0,51,0.5417
+Spring Barley,19,0,19,0.6667
+Winter Wheat,51,0,51,0.5375
+Spring Wheat,19,0,19,0.7833
+Silage Maize,19,0,19,1.0
+White Potato,73,0,73,0.2962
+Oat,71,0,71,0.584
+Dry Pea,17,0,17,1.0625
+Winter Rape,5,0,5,0.3
+Spring Rape,55,0,55,0.3075
