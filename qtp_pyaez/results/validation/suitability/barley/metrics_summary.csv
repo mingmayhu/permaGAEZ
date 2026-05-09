@@ -1,0 +1,4 @@
+Crop,Model,N pixels,Spearman r,Spearman p,TP,FP,FN,TN,Precision,Recall,F1,Accuracy
+Barley,Permafrost Model,1746,0.1028,0.0,0,19,142,1585,0.0,0.0,0.0,0.9078
+Barley,No-Thaw Model,1746,0.106,0.0,0,18,142,1586,0.0,0.0,0.0,0.9084
+Barley,Original Model,1746,0.1061,0.0,0,41,142,1563,0.0,0.0,0.0,0.8952

@@ -1,0 +1,10 @@
+Crop,Model,N pixels,Spearman r,Spearman p,Precision,Recall,F1,Accuracy,TP,FP,FN,TN
+Barley,Permafrost Model,1746,0.1028,0.0,0.0,0.0,0.0,0.9078,0,19,142,1585
+Barley,No-Thaw Model,1746,0.106,0.0,0.0,0.0,0.0,0.9084,0,18,142,1586
+Barley,Original Model,1746,0.1061,0.0,0.0,0.0,0.0,0.8952,0,41,142,1563
+Wheat,Permafrost Model,1746,-0.0154,0.5215,0.0,0.0,0.0,0.9868,0,19,4,1723
+Wheat,No-Thaw Model,1746,-0.0161,0.501,0.0,0.0,0.0,0.9874,0,18,4,1724
+Wheat,Original Model,1746,-0.0177,0.4606,0.0,0.0,0.0,0.9731,0,43,4,1699
+Rapeseed,Permafrost Model,1746,0.3704,0.0,0.6726,0.3038,0.4185,0.8202,113,55,259,1319
+Rapeseed,No-Thaw Model,1746,0.3911,0.0,0.6939,0.2742,0.3931,0.8196,102,45,270,1329
+Rapeseed,Original Model,1746,0.3237,0.0,0.6364,0.3199,0.4258,0.8162,119,68,253,1306

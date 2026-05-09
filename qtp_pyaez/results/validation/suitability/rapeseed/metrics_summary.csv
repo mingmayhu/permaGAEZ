@@ -1,0 +1,4 @@
+Crop,Model,N pixels,Spearman r,Spearman p,TP,FP,FN,TN,Precision,Recall,F1,Accuracy
+Rapeseed,Permafrost Model,1746,0.3704,0.0,113,55,259,1319,0.6726,0.3038,0.4185,0.8202
+Rapeseed,No-Thaw Model,1746,0.3911,0.0,102,45,270,1329,0.6939,0.2742,0.3931,0.8196
+Rapeseed,Original Model,1746,0.3237,0.0,119,68,253,1306,0.6364,0.3199,0.4258,0.8162
