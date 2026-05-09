@@ -105,7 +105,7 @@ def load_mask():
     mask = arr.astype(bool)
     pf_arr, _ = load_raster(PERMAFROST_PATH)
     if pf_arr is not None:
-        lake_mask = ((pf_arr == 0) | ~np.isfinite(pf_arr)) & mask
+        lake_mask = ((pf_arr == 0) | ~np.isfinite(pf_arr) | (pf_arr == 2)) & mask
         mask[lake_mask] = False
         print(f'  Excluded {lake_mask.sum()} lake/nodata pixels from mask')
     return mask

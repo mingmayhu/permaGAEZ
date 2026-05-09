@@ -1,0 +1,23 @@
+crop,variable,spearman_r,p_value,significant,n_pixels
+Winter Barley,Active Layer Depth,-0.1499,0.0,True,1746
+Winter Barley,Soil Moisture,-0.1792,0.0,True,1746
+Spring Barley,Active Layer Depth,-0.1333,0.0,True,1746
+Spring Barley,Soil Moisture,-0.1624,0.0,True,1746
+Winter Wheat,Active Layer Depth,-0.1835,0.0,True,1746
+Winter Wheat,Soil Moisture,-0.2194,0.0,True,1746
+Spring Wheat,Active Layer Depth,-0.1415,0.0,True,1746
+Spring Wheat,Soil Moisture,-0.1714,0.0,True,1746
+Silage Maize,Active Layer Depth,0.0451,0.0598,False,1746
+Silage Maize,Soil Moisture,0.0611,0.0107,True,1746
+White Potato,Active Layer Depth,0.2737,0.0,True,1746
+White Potato,Soil Moisture,0.2477,0.0,True,1746
+Oat,Active Layer Depth,-0.0239,0.3173,False,1746
+Oat,Soil Moisture,0.0079,0.7429,False,1746
+Dry Pea,Active Layer Depth,0.0,1.0,False,1746
+Dry Pea,Soil Moisture,0.0212,0.3761,False,1746
+Winter Rape,Active Layer Depth,-0.1646,0.0,True,1746
+Winter Rape,Soil Moisture,-0.2238,0.0,True,1746
+Spring Rape,Active Layer Depth,0.1779,0.0,True,1746
+Spring Rape,Soil Moisture,0.1962,0.0,True,1746
+Overall,Active Layer Depth,0.0741,0.0019,True,1746
+Overall,Soil Moisture,0.1043,0.0,True,1746
