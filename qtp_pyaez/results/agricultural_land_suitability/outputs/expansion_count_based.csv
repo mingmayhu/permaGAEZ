@@ -1,0 +1,11 @@
+crop,newly_suitable_px,lost_suitable_px,net_expansion_px,already_suitable_px,intensification_improved_px,intensification_declined_px,total_suitable_px,pct_expansion_of_suitable,pct_loss_of_suitable,pct_intensification_of_suitable
+Winter Barley,51,0,51,12,4,0,63,81.0,0.0,19.0
+Spring Barley,19,0,19,3,2,0,22,86.4,0.0,13.6
+Winter Wheat,51,0,51,12,4,0,63,81.0,0.0,19.0
+Spring Wheat,19,0,19,3,3,0,22,86.4,0.0,13.6
+Silage Maize,19,0,19,3,2,0,22,86.4,0.0,13.6
+White Potato,73,0,73,53,4,0,126,57.9,0.0,42.1
+Oat,71,0,71,94,41,0,165,43.0,0.0,57.0
+Dry Pea,17,0,17,4,3,0,21,81.0,0.0,19.0
+Winter Rape,5,0,5,2,0,0,7,71.4,0.0,28.6
+Spring Rape,55,0,55,173,50,0,228,24.1,0.0,75.9

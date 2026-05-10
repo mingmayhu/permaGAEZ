@@ -66,8 +66,23 @@ if not (cropland.shape == risk.shape == area_km2.shape):
 valid   = np.isfinite(cropland) & np.isfinite(risk) & np.isfinite(area_km2)
 ag_mask = valid & (cropland >= CROPLAND_THRESHOLD)
 
+# Get pixel latitude from raster geotransform
+ds = gdal.Open(CROPLAND_PATH)
+gt = ds.GetGeoTransform()
+# gt[3] = top-left latitude, gt[5] = pixel height (negative)
+nrows = cropland.shape[0]
+# latitude at centre of each row
+lats = gt[3] + (np.arange(nrows) + 0.5) * gt[5]
+
+# Pixel area varies by row (latitude)
+# Shape: (nrows, 1) for broadcasting across columns
+pixel_area_km2_grid = (
+    (abs(gt[5]) * 111.132) *           # N-S dimension (constant)
+    (abs(gt[1]) * 111.132 * np.cos(np.radians(lats)))  # E-W dimension
+)[:, np.newaxis]  # broadcast to (nrows, ncols)
+
 # Metric 1: cropland area in each pixel (km²)
-cropland_area = cropland * PIXEL_AREA_KM2
+cropland_area = cropland * pixel_area_km2_grid
 
 # Metric 2: cropland physically exposed (km²)
 # cropland_fraction × A_adj — A_adj already incorporates susceptibility
@@ -82,6 +97,8 @@ print(f'Total valid pixels:       {valid.sum():,}')
 print(f'Agricultural pixels:      {ag_mask.sum():,}')
 print(f'Total cropland area:      {total_cropland:.2f} km²')
 print(f'Total physically exposed: {total_exposed:.2f} km² (±34%)')
+
+
 
 # ── Risk class masks ──────────────────────────────────────────────────────────
 

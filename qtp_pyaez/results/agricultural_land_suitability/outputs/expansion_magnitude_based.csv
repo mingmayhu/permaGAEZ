@@ -1,0 +1,11 @@
+crop,expansion_units,intensification_units,lost_units,total_units,pct_expansion,pct_intensification,pct_loss,newly_suitable_px,lost_suitable_px,already_suitable_px
+Winter Barley,43.2,6.5,0.0,49.7,86.9,13.1,0.0,51,0,12
+Spring Barley,13.05,2.0,0.0,15.05,86.7,13.3,0.0,19,0,3
+Winter Wheat,43.1,6.45,0.0,49.55,87.0,13.0,0.0,51,0,12
+Spring Wheat,13.0,2.35,0.0,15.35,84.7,15.3,0.0,19,0,3
+Silage Maize,14.5,3.0,0.0,17.5,82.9,17.1,0.0,19,0,3
+White Potato,28.85,15.7,0.0,44.55,64.8,35.2,0.0,73,0,53
+Oat,56.85,54.9,0.0,111.75,50.9,49.1,0.0,71,0,94
+Dry Pea,13.9,4.25,0.0,18.15,76.6,23.4,0.0,17,0,4
+Winter Rape,2.0,0.6,0.0,2.6,76.9,23.1,0.0,5,0,2
+Spring Rape,51.95,53.2,0.0,105.15,49.4,50.6,0.0,55,0,173
