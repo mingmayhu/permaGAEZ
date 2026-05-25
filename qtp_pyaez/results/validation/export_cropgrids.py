@@ -1,15 +1,12 @@
 """
 Convert CROPGRIDS NetCDF to GeoTIFF aligned to PyAEZ reference grid
 ====================================================================
-Reads a CROPGRIDS .nc file, extracts the harvested area variable,
-writes it as a GeoTIFF, then warps it to match the reference raster
-(same extent, resolution, and pixel alignment as your model outputs).
+Exports three variables per crop:
+  - harvested_area (ha) — {crop}_harvested_area.tif
+  - crop area (ha)      — {crop}_crop_area.tif
+  - quality score       — {crop}_quality.tif
 
-Usage:
-    python cropgrids_to_tif.py
-
-Outputs (per crop defined in CROPS):
-    data_input/cropgrids/{crop}_harvested_area.tif   <- aligned to reference grid
+Quality values (0–1): 1.0=best data, 0.0=missing data
 """
 
 import os
@@ -33,15 +30,19 @@ CROPS = [
     ("barley",   "CROPGRIDSv1.08_barley.nc"),
     ("wheat",    "CROPGRIDSv1.08_wheat.nc"),
     ("rapeseed", "CROPGRIDSv1.08_rapeseed.nc"),
+    ("spring oat", "CROPGRIDSv1.08_oats.nc"),
+    ("dry pea", "CROPGRIDSv1.08_pea.nc"),
+    ("silage maize", "CROPGRIDSv1.08_maizefor.nc"),
+    ("white potato", "CROPGRIDSv1.08_potato.nc")
 ]
 
 NC_DIR  = os.path.join(BASE, "data_input/cropgrids")
 OUT_DIR = os.path.join(BASE, "data_input/cropgrids")
 
-# Name of the harvested area variable inside the NetCDF
-# CROPGRIDS uses 'harvested_area' — adjust if your file differs
-HA_VAR = "harvested_area"
-AREA_VAR = "croparea"
+# Variable names inside CROPGRIDS NetCDF files
+HA_VAR   = "harvarea"   # harvested area
+CA_VAR   = "croparea"   # crop (physical) area
+QUAL_VAR = "qual"       # data quality score
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -88,6 +89,8 @@ def nc_to_tif(nc_path, out_path, var_name):
             ds.variables[var_name], "_FillValue") else -9999.0
         data = data.filled(fill_val)
     data = np.array(data, dtype=np.float32)
+    # Treat -1 and other negative values as nodata
+    data[data < 0] = -9999.0
 
     # Ensure lat is descending (north-up)
     if lats[0] < lats[-1]:
@@ -155,11 +158,17 @@ def warp_to_reference(src_path, ref_path, out_path):
     band    = out_ds.GetRasterBand(1)
     arr     = band.ReadAsArray().astype(float)
     arr[arr == -9999] = np.nan
+    arr[arr < 0]      = np.nan  # catch -1 nodata values
     valid   = arr[np.isfinite(arr) & (arr > 0)]
-    print(f"  Warped → {os.path.basename(out_path)}: "
-          f"shape=({out_ds.RasterYSize}×{out_ds.RasterXSize}), "
-          f"valid pixels={len(valid)}, "
-          f"mean={np.mean(valid):.2f} ha, max={np.max(valid):.2f} ha")
+    if len(valid) == 0:
+        print(f"  Warped → {os.path.basename(out_path)}: "
+              f"shape=({out_ds.RasterYSize}×{out_ds.RasterXSize}), "
+              f"WARNING: no valid pixels in study area")
+    else:
+        print(f"  Warped → {os.path.basename(out_path)}: "
+              f"shape=({out_ds.RasterYSize}×{out_ds.RasterXSize}), "
+              f"valid pixels={len(valid)}, "
+              f"mean={np.mean(valid):.2f} ha, max={np.max(valid):.2f} ha")
     out_ds = None
 
 
@@ -169,7 +178,7 @@ def main():
     os.makedirs(OUT_DIR, exist_ok=True)
 
     for crop, nc_file in CROPS:
-        nc_path  = os.path.join(NC_DIR, nc_file)
+        nc_path = os.path.join(NC_DIR, nc_file)
         if not os.path.exists(nc_path):
             print(f"\n  SKIP {crop}: file not found at {nc_path}")
             continue
@@ -178,17 +187,29 @@ def main():
         print(f"  Processing: {crop}")
         print(f"{'─'*55}")
 
-        # Step 1: NetCDF -> global GeoTIFF
+        # Export harvested area
         global_tif = os.path.join(OUT_DIR, f"{crop}_ha_global.tif")
         nc_to_tif(nc_path, global_tif, HA_VAR)
-
-        # Step 2: warp to reference grid
         aligned_tif = os.path.join(OUT_DIR, f"{crop}_harvested_area.tif")
         warp_to_reference(global_tif, REFERENCE_TIF, aligned_tif)
-
-        # Clean up intermediate global tif
         os.remove(global_tif)
-        print(f"  Done → {aligned_tif}")
+        print(f"  → {aligned_tif}")
+
+        # Export crop area
+        global_tif = os.path.join(OUT_DIR, f"{crop}_ca_global.tif")
+        nc_to_tif(nc_path, global_tif, CA_VAR)
+        aligned_tif = os.path.join(OUT_DIR, f"{crop}_crop_area.tif")
+        warp_to_reference(global_tif, REFERENCE_TIF, aligned_tif)
+        os.remove(global_tif)
+        print(f"  → {aligned_tif}")
+
+        # Export quality
+        global_tif = os.path.join(OUT_DIR, f"{crop}_qual_global.tif")
+        nc_to_tif(nc_path, global_tif, QUAL_VAR)
+        aligned_tif = os.path.join(OUT_DIR, f"{crop}_quality.tif")
+        warp_to_reference(global_tif, REFERENCE_TIF, aligned_tif)
+        os.remove(global_tif)
+        print(f"  → {aligned_tif}")
 
     print(f"\n{'='*55}")
     print("  All crops processed.")

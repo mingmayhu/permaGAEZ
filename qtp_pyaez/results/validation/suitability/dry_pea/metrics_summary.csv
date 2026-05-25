@@ -1,0 +1,4 @@
+Crop,HA Source,Model,N pixels,Spearman r,Spearman p,TP,FP,FN,TN,Precision,Recall,F1,Accuracy
+Dry Pea,CROPGRIDS (1999–2018),Permafrost Model,1746,0.185,0.0,6,0,968,772,1.0,0.0062,0.0122,0.4456
+Dry Pea,CROPGRIDS (1999–2018),No-Thaw Model,1746,0.2176,0.0,5,0,969,772,1.0,0.0051,0.0102,0.445
+Dry Pea,CROPGRIDS (1999–2018),Original Model,1746,0.1663,0.0,5,0,969,772,1.0,0.0051,0.0102,0.445

@@ -1,0 +1,4 @@
+Model,N pixels,False Negatives (n),False Negatives (%),Mean Actual (kg/ha),Mean Modelled (kg/ha),Pearson r,Pearson p,Spearman r,Spearman p,RMSE (kg/ha),MAE (kg/ha),Mean Bias (kg/ha),Mean Bias (%),Yield Gap Ratio (actual/mod),Crop
+Permafrost Model,1398,1108,79.3,14.79,2.48,-0.1252,0.0,-0.1495,0.0,14.98,13.23,-12.3,-83.21,1.8906,Potato
+No-Thaw Model,1398,1167,83.5,14.79,2.08,-0.1045,0.0001,-0.1352,0.0,15.15,13.48,-12.71,-85.92,1.8514,Potato
+Original Model,1398,1011,72.3,14.79,2.62,-0.1677,0.0,-0.2004,0.0,14.78,13.0,-12.17,-82.3,2.7931,Potato

@@ -34,7 +34,7 @@ os.makedirs(os.path.dirname(OUT_PATH), exist_ok=True)
 # ── Font setup ───────────────────────────────────────────────────────────────
 FONT      = 'Helvetica'
 BOLD_PATH = '/Users/ming-mayhu/Library/Fonts/Helvetica LT 75 Bold.ttf'
-REG_PATH  = '/System/Library/Fonts/Helvetica.ttc' 
+REG_PATH  = '/System/Library/Fonts/Helvetica.ttc'
 
 # ── Seaborn theme ─────────────────────────────────────────────────────────────
 sns.set_theme(
@@ -54,10 +54,10 @@ sns.set_theme(
 )
 
 units_map = {
-    'a': '°C/yr',
-    'b': 'mm/yr',
-    'c': 'm/yr',
-    'd': 'mm/yr',
+    'a': ' °C yr⁻¹ ',
+    'b': ' mm yr⁻¹ ',
+    'c': ' mm yr⁻¹ ',
+    'd': ' mm yr⁻¹ ',
 }
 
 OBS_BLUE  = '#1f77b4'
@@ -108,6 +108,8 @@ def load_perm_annual(var_file, years, mask, agg='max'):
         arr = np.load(path).astype(float)
         if arr.ndim == 3:
             arr = np.nanmax(arr, axis=2) if agg == 'max' else np.nanmean(arr, axis=2)
+        if agg == 'max':
+            arr = arr * 1000
         arr[~mask] = np.nan
         annual.append(regional_mean(arr, mask))
     return np.array(annual)
@@ -122,9 +124,26 @@ def run_mk(series):
     line[valid] = mk.intercept + mk.slope * np.arange(valid.sum())
     return {
         'tau': mk.Tau, 'p': mk.p,
-        'slope': mk.slope, 'significant': mk.p < ALPHA,
+        'slope': mk.slope, 'intercept': mk.intercept,
+        'significant': mk.p < ALPHA,
         'sen_line': line,
     }
+
+def bootstrap_sen_ci(series, n_boot=1000, ci=95):
+    """Bootstrap 95% CI on Sen's slope; returns (lo_slope, hi_slope, intercept)."""
+    s = np.array(series, dtype=float)
+    valid_idx = np.where(np.isfinite(s))[0]
+    if len(valid_idx) < 4:
+        return (np.nan, np.nan)
+    s_valid = s[valid_idx]
+    slopes = []
+    rng = np.random.default_rng(42)
+    for _ in range(n_boot):
+        idx = np.sort(rng.choice(len(s_valid), size=len(s_valid), replace=True))
+        slopes.append(mk_test(s_valid[idx]).slope)
+    lo = np.percentile(slopes, (100 - ci) / 2)
+    hi = np.percentile(slopes, 100 - (100 - ci) / 2)
+    return (lo, hi)
 
 # ── Figure ────────────────────────────────────────────────────────────────────
 def make_figure():
@@ -147,15 +166,21 @@ def make_figure():
     mk_alt   = run_mk(alt_ann)
     mk_sm    = run_mk(sm_ann)
 
+    print('Bootstrapping Sen slope CIs ...')
+    ci_tmean = bootstrap_sen_ci(tmean_ann)
+    ci_prec  = bootstrap_sen_ci(prec_ann)
+    ci_alt   = bootstrap_sen_ci(alt_ann)
+    ci_sm    = bootstrap_sen_ci(sm_ann)
+
     panels = [
-        (tmean_ann, mk_tmean, 'Temperature (°C)',
-         'Regional mean temperature',           'a', OBS_BLUE),
-        (prec_ann,  mk_prec,  'Precipitation (mm)',
-         'Regional total precipitation', 'b', OBS_BLUE),
-        (alt_ann,   mk_alt,   'Active layer thickness (m)',
-         'Regional active layer thickness',              'c', OBS_GREEN),
-        (sm_ann,    mk_sm,    'Available soil moisture (mm)',
-         'Regional available soil moisture',             'd', OBS_GREEN),
+        (tmean_ann, mk_tmean, ci_tmean, 'Temperature (°C)',
+         'Regional mean temperature',        'a', OBS_BLUE),
+        (prec_ann,  mk_prec,  ci_prec,  'Precipitation (mm)',
+         'Regional total precipitation',     'b', OBS_BLUE),
+        (alt_ann,   mk_alt,   ci_alt,   'Active layer thickness (mm)',
+         'Regional active layer thickness',  'c', OBS_GREEN),
+        (sm_ann,    mk_sm,    ci_sm,    'Available soil moisture (mm)',
+         'Regional available soil moisture', 'd', OBS_GREEN),
     ]
 
     fig, axes = plt.subplots(2, 2, figsize=(13, 8.5))
@@ -165,7 +190,7 @@ def make_figure():
     fp_normal = FontProperties(fname=REG_PATH, size=18)
     xtick_years = years_arr[::5]
 
-    for ax, (series, mk, ylabel, title, letter, obs_col) in zip(axes.flat, panels):
+    for ax, (series, mk, ci, ylabel, title, letter, obs_col) in zip(axes.flat, panels):
 
         # Fill under series
         ax.fill_between(years_arr, np.nanmin(series), series,
@@ -177,22 +202,36 @@ def make_figure():
                 marker='o', markersize=3.2,
                 markerfacecolor=obs_col, markeredgewidth=0)
 
-        # Sen's slope
+        # Sen's slope + 95% CI band
         if mk:
             if mk['p'] < 0.001:
                 pstring = 'p < 0.001'
             else:
                 pstring = f'p = {mk["p"]:.3f}'
-            
-            slope_lbl = (f"Sen's slope: {mk['slope']:+.4f}{units_map[letter]}, ({pstring})")
+
+            slope_lbl = (f"Sen's slope: {mk['slope']:+.3f}{units_map[letter]}, ({pstring})")
             ax.plot(years_arr, mk['sen_line'],
                     color=TREND_RED, linewidth=1.8,
                     linestyle='--', dashes=(6, 3),
                     zorder=4, label=slope_lbl)
-        
+
+            # CI band: upper and lower lines share the same intercept as the
+            # central Sen line, only the slope varies
+            if not np.isnan(ci[0]):
+                valid = np.isfinite(series)
+                n_valid = valid.sum()
+                x_idx = np.arange(n_valid)
+                lo_line = np.full(len(series), np.nan)
+                hi_line = np.full(len(series), np.nan)
+                lo_line[valid] = mk['intercept'] + ci[0] * x_idx
+                hi_line[valid] = mk['intercept'] + ci[1] * x_idx
+                ax.fill_between(years_arr, lo_line, hi_line,
+                                color=TREND_RED, alpha=0.15, zorder=3,
+                                label='95% CI')
+
         # Axis formatting
         pad = (np.nanmax(series) - np.nanmin(series)) * 0.1
-        ax.set_ylim(np.nanmin(series) - pad/3, np.nanmax(series) + pad)
+        ax.set_ylim(np.nanmin(series) - pad / 3, np.nanmax(series) + pad)
         ax.set_xlim(1978.5, 2018.5)
         ax.set_xticks(xtick_years)
         ax.set_xticklabels([str(y) for y in xtick_years],
@@ -213,7 +252,7 @@ def make_figure():
 
         # Legend
         leg = ax.legend(loc='upper left',
-                        bbox_to_anchor=(0, 1.1),
+                        bbox_to_anchor=(0, 1.3),
                         bbox_transform=ax.transAxes,
                         edgecolor='none',
                         handlelength=2.5, borderpad=0.5)
@@ -221,7 +260,7 @@ def make_figure():
             text.set_fontproperties(fp_normal)
 
     plt.tight_layout()
-    plt.subplots_adjust(hspace=0.65, wspace=0.4)
+    plt.subplots_adjust(hspace=0.85, wspace=0.4)
     fig.savefig(OUT_PATH, dpi=DPI, bbox_inches='tight',
                 facecolor='white', edgecolor='none')
     plt.close()

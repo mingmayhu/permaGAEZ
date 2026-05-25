@@ -1,0 +1,4 @@
+Model,N pixels,False Negatives (n),False Negatives (%),Mean Actual (kg/ha),Mean Modelled (kg/ha),Pearson r,Pearson p,Spearman r,Spearman p,RMSE (kg/ha),MAE (kg/ha),Mean Bias (kg/ha),Mean Bias (%),Yield Gap Ratio (actual/mod),Crop
+Permafrost Model,1398,1166,83.4,2006.65,3.8,0.1376,0.0,0.1659,0.0,2103.99,2002.86,-2002.86,-99.81,161.3527,Spring Oat
+No-Thaw Model,1398,1193,85.3,2006.65,3.43,0.1348,0.0,0.1666,0.0,2104.35,2003.22,-2003.22,-99.83,157.4606,Spring Oat
+Original Model,1398,1078,77.1,2006.65,5.46,0.0402,0.1334,0.1077,0.0001,2102.67,2001.2,-2001.2,-99.73,185.7543,Spring Oat

@@ -46,9 +46,9 @@ METRIC = 'mean_suit'   # use mean suitability score for permutation panel
 
 # Crop order — sorted by Wilcoxon median delta descending
 CROP_ORDER = [
-    'Spring Rape', 'Oat', 'White Potato', 'Silage Maize',
-    'Winter Wheat', 'Winter Barley', 'Dry Pea',
-    'Spring Barley', 'Spring Wheat', 'Winter Rape',
+    'Spring rapeseed', 'Spring oat', 'White potato', 'Silage maize',
+    'Winter wheat', 'Winter barley', 'Dry pea',
+    'Spring barley', 'Spring wheat', 'Winter rapeseed',
 ]
 
 os.chdir(WORK_DIR)
@@ -120,7 +120,7 @@ df_w = df_w.set_index('crop').reindex(crop_order_full).reset_index()
 df_p = df_p.set_index('crop').reindex(crop_order_full).reset_index()
 
 # ── Figure ────────────────────────────────────────────────────────────────────
-fig, axes = plt.subplots(1, 2, figsize=(14, 6), sharey=True)
+fig, axes = plt.subplots(1, 2, figsize=(15, 6), sharey=True)
 fig.patch.set_facecolor('white')
 
 # ── Left panel: Wilcoxon median ΔSuitability ──────────────────────────────────
@@ -143,17 +143,17 @@ for bar, (_, row) in zip(bars1, df_w.iterrows()):
         x + (0.0003 if x >= 0 else -0.0003),
         bar.get_y() + bar.get_height() / 2,
         f'p = {row["p_greater_zero"]:.3f}',
-        va='center', fontsize=12,
+        va='center', fontsize=14,
         ha='left' if x >= 0 else 'right',
         color=(COLOR_SIG if sig else COLOR_NS),
         fontproperties=fp_bold if sig else fp_reg
     )
 
-ax1.set_xlim(-0.01, 0.055)
-ax1.set_xlabel('Median Δsuitability', fontsize=12,
+ax1.set_xlim(-0.01, 0.05)
+ax1.set_xlabel('Median Δsuitability', fontsize=14,
                fontproperties=fp_reg)
-ax1.set_title('(a) Wilcoxon signed rank', loc='left' ,fontsize=12, pad=8)
-ax1.tick_params(labelsize=12)
+ax1.set_title('(a) Wilcoxon signed-rank', loc='left' ,fontsize=14, pad=8)
+ax1.tick_params(labelsize=14)
 
 # ── Right panel: Permutation slope difference ─────────────────────────────────
 ax2     = axes[1]
@@ -179,18 +179,18 @@ for bar, (_, row) in zip(bars2, df_p.iterrows()):
         x + (0.00002 if x >= 0 else -0.00002),
         bar.get_y() + bar.get_height() / 2,
         f'p = {row["perm_p"]:.3f}' if not pd.isna(row['perm_p']) else '',
-        va='center', fontsize=12,
+        va='center', fontsize=14,
         ha='left' if x >= 0 else 'right',
         color=color,
         fontproperties=fp_bold if sig else fp_reg
     )
 
-ax2.set_xlabel("Sen's slope difference (mean suitability/yr)", fontsize=12,
+ax2.set_xlabel("Sen's slope difference (mean suitability/yr)", fontsize=14,
                fontproperties=fp_reg)
 ax2.set_title('(b) Slope permutation', loc='left',
-              fontsize=12, pad=8)
-ax2.tick_params(labelsize=12)
-ax2.set_xlim(-0.0003, 0.0015)
+              fontsize=14, pad=8)
+ax2.tick_params(labelsize=14)
+ax2.set_xlim(-0.0006, 0.0018)
 
 plt.tight_layout()
 fig.savefig(OUT_PATH, dpi=DPI, bbox_inches='tight', facecolor='white')

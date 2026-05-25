@@ -1,45 +1,45 @@
-crop,scenario,metric,tau,p,slope,significant
-Winter Barley,obs,mean_suit,0.524,0.0,0.001442,True
-Winter Barley,obs,pct_ge2,0.514,0.0,0.069138,True
-Winter Barley,fao,mean_suit,0.473,0.0,0.002203,True
-Winter Barley,fao,pct_ge2,0.491,0.0,0.113593,True
-Spring Barley,obs,mean_suit,0.468,0.0,0.000435,True
-Spring Barley,obs,pct_ge2,0.463,0.0,0.025819,True
-Spring Barley,fao,mean_suit,0.518,0.0,0.000494,True
-Spring Barley,fao,pct_ge2,0.482,0.0,0.028637,True
-Winter Wheat,obs,mean_suit,0.526,0.0,0.001432,True
-Winter Wheat,obs,pct_ge2,0.517,0.0,0.068023,True
-Winter Wheat,fao,mean_suit,0.488,0.0,0.002345,True
-Winter Wheat,fao,pct_ge2,0.501,0.0,0.114548,True
-Spring Wheat,obs,mean_suit,0.464,0.0,0.000436,True
-Spring Wheat,obs,pct_ge2,0.441,0.0001,0.024546,True
-Spring Wheat,fao,mean_suit,0.51,0.0,0.000458,True
-Spring Wheat,fao,pct_ge2,0.5,0.0,0.028637,True
-Silage Maize,obs,mean_suit,0.521,0.0,0.00043,True
-Silage Maize,obs,pct_ge2,0.514,0.0,0.021601,True
-Silage Maize,fao,mean_suit,0.512,0.0,0.000382,True
-Silage Maize,fao,pct_ge2,0.5,0.0,0.022411,True
-White Potato,obs,mean_suit,0.314,0.0045,0.001375,True
-White Potato,obs,pct_ge2,0.313,0.0046,0.114548,True
-White Potato,fao,mean_suit,0.269,0.0149,0.001508,True
-White Potato,fao,pct_ge2,0.291,0.0084,0.114548,True
-Oat,obs,mean_suit,0.424,0.0001,0.003427,True
-Oat,obs,pct_ge2,0.435,0.0001,0.157503,True
-Oat,fao,mean_suit,0.422,0.0001,0.003088,True
-Oat,fao,pct_ge2,0.444,0.0001,0.171821,True
-Dry Pea,obs,mean_suit,0.488,0.0,0.000415,True
-Dry Pea,obs,pct_ge2,0.497,0.0,0.024546,True
-Dry Pea,fao,mean_suit,0.503,0.0,0.000404,True
-Dry Pea,fao,pct_ge2,0.472,0.0,0.02291,True
-Winter Rape,obs,mean_suit,0.369,0.0007,0.000143,True
-Winter Rape,obs,pct_ge2,0.353,0.0011,0.00743,True
-Winter Rape,fao,mean_suit,0.349,0.0015,0.000263,True
-Winter Rape,fao,pct_ge2,0.335,0.0024,0.0162,True
-Spring Rape,obs,mean_suit,0.517,0.0,0.002913,True
-Spring Rape,obs,pct_ge2,0.486,0.0,0.095456,True
-Spring Rape,fao,mean_suit,0.529,0.0,0.003116,True
-Spring Rape,fao,pct_ge2,0.576,0.0,0.158746,True
-OVERALL,obs,mean_suit,0.579,0.0,0.001204,True
-OVERALL,obs,pct_ge2,0.545,0.0,0.057274,True
-OVERALL,fao,mean_suit,0.554,0.0,0.001366,True
-OVERALL,fao,pct_ge2,0.553,0.0,0.074456,True
+crop,scenario,metric,tau,p,slope,significant,ci_lo,ci_hi
+Winter Barley,obs,mean_suit,0.524,0.0,0.001442,True,,
+Winter Barley,obs,area_ge2_km2,0.505,0.0,119.402873,True,,
+Winter Barley,fao,mean_suit,0.473,0.0,0.002203,True,,
+Winter Barley,fao,area_ge2_km2,0.49,0.0,196.137173,True,,
+Spring Barley,obs,mean_suit,0.468,0.0,0.000435,True,,
+Spring Barley,obs,area_ge2_km2,0.467,0.0,44.553678,True,,
+Spring Barley,fao,mean_suit,0.518,0.0,0.000494,True,,
+Spring Barley,fao,area_ge2_km2,0.477,0.0,49.468272,True,,
+Winter Wheat,obs,mean_suit,0.526,0.0,0.001432,True,,
+Winter Wheat,obs,area_ge2_km2,0.508,0.0,117.621443,True,,
+Winter Wheat,fao,mean_suit,0.488,0.0,0.002345,True,,
+Winter Wheat,fao,area_ge2_km2,0.5,0.0,197.84995,True,,
+Spring Wheat,obs,mean_suit,0.464,0.0,0.000436,True,,
+Spring Wheat,obs,area_ge2_km2,0.449,0.0,42.5788,True,,
+Spring Wheat,fao,mean_suit,0.51,0.0,0.000458,True,,
+Spring Wheat,fao,area_ge2_km2,0.486,0.0,49.518086,True,,
+Silage Maize,obs,mean_suit,0.521,0.0,0.00043,True,,
+Silage Maize,obs,area_ge2_km2,0.519,0.0,37.478875,True,,
+Silage Maize,fao,mean_suit,0.512,0.0,0.000382,True,,
+Silage Maize,fao,area_ge2_km2,0.509,0.0,38.813696,True,,
+White Potato,obs,mean_suit,0.314,0.0045,0.001375,True,,
+White Potato,obs,area_ge2_km2,0.313,0.0046,198.168664,True,,
+White Potato,fao,mean_suit,0.269,0.0149,0.001508,True,,
+White Potato,fao,area_ge2_km2,0.29,0.0088,199.262732,True,,
+Oat,obs,mean_suit,0.424,0.0001,0.003427,True,,
+Oat,obs,area_ge2_km2,0.436,0.0001,271.728973,True,,
+Oat,fao,mean_suit,0.422,0.0001,0.003088,True,,
+Oat,fao,area_ge2_km2,0.441,0.0001,295.911029,True,,
+Dry Pea,obs,mean_suit,0.488,0.0,0.000415,True,,
+Dry Pea,obs,area_ge2_km2,0.488,0.0,42.36816,True,,
+Dry Pea,fao,mean_suit,0.503,0.0,0.000404,True,,
+Dry Pea,fao,area_ge2_km2,0.469,0.0,39.602447,True,,
+Winter Rape,obs,mean_suit,0.369,0.0007,0.000143,True,,
+Winter Rape,obs,area_ge2_km2,0.367,0.0007,12.869498,True,,
+Winter Rape,fao,mean_suit,0.349,0.0015,0.000263,True,,
+Winter Rape,fao,area_ge2_km2,0.331,0.0027,28.073045,True,,
+Spring Rape,obs,mean_suit,0.517,0.0,0.002913,True,,
+Spring Rape,obs,area_ge2_km2,0.49,0.0,164.291584,True,,
+Spring Rape,fao,mean_suit,0.529,0.0,0.003116,True,,
+Spring Rape,fao,area_ge2_km2,0.574,0.0,273.074602,True,,
+OVERALL,obs,mean_suit,0.579,0.0,0.001204,True,0.0007918892634530091,0.0017519531823655557
+OVERALL,obs,area_ge2_km2,0.544,0.0,99.142776,True,61.4078426196876,140.92725896265085
+OVERALL,fao,mean_suit,0.554,0.0,0.001366,True,0.0007796154428652806,0.0019972981722197443
+OVERALL,fao,area_ge2_km2,0.551,0.0,127.99485,True,74.22005389698107,182.58241665054481

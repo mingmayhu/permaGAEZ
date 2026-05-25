@@ -1,3 +1,3 @@
-variable,tau,p,slope_per_yr,significant,trend
-ALT,0.228,0.0392,0.0009,True,increasing
-Soil Moisture,0.797,0.0,1.4627,True,increasing
+variable,tau,p,slope_per_yr,significant,trend,bootstrap_ci_lo,bootstrap_ci_hi
+ALT,0.228,0.0392,0.0009,True,increasing,0.0,0.0015
+Soil Moisture,0.797,0.0,1.4627,True,increasing,1.1584,1.6463

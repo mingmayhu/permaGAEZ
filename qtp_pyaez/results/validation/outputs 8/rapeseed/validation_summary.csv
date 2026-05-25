@@ -1,5 +1,0 @@
-Model,N pixels,False Negatives (n),False Negatives (%),Mean Actual (kg/ha),Mean Modelled (kg/ha),Pearson r,Pearson p,Spearman r,Spearman p,RMSE (kg/ha),MAE (kg/ha),Mean Bias (kg/ha),Mean Bias (%),Yield Gap Ratio (actual/mod),Crop
-Permafrost Model,104,65,62.5,115.18,7.68,0.0365,0.7132,-0.0147,0.8824,117.15,107.5,-107.5,-93.33,5.7922,Rapeseed
-No-Thaw Model,104,65,62.5,115.18,7.7,0.0375,0.7058,-0.0107,0.9139,117.13,107.48,-107.48,-93.32,5.7756,Rapeseed
-Original Model,104,64,61.5,115.18,7.22,0.0411,0.679,-0.0074,0.9403,117.51,107.96,-107.96,-93.73,6.4172,Rapeseed
-FAO GAEZ v5,104,0,0.0,115.18,103.89,0.4867,0.0,0.4459,0.0,94.31,76.43,-11.3,-9.81,5.8742,Rapeseed

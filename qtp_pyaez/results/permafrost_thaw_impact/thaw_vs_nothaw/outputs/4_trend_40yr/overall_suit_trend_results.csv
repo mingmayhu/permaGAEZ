@@ -1,5 +1,5 @@
-crop,period,metric,obs_tau,obs_p,obs_slope,obs_significant,cf_tau,cf_p,cf_slope,cf_significant,slope_difference,boot_ci_lo,boot_ci_hi,boot_p,boot_sig,perm_ci_lo,perm_ci_hi,perm_p,perm_sig
-OVERALL,1979-2018,mean_suit,0.579,0.0,0.001204,True,0.538,0.0,0.001072,True,0.000132,-0.000199,0.000222,0.169,False,-0.000201,0.000198,0.224,False
-OVERALL,1979-2018,pct_ge2,0.545,0.0,0.057274,True,0.499,0.0,0.04891,True,0.008364,-0.010538,0.011516,0.099,False,-0.011489,0.011194,0.178,False
-OVERALL,1999-2018,mean_suit,0.211,0.2058,0.000981,False,0.158,0.3468,0.000574,False,0.000407,-0.000907,0.000843,0.328,False,-0.001091,0.00102,0.487,False
-OVERALL,1999-2018,pct_ge2,0.179,0.2843,0.060495,False,0.147,0.381,0.025057,False,0.035438,-0.053881,0.048619,0.144,False,-0.054754,0.052334,0.282,False
+crop,period,metric,obs_tau,obs_p,obs_slope,obs_ci_lo,obs_ci_hi,obs_significant,cf_tau,cf_p,cf_slope,cf_ci_lo,cf_ci_hi,cf_significant,slope_difference,boot_ci_lo,boot_ci_hi,boot_p,boot_sig,perm_ci_lo,perm_ci_hi,perm_p,perm_sig
+OVERALL,1979-2018,mean_suit,0.579,0.0,0.001204,0.000792,0.001752,True,0.546,0.0,0.001078,0.000586,0.001406,True,0.000126,-0.000194,0.000207,0.185,False,-0.000211,0.000202,0.246,False
+OVERALL,1979-2018,area_ge2_km2,0.544,0.0,99.142776,61.407843,140.927259,True,0.518,0.0,86.104772,46.326772,113.706527,True,13.038004,-18.41127,19.479999,0.133,False,-19.459489,19.400868,0.246,False
+OVERALL,1999-2018,mean_suit,0.211,0.2058,0.000981,-0.000936,0.002419,False,0.147,0.381,0.000627,-0.000525,0.00184,False,0.000354,-0.000976,0.000865,0.397,False,-0.001071,0.000954,0.482,False
+OVERALL,1999-2018,area_ge2_km2,0.179,0.2843,104.154378,-94.489135,196.456398,False,0.147,0.381,44.139497,-39.04806,148.992066,False,60.014881,-94.279346,86.507192,0.159,False,-95.09088,89.968176,0.321,False

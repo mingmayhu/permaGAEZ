@@ -105,59 +105,51 @@ def run(mask):
     elevation = np.load(ELEV_PATH)
     slope, _  = load_raster(SLOPE_PATH)
 
-    # ── Slope diagnostic ──────────────────────────────────────────────────────
+    # ── Slope diagnostic & binning ────────────────────────────────────────────
     slope_masked = slope[mask & np.isfinite(slope)]
     print('Slope diagnostic:')
     print(f'  Min={slope_masked.min():.2f}  Max={slope_masked.max():.2f}  '
           f'Mean={slope_masked.mean():.2f}  Median={np.median(slope_masked):.2f}')
     for p in [75, 90, 95, 99]:
         print(f'  P{p}: {np.percentile(slope_masked, p):.2f}')
+    s_max        = np.percentile(slope_masked, 99)
+    slope_edges  = np.append(np.linspace(0, s_max, 7), slope_masked.max() + 1)
+    slope_mids   = slope_edges[:-1] + np.diff(slope_edges) / 2
+    slope_labels = [f'{slope_edges[i]:.1f}-{slope_edges[i+1]:.1f}'
+                    for i in range(len(slope_edges) - 1)]
+    print(f'  Slope bin edges: {[round(b, 2) for b in slope_edges]}')
 
-    # s_max        = np.percentile(slope_masked, 99)
-    # slope_edges  = np.append(np.linspace(0, s_max, 7), slope_masked.max() + 1)
-    # slope_mids   = slope_edges[:-1] + np.diff(slope_edges) / 2
-    # slope_labels = [f'{slope_edges[i]:.1f}-{slope_edges[i+1]:.1f}'
-    #                 for i in range(len(slope_edges) - 1)]
-    # print(f'  Slope bin edges: {[round(b, 2) for b in slope_edges]}')
+    # ── Elevation diagnostic ──────────────────────────────────────────────────
+    elev_masked = elevation[mask & np.isfinite(elevation)]
+    print('Elevation diagnostic:')
+    print(f'  Min={elev_masked.min():.2f}  Max={elev_masked.max():.2f}  '
+          f'Mean={elev_masked.mean():.2f}  Median={np.median(elev_masked):.2f}')
+    for p in [75, 90, 95, 99]:
+        print(f'  P{p}: {np.percentile(elev_masked, p):.2f}')
 
-        # ── Slope diagnostic ──────────────────────────────────────────────────────
-    slope_masked = elevation[mask & np.isfinite(slope)]
-    print('elevation diagnostic:')
-    print(f'  Min={slope_masked.min():.2f}  Max={slope_masked.max():.2f}  '
-          f'Mean={slope_masked.mean():.2f}  Median={np.median(slope_masked):.2f}')
-    # for p in [75, 90, 95, 99]:
-    #     print(f'  P{p}: {np.percentile(slope_masked, p):.2f}')
+    # ── Load mean delta rasters ────────────────────────────────────────────────
+    delta_arrays = {}
+    for crop in CROPS:
+        path = f'{DELTA_DIR}/{crop["tag"]}_mean_delta_suit.tif'
+        arr, _ = load_raster(path)
+        if arr is None:
+            print(f'  Warning: missing {path}')
+            continue
+        arr[~mask] = np.nan
+        delta_arrays[crop['label']] = arr
 
-    # s_max        = np.percentile(slope_masked, 99)
-    # slope_edges  = np.append(np.linspace(0, s_max, 7), slope_masked.max() + 1)
-    # slope_mids   = slope_edges[:-1] + np.diff(slope_edges) / 2
-    # slope_labels = [f'{slope_edges[i]:.1f}-{slope_edges[i+1]:.1f}'
-    #                 for i in range(len(slope_edges) - 1)]
-    # print(f'  Slope bin edges: {[round(b, 2) for b in slope_edges]}')
+    if not delta_arrays:
+        print('No delta rasters found.')
+        return
 
-    # # ── Load mean delta rasters ────────────────────────────────────────────────
-    # delta_arrays = {}
-    # for crop in CROPS:
-    #     path = f'{DELTA_DIR}/{crop["tag"]}_mean_delta_suit.tif'
-    #     arr, _ = load_raster(path)
-    #     if arr is None:
-    #         print(f'  Warning: missing {path}')
-    #         continue
-    #     arr[~mask] = np.nan
-    #     delta_arrays[crop['label']] = arr
+    import warnings
+    with warnings.catch_warnings():
+        warnings.simplefilter('ignore', RuntimeWarning)
+        agg_delta = np.nanmean(np.stack(list(delta_arrays.values())), axis=0)
+    agg_delta[~mask] = np.nan
+    delta_arrays['OVERALL'] = agg_delta
 
-    # if not delta_arrays:
-    #     print('No delta rasters found.')
-    #     return
-
-    # import warnings
-    # with warnings.catch_warnings():
-    #     warnings.simplefilter('ignore', RuntimeWarning)
-    #     agg_delta = np.nanmean(np.stack(list(delta_arrays.values())), axis=0)
-    # agg_delta[~mask] = np.nan
-    # delta_arrays['OVERALL'] = agg_delta
-
-    # records = []
+    records = []
 
     # ── Elevation stratification ───────────────────────────────────────────────
     elev_bins = np.array(ELEV_BINS)

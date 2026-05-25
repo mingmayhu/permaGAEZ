@@ -46,7 +46,7 @@ DIVERGENCE_YEAR = 1999
 ALPHA = 0.05
 
 # Plot styling
-OBS_COLOR  = '#2166AC'
+OBS_COLOR   = '#2166AC'
 TREND_COLOR = '#D6604D'
 FONTSIZE_TITLE = 13
 FONTSIZE_LABEL = 11
@@ -80,6 +80,10 @@ def regional_mean(arr, mask):
     valid = mask & np.isfinite(arr)
     return float(np.nanmean(arr[valid])) if valid.any() else np.nan
 
+def regional_sd(arr, mask):
+    valid = mask & np.isfinite(arr)
+    return float(np.nanstd(arr[valid])) if valid.any() else np.nan
+
 def load_clim_annual(var_file, years, mask, agg='mean'):
     """Load climate variable — aggregate across days, return annual value per year."""
     annual = []
@@ -94,6 +98,22 @@ def load_clim_annual(var_file, years, mask, agg='mean'):
                   else np.nanmean(arr, axis=2)
         arr[~mask] = np.nan
         annual.append(regional_mean(arr, mask))
+    return np.array(annual)
+
+def load_clim_annual_sd(var_file, years, mask, agg='mean'):
+    """Load climate variable — return per-year spatial SD across mask pixels."""
+    annual = []
+    for year in years:
+        path = f'{CLIM_DIR}/{year}/{var_file}'
+        if not os.path.exists(path):
+            annual.append(np.nan)
+            continue
+        arr = np.load(path).astype(float)
+        if arr.ndim == 3:
+            arr = np.nansum(arr, axis=2) if agg == 'sum' \
+                  else np.nanmean(arr, axis=2)
+        arr[~mask] = np.nan
+        annual.append(regional_sd(arr, mask))
     return np.array(annual)
 
 def load_clim_spatial(var_file, years, mask, agg='mean'):
@@ -127,6 +147,22 @@ def load_perm_annual(var_file, years, mask, agg='max'):
         annual.append(regional_mean(arr, mask))
     return np.array(annual)
 
+def load_perm_annual_sd(var_file, years, mask, agg='max'):
+    """Load permafrost variable — return per-year spatial SD across mask pixels."""
+    annual = []
+    for year in years:
+        path = f'{PERM_DIR}/{year}/{var_file}'
+        if not os.path.exists(path):
+            annual.append(np.nan)
+            continue
+        arr = np.load(path).astype(float)
+        if arr.ndim == 3:
+            arr = np.nanmax(arr, axis=2) if agg == 'max' \
+                  else np.nanmean(arr, axis=2)
+        arr[~mask] = np.nan
+        annual.append(regional_sd(arr, mask))
+    return np.array(annual)
+
 def load_perm_spatial(var_file, years, mask, agg='max'):
     """Load permafrost variable — return mean spatial map over given years."""
     stack = []
@@ -154,20 +190,46 @@ def run_mk(series):
         'tau': round(mk.Tau, 3), 'p': round(mk.p, 4),
         'slope': round(mk.slope, 4), 'significant': mk.p < ALPHA,
         'trend': mk.trend, 'sen_line': line,
-        'intercept': round(mk.intercept, 4),   # ← add this
+        'intercept': round(mk.intercept, 4),
     }
 
+def bootstrap_sen_ci(series, n_boot=1000, ci=95):
+    """Bootstrap 95% CI on Sen's slope by resampling the valid time series."""
+    s = np.array(series, dtype=float)
+    valid_idx = np.where(np.isfinite(s))[0]
+    if len(valid_idx) < 4:
+        return (np.nan, np.nan)
+    s_valid = s[valid_idx]
+    slopes = []
+    rng = np.random.default_rng(42)
+    for _ in range(n_boot):
+        idx = np.sort(rng.choice(len(s_valid), size=len(s_valid), replace=True))
+        s_boot = s_valid[idx]
+        slopes.append(mk_test(s_boot).slope)
+    lo = np.percentile(slopes, (100 - ci) / 2)
+    hi = np.percentile(slopes, 100 - (100 - ci) / 2)
+    return (round(lo, 4), round(hi, 4))
+
 def plot_timeseries(ax, years, series, mk_result, ylabel, title,
-                    color=OBS_COLOR, vline=True):
-    """Plot time series with Sen's slope line."""
+                    color=OBS_COLOR, vline=True,
+                    sd_band=None, slope_ci=None):
+    """Plot time series with Sen's slope line, optional ±1 SD band and bootstrap CI."""
     ax.plot(years, series, color=color, linewidth=2,
             marker='o', markersize=3, label='Annual mean')
+    if sd_band is not None:
+        ax.fill_between(years,
+                        np.array(series) - np.array(sd_band),
+                        np.array(series) + np.array(sd_band),
+                        color=color, alpha=0.15, label='±1 SD (spatial)')
     if mk_result:
         sig = '★' if mk_result['significant'] else ''
+        ci_str = ''
+        if slope_ci is not None and not np.isnan(slope_ci[0]):
+            ci_str = f' [95% CI: {slope_ci[0]:.4f}, {slope_ci[1]:.4f}]'
         ax.plot(years, mk_result['sen_line'], color=TREND_COLOR,
                 linewidth=2, linestyle='--',
-                label=f"Sen's slope: {mk_result['slope']:.4f}/yr "
-                      f"(p={mk_result['p']:.3f}){sig}")
+                label=f"Sen's slope: {mk_result['slope']:.4f}/yr"
+                      f"{ci_str} (p={mk_result['p']:.3f}){sig}")
     if vline:
         ax.axvline(DIVERGENCE_YEAR, color='grey', linestyle=':',
                    linewidth=1.2, label='1999 divergence')
@@ -242,6 +304,17 @@ def section_climate(mask):
     print(f'  Precip:   τ={mk_prec["tau"]},  p={mk_prec["p"]}, '
           f'slope={mk_prec["slope"]}/yr')
 
+    # Spatial SD series
+    tmax_sd   = load_clim_annual_sd('TempMax.npy', YEARS_ALL, mask, 'mean')
+    tmin_sd   = load_clim_annual_sd('TempMin.npy', YEARS_ALL, mask, 'mean')
+    tmean_sd  = (tmax_sd + tmin_sd) / 2
+    prec_sd   = load_clim_annual_sd('Precip.npy',  YEARS_ALL, mask, 'sum')
+
+    # Bootstrap CIs
+    print('  Bootstrapping Sen slope CIs …')
+    ci_tmean = bootstrap_sen_ci(tmean_ann)
+    ci_prec  = bootstrap_sen_ci(prec_ann)
+
     # ── Figure 1: Time series — temperature and precipitation ─────────────────
     fig, axes = plt.subplots(2, 1, figsize=(12, 10))
 
@@ -249,11 +322,11 @@ def section_climate(mask):
                     'Mean Temperature (°C)',
                     'Regional Mean Temperature (1979–2018)\n'
                     '[computed as (TempMax + TempMin) / 2]',
-                    vline=False)
+                    vline=False, sd_band=tmean_sd, slope_ci=ci_tmean)
     plot_timeseries(axes[1], years_arr, prec_ann, mk_prec,
                     'Annual Total Precipitation (mm)',
                     'Regional Annual Total Precipitation (1979–2018)',
-                    vline=False)
+                    vline=False, sd_band=prec_sd, slope_ci=ci_prec)
 
     fig.suptitle('Qilian Mountain Region — Climate Trends (1979–2018)',
                  fontsize=15, fontweight='bold', y=1.01)
@@ -299,13 +372,17 @@ def section_climate(mask):
     pd.DataFrame([
         {'variable': 'TempMean', 'tau': mk_tmean['tau'], 'p': mk_tmean['p'],
          'slope_per_yr': mk_tmean['slope'], 'significant': mk_tmean['significant'],
-         'trend': mk_tmean['trend']},
+         'trend': mk_tmean['trend'],
+         'bootstrap_ci_lo': ci_tmean[0], 'bootstrap_ci_hi': ci_tmean[1]},
         {'variable': 'Precip',   'tau': mk_prec['tau'],  'p': mk_prec['p'],
          'slope_per_yr': mk_prec['slope'],  'significant': mk_prec['significant'],
-         'trend': mk_prec['trend']},
+         'trend': mk_prec['trend'],
+         'bootstrap_ci_lo': ci_prec[0], 'bootstrap_ci_hi': ci_prec[1]},
     ]).to_csv(f'{out_dir}/climate_mk_results.csv', index=False)
-    print(f'  TempMean: slope={mk_tmean["slope"]}/yr, intercept={mk_tmean["intercept"]}')
-    print(f'  Precip:   slope={mk_prec["slope"]}/yr,  intercept={mk_prec["intercept"]}')
+    print(f'  TempMean: slope={mk_tmean["slope"]}/yr, intercept={mk_tmean["intercept"]}, '
+          f'95% CI=[{ci_tmean[0]}, {ci_tmean[1]}]')
+    print(f'  Precip:   slope={mk_prec["slope"]}/yr,  intercept={mk_prec["intercept"]}, '
+          f'95% CI=[{ci_prec[0]}, {ci_prec[1]}]')
 
 
 # ── Section 4.2: Permafrost Thaw Trends ──────────────────────────────────────
@@ -335,16 +412,26 @@ def section_permafrost(mask):
     print(f'  Soil Moisture: τ={mk_sm["tau"]},  p={mk_sm["p"]}, '
           f'slope={mk_sm["slope"]}/yr')
 
+    # Spatial SD series
+    alt_sd = load_perm_annual_sd('active_layer_depth.npy', YEARS_ALL, mask, 'max')
+    sm_sd  = load_perm_annual_sd('avail_soil_moisture.npy', YEARS_ALL, mask, 'mean')
+
+    # Bootstrap CIs
+    print('  Bootstrapping Sen slope CIs …')
+    ci_alt = bootstrap_sen_ci(alt_ann)
+    ci_sm  = bootstrap_sen_ci(sm_ann)
+
     # ── Figure 4: Time series — ALT and soil moisture ─────────────────────────
     fig, axes = plt.subplots(2, 1, figsize=(12, 10))
 
     plot_timeseries(axes[0], years_arr, alt_ann, mk_alt,
                     'Mean Annual Max ALT (m)',
-                    'Regional Mean Active Layer Thickness (1979–2018)')
+                    'Regional Mean Active Layer Thickness (1979–2018)',
+                    sd_band=alt_sd, slope_ci=ci_alt)
     plot_timeseries(axes[1], years_arr, sm_ann, mk_sm,
                     'Mean Available Soil Moisture (mm)',
                     'Regional Mean Available Soil Moisture (1979–2018)',
-                    color='#1a9850')
+                    color='#1a9850', sd_band=sm_sd, slope_ci=ci_sm)
 
     fig.suptitle('Qilian Mountain Region — Permafrost Thaw Trends (1979–2018)',
                  fontsize=15, fontweight='bold', y=1.01)
@@ -424,8 +511,6 @@ def section_permafrost(mask):
                 dpi=DPI, bbox_inches='tight')
     plt.close()
     print('  ✓ Permafrost distribution map saved')
-    print(f'  ALT:      slope={mk_alt["slope"]} m/yr, intercept={mk_alt["intercept"]}')
-    print(f'  SM:       slope={mk_sm["slope"]}/yr,    intercept={mk_sm["intercept"]}')
 
     # ── Figure 8: Combined summary — 4 panel hotspot map ─────────────────────
     tmax_pre_h  = load_clim_spatial('TempMax.npy', YEARS_PRE,  mask, 'mean')
@@ -441,8 +526,6 @@ def section_permafrost(mask):
     gs  = GridSpec(3, 2, figure=fig, height_ratios=[0.6, 1, 1], hspace=0.35)
     ax_perm = fig.add_subplot(gs[0, :])   # top row spanning both columns
 
-    # Top row — permafrost distribution spanning full width
-    # ax_perm = fig.add_subplot(3, 1, 1)
     perm_display = np.full(mask.shape, np.nan)
     perm_display[mask & (perm_arr == 1)] = 1
     perm_display[mask & (perm_arr == 2)] = 2
@@ -450,15 +533,14 @@ def section_permafrost(mask):
     norm_p  = mcolors.BoundaryNorm([0.5, 1.5, 2.5], cmap_p.N)
     ax_perm.imshow(perm_display, cmap=cmap_p, norm=norm_p)
     ax_perm.set_title('Permafrost Distribution', fontsize=FONTSIZE_TITLE,
-                    fontweight='bold')
+                      fontweight='bold')
     ax_perm.axis('off')
     patches = [mpatches.Patch(color='#2166AC', label='Permafrost'),
-            mpatches.Patch(color='#808080', label='Seasonally Frozen')]
+               mpatches.Patch(color='#808080', label='Seasonally Frozen')]
     ax_perm.legend(handles=patches, loc='lower right', fontsize=9)
 
-    # Bottom 2x2 — change panels
-    axes    = [fig.add_subplot(gs[1, 0]), fig.add_subplot(gs[1, 1]),
-           fig.add_subplot(gs[2, 0]), fig.add_subplot(gs[2, 1])]
+    axes = [fig.add_subplot(gs[1, 0]), fig.add_subplot(gs[1, 1]),
+            fig.add_subplot(gs[2, 0]), fig.add_subplot(gs[2, 1])]
 
     for ax, arr, title, cmap, label in [
         (axes[0], alt_post - alt_pre,          'ΔALT (m)',             'RdBu',   'Δm'),
@@ -486,16 +568,23 @@ def section_permafrost(mask):
                 dpi=DPI, bbox_inches='tight')
     plt.close()
     print('  ✓ Change hotspot summary map saved')
+    print(f'  ALT:      slope={mk_alt["slope"]} m/yr, intercept={mk_alt["intercept"]}, '
+          f'95% CI=[{ci_alt[0]}, {ci_alt[1]}]')
+    print(f'  SM:       slope={mk_sm["slope"]}/yr,    intercept={mk_sm["intercept"]}, '
+          f'95% CI=[{ci_sm[0]}, {ci_sm[1]}]')
 
     # Save MK results
     pd.DataFrame([
         {'variable': 'ALT', 'tau': mk_alt['tau'], 'p': mk_alt['p'],
          'slope_per_yr': mk_alt['slope'], 'significant': mk_alt['significant'],
-         'trend': mk_alt['trend']},
+         'trend': mk_alt['trend'],
+         'bootstrap_ci_lo': ci_alt[0], 'bootstrap_ci_hi': ci_alt[1]},
         {'variable': 'Soil Moisture', 'tau': mk_sm['tau'], 'p': mk_sm['p'],
          'slope_per_yr': mk_sm['slope'], 'significant': mk_sm['significant'],
-         'trend': mk_sm['trend']},
+         'trend': mk_sm['trend'],
+         'bootstrap_ci_lo': ci_sm[0], 'bootstrap_ci_hi': ci_sm[1]},
     ]).to_csv(f'{out_dir}/permafrost_mk_results.csv', index=False)
+
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 
@@ -503,5 +592,5 @@ if __name__ == '__main__':
     mask = load_mask()
     section_climate(mask)
     section_permafrost(mask)
-    
+
     print(f'\n✓ All Chapter 4 figures saved to: {OUT_ROOT}/')

@@ -104,7 +104,7 @@ ax.axhline(50, color='black', linewidth=0.8, linestyle='--', alpha=0.4)
 # Axis formatting
 ax.set_xticks(x)
 ax.set_xticklabels(crop_labels, rotation=30, ha='right', fontsize=14)
-ax.set_ylabel('% of Total Suitability Gain', fontsize=14, labelpad=6)
+ax.set_ylabel('Percent of Total Suitability Gain', fontsize=14, labelpad=6)
 ax.set_ylim(0, 100)
 ax.tick_params(which='major', labelsize=14, length=4,
                color='#000000', width=0.8)

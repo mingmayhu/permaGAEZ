@@ -132,6 +132,9 @@ def obs_suit_path(tag, year):
     return f'./data_output/final_classification_fixed/{tag}/{year}_suitability_class.tif'
 
 def cf_suit_path(tag, year):
+    if tag == "combined_oat":
+        tag = "combined_spring_oat_NEW"
+        print("using new spring oat")
     return f'./data_output/final_classification_nothaw_fixed/{tag}/{year}_suitability_class.tif'
 
 def apply_remap(arr, mask):

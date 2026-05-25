@@ -97,9 +97,9 @@ panels = [
         'title':  '(a)',
     },
     {
-        'obs':    df['obs_pct_ge2'].values,
-        'cf':     df['cf_pct_ge2'].values,
-        'ylabel': 'Percent suitable land',
+        'obs':    df['obs_area_km2'].values,
+        'cf':     df['cf_area_km2'].values,
+        'ylabel': 'Suitable land (%)',
         'title':  '(b)',
     },
 
@@ -134,19 +134,19 @@ for ax, panel in zip(axes, panels):
             marker='o', markersize=3.5, zorder=4, label='Thaw')
     ax.plot(years, cf_s, color=COLOR_CF, linewidth=1.8,
             marker='s', markersize=3.5, linestyle='--', zorder=4,
-            label='No-Thaw CF')
+            label='No-Thaw')
 
     # Sen's slope trend lines
     if mk_obs:
-
+    
         ax.plot(years, mk_obs['line'], color=COLOR_THAW,
                 linewidth=1.4, linestyle=':', zorder=5,
-                label=(f"Thaw slope: {mk_obs['slope']:.5f}/yr "
+                label=(f"Thaw slope: {mk_obs['slope']:.5f} yr⁻¹ "
                        f"(p < 0.001)"))
     if mk_cf:
         ax.plot(years, mk_cf['line'], color=COLOR_CF,
                 linewidth=1.4, linestyle=':', zorder=5,
-                label=(f"No-Thaw slope: {mk_cf['slope']:.5f}/yr "
+                label=(f"No-Thaw slope: {mk_cf['slope']:.5f} yr⁻¹ "
                        f"(p < 0.001)"))
 
     # 1999 divergence line

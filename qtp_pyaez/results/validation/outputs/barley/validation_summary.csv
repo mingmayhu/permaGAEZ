@@ -1,0 +1,4 @@
+Model,N pixels,False Negatives (n),False Negatives (%),Mean Actual (kg/ha),Mean Modelled (kg/ha),Pearson r,Pearson p,Spearman r,Spearman p,RMSE (kg/ha),MAE (kg/ha),Mean Bias (kg/ha),Mean Bias (%),Yield Gap Ratio (actual/mod),Crop
+Permafrost Model,1398,1236,88.4,2583.67,32.76,0.1024,0.0001,0.1253,0.0,2681.7,2550.91,-2550.91,-98.73,29.1983,Barley
+No-Thaw Model,1398,1222,87.4,2583.67,28.39,0.0661,0.0134,0.1019,0.0001,2686.83,2555.3,-2555.28,-98.9,56.8068,Barley
+Original Model,1398,1193,85.3,2583.67,42.21,-0.0156,0.5608,0.0344,0.1987,2677.45,2542.93,-2541.46,-98.37,24.7675,Barley

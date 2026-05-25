@@ -5,129 +5,129 @@ spatial,Winter Wheat,precip,mean,0.0138,0.5641,False,1746.0,
 spatial,Spring Wheat,precip,mean,-0.0239,0.3173,False,1746.0,
 spatial,Silage Maize,precip,mean,-0.1474,0.0,True,1746.0,
 spatial,White Potato,precip,mean,-0.0651,0.0065,True,1746.0,
-spatial,Oat,precip,mean,0.0037,0.8778,False,1746.0,
+spatial,Oat,precip,mean,-0.0209,0.3838,False,1746.0,
 spatial,Dry Pea,precip,mean,-0.0219,0.3609,False,1746.0,
 spatial,Winter Rape,precip,mean,-0.0428,0.0741,False,1746.0,
 spatial,Spring Rape,precip,mean,-0.1512,0.0,True,1746.0,
-spatial,OVERALL,precip,mean,-0.1765,0.0,True,1746.0,
+spatial,OVERALL,precip,mean,-0.1804,0.0,True,1746.0,
 spatial,Winter Barley,precip,change,-0.0097,0.6847,False,1746.0,
 spatial,Spring Barley,precip,change,-0.0402,0.0929,False,1746.0,
 spatial,Winter Wheat,precip,change,-0.004,0.8682,False,1746.0,
 spatial,Spring Wheat,precip,change,-0.0354,0.1396,False,1746.0,
 spatial,Silage Maize,precip,change,-0.1025,0.0,True,1746.0,
 spatial,White Potato,precip,change,0.0574,0.0164,True,1746.0,
-spatial,Oat,precip,change,-0.0275,0.2513,False,1746.0,
+spatial,Oat,precip,change,-0.0162,0.4999,False,1746.0,
 spatial,Dry Pea,precip,change,-0.032,0.1821,False,1746.0,
 spatial,Winter Rape,precip,change,0.1024,0.0,True,1746.0,
 spatial,Spring Rape,precip,change,0.1142,0.0,True,1746.0,
-spatial,OVERALL,precip,change,0.0867,0.0003,True,1746.0,
+spatial,OVERALL,precip,change,0.0905,0.0002,True,1746.0,
 spatial,Winter Barley,temp_max,mean,0.1316,0.0,True,1746.0,
 spatial,Spring Barley,temp_max,mean,0.1022,0.0,True,1746.0,
 spatial,Winter Wheat,temp_max,mean,0.1235,0.0,True,1746.0,
 spatial,Spring Wheat,temp_max,mean,0.097,0.0,True,1746.0,
 spatial,Silage Maize,temp_max,mean,0.1682,0.0,True,1746.0,
 spatial,White Potato,temp_max,mean,0.0708,0.0031,True,1746.0,
-spatial,Oat,temp_max,mean,0.1354,0.0,True,1746.0,
+spatial,Oat,temp_max,mean,0.0912,0.0001,True,1746.0,
 spatial,Dry Pea,temp_max,mean,0.098,0.0,True,1746.0,
 spatial,Winter Rape,temp_max,mean,-0.1169,0.0,True,1746.0,
 spatial,Spring Rape,temp_max,mean,0.0586,0.0143,True,1746.0,
-spatial,OVERALL,temp_max,mean,0.1141,0.0,True,1746.0,
+spatial,OVERALL,temp_max,mean,0.1081,0.0,True,1746.0,
 spatial,Winter Barley,temp_max,change,-0.0145,0.5449,False,1746.0,
 spatial,Spring Barley,temp_max,change,0.0256,0.2856,False,1746.0,
 spatial,Winter Wheat,temp_max,change,-0.0135,0.574,False,1746.0,
 spatial,Spring Wheat,temp_max,change,0.042,0.0792,False,1746.0,
 spatial,Silage Maize,temp_max,change,0.0916,0.0001,True,1746.0,
 spatial,White Potato,temp_max,change,-0.0545,0.0227,True,1746.0,
-spatial,Oat,temp_max,change,0.0356,0.137,False,1746.0,
+spatial,Oat,temp_max,change,0.0165,0.4913,False,1746.0,
 spatial,Dry Pea,temp_max,change,0.0611,0.0107,True,1746.0,
 spatial,Winter Rape,temp_max,change,-0.0294,0.2195,False,1746.0,
 spatial,Spring Rape,temp_max,change,-0.142,0.0,True,1746.0,
-spatial,OVERALL,temp_max,change,-0.0984,0.0,True,1746.0,
+spatial,OVERALL,temp_max,change,-0.1023,0.0,True,1746.0,
 spatial,Winter Barley,temp_min,mean,0.1499,0.0,True,1746.0,
 spatial,Spring Barley,temp_min,mean,0.1122,0.0,True,1746.0,
 spatial,Winter Wheat,temp_min,mean,0.1414,0.0,True,1746.0,
 spatial,Spring Wheat,temp_min,mean,0.1046,0.0,True,1746.0,
 spatial,Silage Maize,temp_min,mean,0.1674,0.0,True,1746.0,
 spatial,White Potato,temp_min,mean,0.0995,0.0,True,1746.0,
-spatial,Oat,temp_min,mean,0.1513,0.0,True,1746.0,
+spatial,Oat,temp_min,mean,0.1013,0.0,True,1746.0,
 spatial,Dry Pea,temp_min,mean,0.1027,0.0,True,1746.0,
 spatial,Winter Rape,temp_min,mean,-0.1216,0.0,True,1746.0,
 spatial,Spring Rape,temp_min,mean,0.1081,0.0,True,1746.0,
-spatial,OVERALL,temp_min,mean,0.1595,0.0,True,1746.0,
+spatial,OVERALL,temp_min,mean,0.1524,0.0,True,1746.0,
 spatial,Winter Barley,temp_min,change,0.0586,0.0143,True,1746.0,
 spatial,Spring Barley,temp_min,change,-0.0092,0.7017,False,1746.0,
 spatial,Winter Wheat,temp_min,change,0.0528,0.0272,True,1746.0,
 spatial,Spring Wheat,temp_min,change,-0.0284,0.2349,False,1746.0,
 spatial,Silage Maize,temp_min,change,-0.0157,0.5109,False,1746.0,
 spatial,White Potato,temp_min,change,-0.1155,0.0,True,1746.0,
-spatial,Oat,temp_min,change,-0.0204,0.3944,False,1746.0,
+spatial,Oat,temp_min,change,-0.0276,0.2496,False,1746.0,
 spatial,Dry Pea,temp_min,change,-0.0441,0.0656,False,1746.0,
 spatial,Winter Rape,temp_min,change,-0.0011,0.962,False,1746.0,
 spatial,Spring Rape,temp_min,change,-0.1502,0.0,True,1746.0,
-spatial,OVERALL,temp_min,change,-0.0987,0.0,True,1746.0,
+spatial,OVERALL,temp_min,change,-0.0999,0.0,True,1746.0,
 spatial,Winter Barley,temp_mean,mean,0.1417,0.0,True,1746.0,
 spatial,Spring Barley,temp_mean,mean,0.1081,0.0,True,1746.0,
 spatial,Winter Wheat,temp_mean,mean,0.1333,0.0,True,1746.0,
 spatial,Spring Wheat,temp_mean,mean,0.1016,0.0,True,1746.0,
 spatial,Silage Maize,temp_mean,mean,0.1687,0.0,True,1746.0,
 spatial,White Potato,temp_mean,mean,0.0856,0.0003,True,1746.0,
-spatial,Oat,temp_mean,mean,0.1442,0.0,True,1746.0,
+spatial,Oat,temp_mean,mean,0.097,0.0,True,1746.0,
 spatial,Dry Pea,temp_mean,mean,0.1012,0.0,True,1746.0,
 spatial,Winter Rape,temp_mean,mean,-0.1204,0.0,True,1746.0,
 spatial,Spring Rape,temp_mean,mean,0.0842,0.0004,True,1746.0,
-spatial,OVERALL,temp_mean,mean,0.1375,0.0,True,1746.0,
+spatial,OVERALL,temp_mean,mean,0.1311,0.0,True,1746.0,
 spatial,Winter Barley,temp_mean,change,0.0113,0.6362,False,1746.0,
 spatial,Spring Barley,temp_mean,change,0.0144,0.5464,False,1746.0,
 spatial,Winter Wheat,temp_mean,change,0.0061,0.7976,False,1746.0,
 spatial,Spring Wheat,temp_mean,change,0.0145,0.5445,False,1746.0,
 spatial,Silage Maize,temp_mean,change,0.0679,0.0045,True,1746.0,
 spatial,White Potato,temp_mean,change,-0.0959,0.0001,True,1746.0,
-spatial,Oat,temp_mean,change,0.0032,0.8923,False,1746.0,
+spatial,Oat,temp_mean,change,-0.0179,0.4559,False,1746.0,
 spatial,Dry Pea,temp_mean,change,0.02,0.4038,False,1746.0,
 spatial,Winter Rape,temp_mean,change,0.0011,0.9646,False,1746.0,
 spatial,Spring Rape,temp_mean,change,-0.1724,0.0,True,1746.0,
-spatial,OVERALL,temp_mean,change,-0.113,0.0,True,1746.0,
+spatial,OVERALL,temp_mean,change,-0.1182,0.0,True,1746.0,
 temporal,Winter Barley,precip,annual_mean,-0.076,0.7502,False,,20.0
 temporal,Spring Barley,precip,annual_mean,0.1921,0.4172,False,,20.0
 temporal,Winter Wheat,precip,annual_mean,-0.076,0.7502,False,,20.0
 temporal,Spring Wheat,precip,annual_mean,0.138,0.5618,False,,20.0
 temporal,Silage Maize,precip,annual_mean,0.1744,0.462,False,,20.0
 temporal,White Potato,precip,annual_mean,0.4101,0.0725,False,,20.0
-temporal,Oat,precip,annual_mean,0.0955,0.6887,False,,20.0
+temporal,Oat,precip,annual_mean,-0.0293,0.9023,False,,20.0
 temporal,Dry Pea,precip,annual_mean,0.1873,0.4291,False,,20.0
 temporal,Winter Rape,precip,annual_mean,-0.0083,0.9723,False,,20.0
 temporal,Spring Rape,precip,annual_mean,0.7008,0.0006,True,,20.0
-temporal,OVERALL,precip,annual_mean,0.2241,0.3423,False,,20.0
+temporal,OVERALL,precip,annual_mean,0.1684,0.4778,False,,20.0
 temporal,Winter Barley,temp_max,annual_mean,-0.2332,0.3225,False,,20.0
 temporal,Spring Barley,temp_max,annual_mean,-0.0495,0.8357,False,,20.0
 temporal,Winter Wheat,temp_max,annual_mean,-0.2332,0.3225,False,,20.0
 temporal,Spring Wheat,temp_max,annual_mean,-0.0425,0.8589,False,,20.0
 temporal,Silage Maize,temp_max,annual_mean,-0.1198,0.6148,False,,20.0
 temporal,White Potato,temp_max,annual_mean,0.1369,0.5648,False,,20.0
-temporal,Oat,temp_max,annual_mean,-0.1286,0.5889,False,,20.0
+temporal,Oat,temp_max,annual_mean,-0.0602,0.801,False,,20.0
 temporal,Dry Pea,temp_max,annual_mean,-0.185,0.4348,False,,20.0
 temporal,Winter Rape,temp_max,annual_mean,-0.1794,0.4493,False,,20.0
 temporal,Spring Rape,temp_max,annual_mean,-0.1474,0.5352,False,,20.0
-temporal,OVERALL,temp_max,annual_mean,-0.2271,0.3357,False,,20.0
+temporal,OVERALL,temp_max,annual_mean,-0.2195,0.3523,False,,20.0
 temporal,Winter Barley,temp_min,annual_mean,0.1136,0.6335,False,,20.0
 temporal,Spring Barley,temp_min,annual_mean,-0.1235,0.604,False,,20.0
 temporal,Winter Wheat,temp_min,annual_mean,0.1136,0.6335,False,,20.0
 temporal,Spring Wheat,temp_min,annual_mean,-0.1448,0.5424,False,,20.0
 temporal,Silage Maize,temp_min,annual_mean,-0.1487,0.5316,False,,20.0
 temporal,White Potato,temp_min,annual_mean,-0.1264,0.5954,False,,20.0
-temporal,Oat,temp_min,annual_mean,0.0963,0.6864,False,,20.0
+temporal,Oat,temp_min,annual_mean,0.1346,0.5714,False,,20.0
 temporal,Dry Pea,temp_min,annual_mean,-0.3686,0.1098,False,,20.0
 temporal,Winter Rape,temp_min,annual_mean,-0.2065,0.3824,False,,20.0
 temporal,Spring Rape,temp_min,annual_mean,-0.412,0.071,False,,20.0
-temporal,OVERALL,temp_min,annual_mean,-0.0045,0.9849,False,,20.0
+temporal,OVERALL,temp_min,annual_mean,-0.0226,0.9248,False,,20.0
 temporal,Winter Barley,temp_mean,annual_mean,-0.1136,0.6335,False,,20.0
 temporal,Spring Barley,temp_mean,annual_mean,-0.1113,0.6404,False,,20.0
 temporal,Winter Wheat,temp_mean,annual_mean,-0.1136,0.6335,False,,20.0
 temporal,Spring Wheat,temp_mean,annual_mean,-0.1152,0.6285,False,,20.0
 temporal,Silage Maize,temp_mean,annual_mean,-0.1426,0.5487,False,,20.0
 temporal,White Potato,temp_mean,annual_mean,0.0572,0.8107,False,,20.0
-temporal,Oat,temp_mean,annual_mean,-0.0075,0.9749,False,,20.0
+temporal,Oat,temp_mean,annual_mean,0.0647,0.7864,False,,20.0
 temporal,Dry Pea,temp_mean,annual_mean,-0.3308,0.1542,False,,20.0
 temporal,Winter Rape,temp_mean,annual_mean,-0.1989,0.4004,False,,20.0
 temporal,Spring Rape,temp_mean,annual_mean,-0.2511,0.2855,False,,20.0
-temporal,OVERALL,temp_mean,annual_mean,-0.1489,0.531,False,,20.0
+temporal,OVERALL,temp_mean,annual_mean,-0.1549,0.5144,False,,20.0

@@ -222,7 +222,7 @@ im = ax.imshow(mean_grid, cmap='RdBu', vmin=-vmax, vmax=vmax,
 divider = make_axes_locatable(ax)
 cax     = divider.append_axes('right', size='3%', pad=0.1)
 cbar    = plt.colorbar(im, cax=cax)
-cbar.set_label('Mean ΔSuitability (class units)', fontsize=12,
+cbar.set_label('Mean Δsuitability (class units)', fontsize=12,
                fontproperties=fp_reg)
 cbar.ax.tick_params(labelsize=12)
 
@@ -261,8 +261,8 @@ ax.set_xticks(range(n_temp))
 ax.set_xticklabels(temp_labels, fontsize=11)
 ax.set_yticks(range(n_precip))
 ax.set_yticklabels(precip_labels, fontsize=11)
-ax.set_xlabel('Mean Temperature (°C)', fontsize=12, fontproperties=fp_reg)
-ax.set_ylabel('Mean Annual Precipitation (mm)', fontsize=12,
+ax.set_xlabel('Mean temperature (°C)', fontsize=12, fontproperties=fp_reg)
+ax.set_ylabel('Mean annual precipitation (mm)', fontsize=12,
               fontproperties=fp_reg)
 
 # White grid lines between cells

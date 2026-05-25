@@ -1,0 +1,4 @@
+Crop,HA Source,Model,N pixels,Spearman r,Spearman p,TP,FP,FN,TN,Precision,Recall,F1,Accuracy
+White Potato,CROPGRIDS (1999–2018),Permafrost Model,1746,0.3394,0.0,23,3,397,1323,0.8846,0.0548,0.1031,0.7709
+White Potato,CROPGRIDS (1999–2018),No-Thaw Model,1746,0.3267,0.0,20,3,400,1323,0.8696,0.0476,0.0903,0.7692
+White Potato,CROPGRIDS (1999–2018),Original Model,1746,0.2723,0.0,29,10,391,1316,0.7436,0.069,0.1264,0.7703

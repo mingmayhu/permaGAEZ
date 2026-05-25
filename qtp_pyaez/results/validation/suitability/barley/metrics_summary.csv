@@ -1,4 +1,9 @@
-Crop,Model,N pixels,Spearman r,Spearman p,TP,FP,FN,TN,Precision,Recall,F1,Accuracy
-Barley,Permafrost Model,1746,0.1028,0.0,0,19,142,1585,0.0,0.0,0.0,0.9078
-Barley,No-Thaw Model,1746,0.106,0.0,0,18,142,1586,0.0,0.0,0.0,0.9084
-Barley,Original Model,1746,0.1061,0.0,0,41,142,1563,0.0,0.0,0.0,0.8952
+Crop,HA Source,Model,N pixels,Spearman r,Spearman p,TP,FP,FN,TN,Precision,Recall,F1,Accuracy
+Barley,CROPGRIDS (1999–2018),Permafrost Model,1746,0.1028,0.0,0,19,142,1585,0.0,0.0,0.0,0.9078
+Barley,CROPGRIDS (1999–2018),No-Thaw Model,1746,0.106,0.0,0,18,142,1586,0.0,0.0,0.0,0.9084
+Barley,CROPGRIDS (1999–2018),Original Model,1746,0.1061,0.0,0,41,142,1563,0.0,0.0,0.0,0.8952
+Barley,FAO Production (1999–2018),Permafrost Model,1746,0.1741,0.0,10,9,105,1622,0.5263,0.087,0.1493,0.9347
+Barley,FAO Production (1999–2018),No-Thaw Model,1746,0.1609,0.0,11,7,104,1624,0.6111,0.0957,0.1654,0.9364
+Barley,FAO Production (1999–2018),Original Model,1746,0.1543,0.0,8,33,107,1598,0.1951,0.0696,0.1026,0.9198
+Barley,Monfreda (2000) (1979–1998),Permafrost Model,1746,0.2569,0.0,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+Barley,Monfreda (2000) (1979–1998),Original Model,1746,0.2887,0.0,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A

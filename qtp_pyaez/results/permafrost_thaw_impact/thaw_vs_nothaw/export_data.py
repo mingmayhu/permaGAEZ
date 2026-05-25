@@ -4,23 +4,18 @@ Export data for Thaw vs No-Thaw figures
 Sources from analyze_permafrost_impact.py (suitability_score_analysis.py).
 
 Figures this feeds:
-  1. Time series — overall mean suitability and % suitable land,
+  1. Time series — overall mean suitability and suitable land area (km²),
      thaw vs no-thaw, 1979-2018  →  annual_suitability_timeseries.csv
 
   2. Permutation test dot plot — Sen's slope difference with CI,
      per crop + overall  →  already in trend_suit_results.csv
-     (this script just verifies it exists and adds an overall-flagged column)
 
   3. Wilcoxon summary — median delta and % years positive per crop
      →  already in wilcoxon_suit_results.csv
-     (this script just verifies it exists)
 
   4. Spatial TIFs:
-     a. overall_mean_delta_1999_2018.tif  — mean ΔSuitability (Thaw − No-Thaw)
-        averaged across all 10 crops, mean over 1999-2018
-     b. overall_pixel_classification.tif — pixel-wise thaw effect classification
-        (0=sig neg, 1=cons neg, 2=mixed, 3=cons pos, 4=sig pos)
-        mean across all crops (modal class per pixel)
+     a. overall_mean_delta_1999_2018.tif
+     b. overall_pixel_classification.tif
 
 All outputs written to:
   ./results/permafrost_thaw_impact/thaw_vs_nothaw/figure_exports/
@@ -34,22 +29,16 @@ from scipy.stats import wilcoxon as wilcoxon_test
 from osgeo import gdal
 
 # ── Configuration ─────────────────────────────────────────────────────────────
-WORK_DIR  = r'/Users/ming-mayhu/Desktop/毕业论文/qtp-pyaez/qtp_pyaez'
-MASK_PATH = r'./data_input/qilian mask.tif'
+WORK_DIR        = r'/Users/ming-mayhu/Desktop/毕业论文/qtp-pyaez/qtp_pyaez'
+MASK_PATH       = r'./data_input/qilian_mask_new.tif'
 PERMAFROST_PATH = r'./data_input/permafrost_qilian.tif'
+OUT_DIR         = r'./results/permafrost_thaw_impact/thaw_vs_nothaw/figure_exports'
 
-OUT_DIR   = r'./results/permafrost_thaw_impact/thaw_vs_nothaw/figure_exports'
-
-# Existing outputs from suitability_score_analysis.py
 TREND_CSV    = r'./results/permafrost_thaw_impact/thaw_vs_nothaw/outputs/4_trend_40yr/trend_suit_results.csv'
 OVERALL_CSV  = r'./results/permafrost_thaw_impact/thaw_vs_nothaw/outputs/4_trend_40yr/overall_suit_trend_results.csv'
 WILCOXON_CSV = r'./results/permafrost_thaw_impact/thaw_vs_nothaw/outputs/2_wilcoxon/wilcoxon_suit_results.csv'
-
-# Per-crop annual delta TIFs (from analysis 1)
 DELTA_TIF_ROOT = r'./results/permafrost_thaw_impact/thaw_vs_nothaw/outputs/1_delta_maps/tif'
-
-# Pixel-wise classification TIFs (from spatial_analysis.py)
-SPATIAL_ROOT = r'./results/permafrost_thaw_impact/thaw_vs_nothaw/outputs/5_spatial/2_wilcoxon'
+SPATIAL_ROOT   = r'./results/permafrost_thaw_impact/thaw_vs_nothaw/outputs/5_spatial/2_wilcoxon'
 
 YEARS_ALL  = list(range(1979, 2019))
 YEARS_CF   = list(range(1999, 2019))
@@ -110,10 +99,25 @@ def load_mask():
         print(f'  Excluded {lake_mask.sum()} lake/nodata pixels from mask')
     return mask
 
+def build_pixel_area_km2(mask):
+    ds  = gdal.Open(MASK_PATH)
+    gt  = ds.GetGeoTransform()
+    nrows, ncols = mask.shape
+    lats = gt[3] + gt[5] * (np.arange(nrows) + 0.5)
+    pixel_side_km = abs(gt[5]) * 111.32
+    area_2d = np.outer(
+        pixel_side_km * pixel_side_km * np.cos(np.deg2rad(lats)),
+        np.ones(ncols)
+    )
+    area_2d[~mask] = 0.0
+    return area_2d
+
 def obs_path(tag, year):
     return f'./data_output/final_classification_fixed/{tag}/{year}_suitability_class.tif'
 
 def cf_path(tag, year):
+    if tag == 'combined_oat':
+        tag = 'combined_spring_oat_NEW'
     return f'./data_output/final_classification_nothaw_fixed/{tag}/{year}_suitability_class.tif'
 
 def remap_arr(arr_int):
@@ -134,67 +138,65 @@ def regional_mean_suit(arr, mask):
     valid = mask & np.isfinite(arr_r)
     return float(np.nanmean(arr_r[valid])) if valid.any() else np.nan
 
-def regional_pct_ge2(arr, mask):
+def regional_area_ge2_km2(arr, mask, pixel_area_km2):
+    """Sum pixel areas where suitability class >= 2."""
     arr_c = arr.copy()
     arr_c[arr_c < 0] = np.nan
     arr_int = np.clip(
         np.where(np.isfinite(arr_c), arr_c, 0).astype(int), 0, 5)
-    return float(np.mean(arr_int[mask] >= 2) * 100) if mask.any() else np.nan
+    arr_int[arr_int == 0] = 1  # remap class 0 -> 1
+    suitable = mask & (arr_int >= 2)
+    return float(np.sum(pixel_area_km2[suitable]))
 
 
 # ── Export 1: Annual time series CSV ─────────────────────────────────────────
-# The existing trend_suit_results.csv only has MK stats, not the raw annual
-# series. We recompute the annual regional means here.
 
-def export_timeseries(mask):
+def export_timeseries(mask, pixel_area_km2):
     print('\n[1] Exporting annual time series CSV ...')
 
     obs_suit_all, cf_suit_all = [], []
-    obs_pct_all,  cf_pct_all  = [], []
+    obs_area_all, cf_area_all = [], []
 
     for crop in CROPS:
         tag = crop['tag']
-        obs_s, cf_s, obs_p, cf_p = [], [], [], []
+        obs_s, cf_s, obs_a, cf_a = [], [], [], []
 
         for year in YEARS_ALL:
             obs, _ = load_raster(obs_path(tag, year))
-            obs_s.append(regional_mean_suit(obs, mask) if obs is not None else np.nan)
-            obs_p.append(regional_pct_ge2(obs, mask)   if obs is not None else np.nan)
+            obs_s.append(regional_mean_suit(obs, mask)           if obs is not None else np.nan)
+            obs_a.append(regional_area_ge2_km2(obs, mask, pixel_area_km2) if obs is not None else np.nan)
 
             if year < DIVERGENCE:
-                # Pre-divergence: no-thaw = observed (scenarios identical)
                 cf_s.append(obs_s[-1])
-                cf_p.append(obs_p[-1])
+                cf_a.append(obs_a[-1])
             else:
                 cf, _ = load_raster(cf_path(tag, year))
-                cf_s.append(regional_mean_suit(cf, mask) if cf is not None else np.nan)
-                cf_p.append(regional_pct_ge2(cf, mask)   if cf is not None else np.nan)
+                cf_s.append(regional_mean_suit(cf, mask)           if cf is not None else np.nan)
+                cf_a.append(regional_area_ge2_km2(cf, mask, pixel_area_km2) if cf is not None else np.nan)
 
         obs_suit_all.append(np.array(obs_s))
         cf_suit_all.append(np.array(cf_s))
-        obs_pct_all.append(np.array(obs_p))
-        cf_pct_all.append(np.array(cf_p))
+        obs_area_all.append(np.array(obs_a))
+        cf_area_all.append(np.array(cf_a))
         print(f'  {crop["label"]} done')
 
     with warnings.catch_warnings():
         warnings.simplefilter('ignore', RuntimeWarning)
         obs_suit_mean = np.nanmean(obs_suit_all, axis=0)
         cf_suit_mean  = np.nanmean(cf_suit_all,  axis=0)
-        obs_pct_mean  = np.nanmean(obs_pct_all,  axis=0)
-        cf_pct_mean   = np.nanmean(cf_pct_all,   axis=0)
+        obs_area_mean = np.nanmean(obs_area_all, axis=0)
+        cf_area_mean  = np.nanmean(cf_area_all,  axis=0)
 
-    # Overall annual series
     overall_rows = []
     for i, year in enumerate(YEARS_ALL):
         overall_rows.append({
             'year'         : year,
             'obs_mean_suit': float(obs_suit_mean[i]),
             'cf_mean_suit' : float(cf_suit_mean[i]),
-            'obs_pct_ge2'  : float(obs_pct_mean[i]),
-            'cf_pct_ge2'   : float(cf_pct_mean[i]),
+            'obs_area_km2' : float(obs_area_mean[i]),
+            'cf_area_km2'  : float(cf_area_mean[i]),
         })
 
-    # Per-crop annual series
     per_crop_rows = []
     for ci, crop in enumerate(CROPS):
         for i, year in enumerate(YEARS_ALL):
@@ -203,8 +205,8 @@ def export_timeseries(mask):
                 'year'         : year,
                 'obs_mean_suit': float(obs_suit_all[ci][i]),
                 'cf_mean_suit' : float(cf_suit_all[ci][i]),
-                'obs_pct_ge2'  : float(obs_pct_all[ci][i]),
-                'cf_pct_ge2'   : float(cf_pct_all[ci][i]),
+                'obs_area_km2' : float(obs_area_all[ci][i]),
+                'cf_area_km2'  : float(cf_area_all[ci][i]),
             })
 
     pd.DataFrame(overall_rows).to_csv(
@@ -215,7 +217,7 @@ def export_timeseries(mask):
     print(f'  Saved: per_crop_suitability_timeseries.csv')
 
 
-# ── Export 2: Permutation test CSV (verify + merge overall) ──────────────────
+# ── Export 2: Permutation test CSV ───────────────────────────────────────────
 
 def export_permutation(mask):
     print('\n[2] Verifying permutation test CSV ...')
@@ -230,7 +232,6 @@ def export_permutation(mask):
     df_crops   = pd.read_csv(TREND_CSV)
     df_overall = pd.read_csv(OVERALL_CSV)
 
-    # Merge into one file, flagging the overall row
     df_crops['is_overall']   = False
     df_overall['is_overall'] = True
     df_combined = pd.concat([df_crops, df_overall], ignore_index=True)
@@ -239,7 +240,6 @@ def export_permutation(mask):
     df_combined.to_csv(out_path, index=False)
     print(f'  Saved: permutation_slope_diff.csv  ({len(df_combined)} rows)')
 
-    # Quick summary of significant results
     df_perm = df_combined[
         (df_combined['period'] == '1979-2018') &
         (df_combined['metric'] == 'mean_suit')
@@ -248,7 +248,7 @@ def export_permutation(mask):
     print(df_perm.to_string(index=False))
 
 
-# ── Export 3: Wilcoxon CSV (verify) ──────────────────────────────────────────
+# ── Export 3: Wilcoxon CSV ────────────────────────────────────────────────────
 
 def export_wilcoxon():
     print('\n[3] Verifying Wilcoxon CSV ...')
@@ -271,8 +271,8 @@ def export_wilcoxon():
 def export_mean_delta_tif(mask):
     print('\n[4a] Exporting overall mean delta TIF (1999-2018) ...')
 
-    geo_info    = None
-    crop_means  = []
+    geo_info   = None
+    crop_means = []
 
     for crop in CROPS:
         tag = crop['tag']
@@ -320,27 +320,15 @@ def export_mean_delta_tif(mask):
 
 
 # ── Export 4b: Overall pixel-wise classification TIF ─────────────────────────
-# The spatial_analysis.py script saves per-crop classification TIFs.
-# Here we compute the modal (most common) class across all crops per pixel,
-# which gives the overall pixel-wise thaw effect classification.
-#
-# Classification codes (matching spatial_analysis.py):
-#   0 = significantly negative
-#   1 = consistently negative
-#   2 = mixed / no effect
-#   3 = consistently positive
-#   4 = significantly positive
 
 def export_classification_tif(mask):
     print('\n[4b] Exporting overall pixel-wise classification TIF ...')
 
-    geo_info      = None
+    geo_info          = None
     crop_class_arrays = []
 
     for crop in CROPS:
-        tag = crop['tag']
-        # spatial_analysis.py saves classification as:
-        # {SPATIAL_ROOT}/{tag}_pixel_classification.tif
+        tag        = crop['tag']
         class_path = f'{SPATIAL_ROOT}/{tag}_classification.tif'
 
         if not os.path.exists(class_path):
@@ -361,10 +349,7 @@ def export_classification_tif(mask):
         print('  ERROR: no classification TIFs found — run spatial_analysis.py first')
         return
 
-    # Modal class across crops per pixel
-    stack = np.stack(crop_class_arrays, axis=0)  # (n_crops, rows, cols)
-
-    # For each pixel count occurrences of each class (0-4) and take the mode
+    stack = np.stack(crop_class_arrays, axis=0)
     n_classes = 5
     rows, cols = mask.shape
     modal_class = np.full((rows, cols), np.nan)
@@ -386,7 +371,6 @@ def export_classification_tif(mask):
     save_raster(out_path, modal_class, geo_info)
     print(f'  Saved: overall_pixel_classification.tif')
 
-    # Summary of class distribution
     labels = {0: 'Sig negative', 1: 'Cons negative', 2: 'Mixed/none',
               3: 'Cons positive', 4: 'Sig positive'}
     valid_cls = modal_class[mask & np.isfinite(modal_class)].astype(int)
@@ -401,12 +385,13 @@ def export_classification_tif(mask):
 
 if __name__ == '__main__':
     print('Loading mask ...')
-    mask = load_mask()
+    mask           = load_mask()
+    pixel_area_km2 = build_pixel_area_km2(mask)
 
-    # export_timeseries(mask)
-    # export_permutation(mask)
-    # export_wilcoxon()
-    # export_mean_delta_tif(mask)
+    export_timeseries(mask, pixel_area_km2)
+    export_permutation(mask)
+    export_wilcoxon()
+    export_mean_delta_tif(mask)
     export_classification_tif(mask)
 
     print(f'\nAll exports saved to: {OUT_DIR}/')

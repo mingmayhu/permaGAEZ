@@ -10,7 +10,7 @@ Lake pixels excluded via permafrost_qilian.tif.
 Analyses:
   1. Difference maps — observed minus FAO original per crop and overall
   2. Regional mean comparison — time series of mean suitability and
-     % suitable land for both scenarios (1979-2018)
+     suitable land area (km²) for both scenarios (1979-2018)
   3. Suitability class transition matrix — how pixels shift between
      the two methodologies
 
@@ -36,8 +36,8 @@ MASK_PATH       = r'./data_input/qilian mask.tif'
 PERMAFROST_PATH = r'./data_input/permafrost_qilian.tif'
 OUT_ROOT        = r'./results/permafrost_thaw_impact/permafrost_vs_fao/outputs'
 
-YEARS_ALL = list(range(1979, 2019))
-YEARS_PRE = list(range(1979, 1999))
+YEARS_ALL  = list(range(1979, 2019))
+YEARS_PRE  = list(range(1979, 1999))
 YEARS_POST = list(range(1999, 2019))
 
 CROPS = [
@@ -66,7 +66,6 @@ for sub in ['1_diff_maps', '2_time_series', '3_transition']:
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
 def remap(arr_int):
-    """Combine class 0 into class 1. Returns array with values in 1-5."""
     out = arr_int.copy()
     out[out == 0] = 1
     return out
@@ -99,13 +98,25 @@ def save_raster(path, arr, geo_info):
 def load_mask():
     arr, _ = load_raster(MASK_PATH)
     mask = arr.astype(bool)
-    # Exclude lake pixels (nodata or 0 in the permafrost map)
     pf_arr, _ = load_raster(PERMAFROST_PATH)
     if pf_arr is not None:
         lake_mask = ((pf_arr == 0) | ~np.isfinite(pf_arr)) & mask
         mask[lake_mask] = False
         print(f'  Excluded {lake_mask.sum()} lake/nodata pixels from mask')
     return mask
+
+def build_pixel_area_km2(mask):
+    ds  = gdal.Open(MASK_PATH)
+    gt  = ds.GetGeoTransform()
+    nrows, ncols = mask.shape
+    lats = gt[3] + gt[5] * (np.arange(nrows) + 0.5)
+    pixel_side_km = abs(gt[5]) * 111.32
+    area_2d = np.outer(
+        pixel_side_km * pixel_side_km * np.cos(np.deg2rad(lats)),
+        np.ones(ncols)
+    )
+    area_2d[~mask] = 0.0
+    return area_2d
 
 def obs_path(tag, year):
     return f'./data_output/final_classification_fixed/{tag}/{year}_suitability_class.tif'
@@ -114,7 +125,6 @@ def fao_path(tag, year):
     return f'./data_output/original/final_classification_fixed/{tag}/{year}_suitability_class.tif'
 
 def apply_remap(arr, mask):
-    """Apply mask and remap class 0 to 1. Returns float array."""
     arr_c = arr.copy()
     arr_c[arr_c < 0] = np.nan
     arr_c[~mask] = np.nan
@@ -125,21 +135,19 @@ def apply_remap(arr, mask):
     )
 
 def regional_mean_suit(arr, mask):
-    """Mean suitability over all mask pixels (remapped, range 1-5)."""
     arr_r = apply_remap(arr, mask)
     valid = mask & np.isfinite(arr_r)
     return float(np.nanmean(arr_r[valid])) if valid.any() else np.nan
 
-def regional_pct_ge2(arr, mask):
-    """% of mask pixels with class >= 2."""
+def regional_area_ge2_km2(arr, mask, pixel_area_km2):
+    """Sum pixel areas where suitability class >= 2."""
     arr_c = arr.copy()
     arr_c[arr_c < 0] = np.nan
     arr_int = np.where(np.isfinite(arr_c),
-                       np.where(np.isfinite(arr_c), arr_c, 0).astype(int), 0)
-    arr_int = np.clip(arr_int, 0, 5)
-    if not mask.any():
-        return np.nan
-    return float(np.mean(arr_int[mask] >= 2) * 100)
+                       np.clip(np.where(np.isfinite(arr_c), arr_c, 0).astype(int), 0, 5), 0)
+    arr_int[arr_int == 0] = 1  # remap class 0 -> 1
+    suitable = mask & (arr_int >= 2)
+    return float(np.sum(pixel_area_km2[suitable]))
 
 def run_mk(series):
     s = np.array(series, dtype=float)
@@ -150,8 +158,23 @@ def run_mk(series):
     line = np.full(len(s), np.nan)
     line[valid] = mk.intercept + mk.slope * np.arange(valid.sum())
     return {'tau': round(mk.Tau, 3), 'p': round(mk.p, 4),
-            'slope': round(mk.slope, 6), 'significant': mk.p < 0.05,
-            'sen_line': line}
+            'slope': round(mk.slope, 6), 'intercept': mk.intercept,
+            'significant': mk.p < 0.05, 'sen_line': line}
+
+def bootstrap_sen_ci(series, n_boot=1000, ci=95):
+    s         = np.array(series, dtype=float)
+    valid_idx = np.where(np.isfinite(s))[0]
+    if len(valid_idx) < 4:
+        return (np.nan, np.nan)
+    s_valid = s[valid_idx]
+    slopes  = []
+    rng     = np.random.default_rng(42)
+    for _ in range(n_boot):
+        idx = np.sort(rng.choice(len(s_valid), size=len(s_valid), replace=True))
+        slopes.append(mk_test(s_valid[idx]).slope)
+    lo = np.percentile(slopes, (100 - ci) / 2)
+    hi = np.percentile(slopes, 100 - (100 - ci) / 2)
+    return (lo, hi)
 
 def plot_map(arr, mask, title, cmap, vmin, vmax, out_path,
              cbar_label='', vcenter=None):
@@ -209,7 +232,6 @@ def analysis_diff_maps(mask):
         tag, label = crop['tag'], crop['label']
         print(f'  {label}')
 
-        # Mean over post period for each scenario
         obs_stack, fao_stack = [], []
         for year in YEARS_POST:
             obs, gi = load_raster(obs_path(tag, year))
@@ -237,7 +259,6 @@ def analysis_diff_maps(mask):
         mean_diffs.append(diff)
         labels.append(label)
 
-        # Save GeoTIFF
         save_raster(f'{out_dir}/{tag}_diff.tif',
                     np.where(np.isfinite(diff), diff, -9999.0), geo_info)
 
@@ -246,7 +267,6 @@ def analysis_diff_maps(mask):
         print(f'    {pos_pct:.1f}% pixels obs > FAO, '
               f'{neg_pct:.1f}% pixels obs < FAO')
 
-    # Overall aggregate
     with warnings.catch_warnings():
         warnings.simplefilter('ignore', RuntimeWarning)
         overall_diff = np.nanmean(np.stack(mean_diffs), axis=0)
@@ -257,21 +277,18 @@ def analysis_diff_maps(mask):
                 np.where(np.isfinite(overall_diff), overall_diff, -9999.0),
                 geo_info)
 
-    # Colour scale
     all_vals = np.concatenate([d[mask & np.isfinite(d)] for d in mean_diffs])
     vlim = max(float(np.nanpercentile(np.abs(all_vals), 98)), 1e-4)
 
-    # Panel
     plot_panel(
         mean_diffs, labels, mask,
-        suptitle=f'Mean Suitability Difference (Observed minus FAO Original)\n'
-                 f'1999-2018 | Blue = obs higher, Red = FAO higher',
+        suptitle='Mean Suitability Difference (Observed minus FAO Original)\n'
+                 '1999-2018 | Blue = obs higher, Red = FAO higher',
         cmap='RdBu', vmin=-vlim, vmax=vlim, vcenter=0,
         cbar_label='delta Class',
         out_path=f'{out_dir}/diff_panel.png', ncols=4
     )
 
-    # Standalone overall
     plot_map(
         overall_diff, mask,
         title='Overall Mean Suitability Difference\n(Observed minus FAO Original, 1999-2018)',
@@ -289,44 +306,44 @@ def analysis_diff_maps(mask):
 
 # ── Analysis 2: Regional mean time series comparison ──────────────────────────
 
-def analysis_time_series(mask):
+def analysis_time_series(mask, pixel_area_km2):
     print('\n[Analysis 2] Regional mean time series comparison ...')
     out_dir   = f'{OUT_ROOT}/2_time_series'
     years_arr = np.array(YEARS_ALL)
     mk_results = []
 
     obs_mean_all, fao_mean_all = [], []
-    obs_ge2_all,  fao_ge2_all  = [], []
+    obs_area_all, fao_area_all = [], []
 
     for crop in CROPS:
         tag, label = crop['tag'], crop['label']
         print(f'  {label}')
 
         obs_mean_s, fao_mean_s = [], []
-        obs_ge2_s,  fao_ge2_s  = [], []
+        obs_area_s, fao_area_s = [], []
 
         for year in YEARS_ALL:
             obs, _ = load_raster(obs_path(tag, year))
             fao, _ = load_raster(fao_path(tag, year))
             obs_mean_s.append(regional_mean_suit(obs, mask) if obs is not None else np.nan)
             fao_mean_s.append(regional_mean_suit(fao, mask) if fao is not None else np.nan)
-            obs_ge2_s.append(regional_pct_ge2(obs, mask) if obs is not None else np.nan)
-            fao_ge2_s.append(regional_pct_ge2(fao, mask) if fao is not None else np.nan)
+            obs_area_s.append(regional_area_ge2_km2(obs, mask, pixel_area_km2) if obs is not None else np.nan)
+            fao_area_s.append(regional_area_ge2_km2(fao, mask, pixel_area_km2) if fao is not None else np.nan)
 
         obs_mean_s = np.array(obs_mean_s)
         fao_mean_s = np.array(fao_mean_s)
-        obs_ge2_s  = np.array(obs_ge2_s)
-        fao_ge2_s  = np.array(fao_ge2_s)
+        obs_area_s = np.array(obs_area_s)
+        fao_area_s = np.array(fao_area_s)
 
         obs_mean_all.append(obs_mean_s)
         fao_mean_all.append(fao_mean_s)
-        obs_ge2_all.append(obs_ge2_s)
-        fao_ge2_all.append(fao_ge2_s)
+        obs_area_all.append(obs_area_s)
+        fao_area_all.append(fao_area_s)
 
-        # MK trends
-        for scenario, ms, ge2 in [('obs', obs_mean_s, obs_ge2_s),
-                                   ('fao', fao_mean_s, fao_ge2_s)]:
-            for metric, series in [('mean_suit', ms), ('pct_ge2', ge2)]:
+        # Per-crop MK trends
+        for scenario, ms, area in [('obs', obs_mean_s, obs_area_s),
+                                    ('fao', fao_mean_s, fao_area_s)]:
+            for metric, series in [('mean_suit', ms), ('area_ge2_km2', area)]:
                 mk = run_mk(series)
                 if mk:
                     mk_results.append({
@@ -334,6 +351,7 @@ def analysis_time_series(mask):
                         'metric': metric, 'tau': mk['tau'],
                         'p': mk['p'], 'slope': mk['slope'],
                         'significant': mk['significant'],
+                        'ci_lo': np.nan, 'ci_hi': np.nan,
                     })
 
         # Per-crop 2-panel time series
@@ -341,8 +359,8 @@ def analysis_time_series(mask):
         for ax, obs_s, fao_s, ylabel, title in [
             (axes[0], obs_mean_s, fao_mean_s,
              'Mean Suitability Score (1-5)', 'Mean Suitability'),
-            (axes[1], obs_ge2_s,  fao_ge2_s,
-             '% Pixels with Class >= 2',    '% Suitable Land'),
+            (axes[1], obs_area_s, fao_area_s,
+             'Suitable Land Area (km²)',     'Suitable Land Area (class ≥ 2)'),
         ]:
             ax.plot(years_arr, obs_s, color='#2166AC', linewidth=2,
                     marker='o', markersize=3, label='Observed (permafrost)')
@@ -354,19 +372,16 @@ def analysis_time_series(mask):
                     color=np.where(diff_s >= 0, '#92C5DE', '#F4A582'),
                     alpha=0.4, width=0.8)
             ax2.axhline(0, color='grey', linewidth=0.5)
-            ax2.set_ylabel('Difference (Obs minus FAO)', fontsize=9,
-                           color='grey')
+            ax2.set_ylabel('Difference (Obs minus FAO)', fontsize=9, color='grey')
             ax2.tick_params(axis='y', labelsize=8, colors='grey')
             ax.set_xlabel('Year', fontsize=10)
             ax.set_ylabel(ylabel, fontsize=10)
             ax.set_title(f'{label} — {title}', fontsize=11, fontweight='bold')
             ax.legend(fontsize=8, loc='upper left')
             ax.set_xticks(years_arr[::4])
-            ax.set_xticklabels(years_arr[::4], rotation=45,
-                               ha='right', fontsize=8)
+            ax.set_xticklabels(years_arr[::4], rotation=45, ha='right', fontsize=8)
         plt.tight_layout()
-        fig.savefig(f'{out_dir}/{tag}_comparison.png',
-                    dpi=150, bbox_inches='tight')
+        fig.savefig(f'{out_dir}/{tag}_comparison.png', dpi=150, bbox_inches='tight')
         plt.close()
 
     # Overall aggregate
@@ -374,51 +389,70 @@ def analysis_time_series(mask):
         warnings.simplefilter('ignore', RuntimeWarning)
         obs_mean_agg = np.nanmean(obs_mean_all, axis=0)
         fao_mean_agg = np.nanmean(fao_mean_all, axis=0)
-        obs_ge2_agg  = np.nanmean(obs_ge2_all,  axis=0)
-        fao_ge2_agg  = np.nanmean(fao_ge2_all,  axis=0)
+        obs_area_agg = np.nanmean(obs_area_all, axis=0)
+        fao_area_agg = np.nanmean(fao_area_all, axis=0)
 
-    # Overall MK trends
-    for scenario, ms, ge2 in [('obs', obs_mean_agg, obs_ge2_agg),
-                               ('fao', fao_mean_agg, fao_ge2_agg)]:
-        for metric, series in [('mean_suit', ms), ('pct_ge2', ge2)]:
-            mk = run_mk(series)
+    # Overall MK + bootstrap CI
+    print('  Bootstrapping overall Sen slope CIs ...')
+    mk_obs_ms = run_mk(obs_mean_agg)
+    mk_fao_ms = run_mk(fao_mean_agg)
+    mk_obs_ar = run_mk(obs_area_agg)
+    mk_fao_ar = run_mk(fao_area_agg)
+
+    ci_obs_ms = bootstrap_sen_ci(obs_mean_agg)
+    ci_fao_ms = bootstrap_sen_ci(fao_mean_agg)
+    ci_obs_ar = bootstrap_sen_ci(obs_area_agg)
+    ci_fao_ar = bootstrap_sen_ci(fao_area_agg)
+
+    for scenario, mk_ms, mk_ar, ci_ms, ci_ar in [
+        ('obs', mk_obs_ms, mk_obs_ar, ci_obs_ms, ci_obs_ar),
+        ('fao', mk_fao_ms, mk_fao_ar, ci_fao_ms, ci_fao_ar),
+    ]:
+        for metric, mk, ci in [('mean_suit', mk_ms, ci_ms),
+                                ('area_ge2_km2', mk_ar, ci_ar)]:
             if mk:
                 mk_results.append({
                     'crop': 'OVERALL', 'scenario': scenario,
                     'metric': metric, 'tau': mk['tau'],
                     'p': mk['p'], 'slope': mk['slope'],
                     'significant': mk['significant'],
+                    'ci_lo': ci[0], 'ci_hi': ci[1],
                 })
 
-    # Overall 2-panel figure
+    # Overall 2-panel figure with CI bands
     fig, axes = plt.subplots(1, 2, figsize=(16, 6))
-    mk_obs_ms = run_mk(obs_mean_agg)
-    mk_fao_ms = run_mk(fao_mean_agg)
-    mk_obs_g2 = run_mk(obs_ge2_agg)
-    mk_fao_g2 = run_mk(fao_ge2_agg)
 
-    for ax, obs_s, fao_s, mk_obs, mk_fao, ylabel, title in [
+    for ax, obs_s, fao_s, mk_obs, mk_fao, ci_obs, ci_fao, ylabel, title in [
         (axes[0], obs_mean_agg, fao_mean_agg, mk_obs_ms, mk_fao_ms,
+         ci_obs_ms, ci_fao_ms,
          'Mean Suitability Score (1-5)', 'Overall Mean Suitability'),
-        (axes[1], obs_ge2_agg,  fao_ge2_agg,  mk_obs_g2, mk_fao_g2,
-         '% Pixels with Class >= 2',    'Overall % Suitable Land'),
+        (axes[1], obs_area_agg, fao_area_agg, mk_obs_ar, mk_fao_ar,
+         ci_obs_ar, ci_fao_ar,
+         'Suitable Land Area (km²)', 'Overall Suitable Land Area (class ≥ 2)'),
     ]:
         ax.plot(years_arr, obs_s, color='#2166AC', linewidth=2.5,
                 marker='o', markersize=4, label='Observed (permafrost)')
         ax.plot(years_arr, fao_s, color='#D6604D', linewidth=2.5,
                 marker='s', markersize=4, linestyle='--', label='FAO Original')
-        if mk_obs:
-            sig = '*' if mk_obs['significant'] else ''
-            ax.plot(years_arr, mk_obs['sen_line'], color='#2166AC',
-                    linewidth=1.5, linestyle=':',
-                    label=f"Obs slope: {mk_obs['slope']:.5f}/yr (p={mk_obs['p']:.3f}){sig}")
-        if mk_fao:
-            sig = '*' if mk_fao['significant'] else ''
-            ax.plot(years_arr, mk_fao['sen_line'], color='#D6604D',
-                    linewidth=1.5, linestyle=':',
-                    label=f"FAO slope: {mk_fao['slope']:.5f}/yr (p={mk_fao['p']:.3f}){sig}")
 
-        # Shaded difference
+        for mk, ci, color in [(mk_obs, ci_obs, '#2166AC'),
+                              (mk_fao, ci_fao, '#D6604D')]:
+            if mk:
+                sig = '*' if mk['significant'] else ''
+                ax.plot(years_arr, mk['sen_line'], color=color,
+                        linewidth=1.5, linestyle=':',
+                        label=f"{'Obs' if color == '#2166AC' else 'FAO'} slope: "
+                              f"{mk['slope']:.5f}/yr (p={mk['p']:.3f}){sig}")
+                if not np.isnan(ci[0]):
+                    valid = np.isfinite(obs_s if color == '#2166AC' else fao_s)
+                    x_idx = np.arange(valid.sum())
+                    lo_line = np.full(len(years_arr), np.nan)
+                    hi_line = np.full(len(years_arr), np.nan)
+                    lo_line[valid] = mk['intercept'] + ci[0] * x_idx
+                    hi_line[valid] = mk['intercept'] + ci[1] * x_idx
+                    ax.fill_between(years_arr, lo_line, hi_line,
+                                    color=color, alpha=0.10)
+
         ax.fill_between(years_arr, obs_s, fao_s,
                         where=obs_s >= fao_s,
                         alpha=0.15, color='#2166AC', label='Obs > FAO')
@@ -442,15 +476,21 @@ def analysis_time_series(mask):
     fig.savefig(f'{out_dir}/overall_comparison.png', dpi=150, bbox_inches='tight')
     plt.close()
 
-    # Save MK results
-    pd.DataFrame(mk_results).to_csv(f'{out_dir}/mk_comparison_results.csv',
-                                    index=False)
-    print('  Overall obs mean_suit slope: '
-          f'{mk_obs_ms["slope"]:.5f} (p={mk_obs_ms["p"]:.4f})'
-          if mk_obs_ms else '  No MK result for obs mean_suit')
-    print('  Overall FAO mean_suit slope: '
-          f'{mk_fao_ms["slope"]:.5f} (p={mk_fao_ms["p"]:.4f})'
-          if mk_fao_ms else '  No MK result for FAO mean_suit')
+    # Save MK results with CI columns
+    pd.DataFrame(mk_results).to_csv(f'{out_dir}/mk_comparison_results.csv', index=False)
+
+    print(f'  Obs mean_suit:  slope={mk_obs_ms["slope"]:.5f} '
+          f'95% CI=[{ci_obs_ms[0]:.6f}, {ci_obs_ms[1]:.6f}] '
+          f'p={mk_obs_ms["p"]:.4f}' if mk_obs_ms else '  No MK for obs mean_suit')
+    print(f'  FAO mean_suit:  slope={mk_fao_ms["slope"]:.5f} '
+          f'95% CI=[{ci_fao_ms[0]:.6f}, {ci_fao_ms[1]:.6f}] '
+          f'p={mk_fao_ms["p"]:.4f}' if mk_fao_ms else '  No MK for FAO mean_suit')
+    print(f'  Obs area km²:   slope={mk_obs_ar["slope"]:.3f} '
+          f'95% CI=[{ci_obs_ar[0]:.3f}, {ci_obs_ar[1]:.3f}] '
+          f'p={mk_obs_ar["p"]:.4f}' if mk_obs_ar else '  No MK for obs area')
+    print(f'  FAO area km²:   slope={mk_fao_ar["slope"]:.3f} '
+          f'95% CI=[{ci_fao_ar[0]:.3f}, {ci_fao_ar[1]:.3f}] '
+          f'p={mk_fao_ar["p"]:.4f}' if mk_fao_ar else '  No MK for FAO area')
     print('  Time series comparison saved.')
 
 
@@ -460,7 +500,6 @@ def analysis_transition(mask):
     print('\n[Analysis 3] Class transition matrix ...')
     out_dir = f'{OUT_ROOT}/3_transition'
 
-    # Use post-period mean class per pixel for each scenario
     obs_stacks, fao_stacks = {}, {}
     for crop in CROPS:
         tag = crop['tag']
@@ -484,19 +523,16 @@ def analysis_transition(mask):
         obs_arr = obs_stacks[label]
         fao_arr = fao_stacks[label]
 
-        # Round to nearest integer class
         obs_cls = np.where(mask & np.isfinite(obs_arr),
                            np.clip(np.round(obs_arr).astype(int), 1, 5), -1)
         fao_cls = np.where(mask & np.isfinite(fao_arr),
                            np.clip(np.round(fao_arr).astype(int), 1, 5), -1)
 
-        # Build 5x5 transition matrix
         matrix = np.zeros((5, 5), dtype=int)
         valid = mask & (obs_cls > 0) & (fao_cls > 0)
         for r, c in zip(fao_cls[valid], obs_cls[valid]):
             matrix[r-1, c-1] += 1
 
-        # Per-crop transition heatmap
         fig, ax = plt.subplots(figsize=(7, 6))
         im = ax.imshow(matrix, cmap='Blues', aspect='auto')
         plt.colorbar(im, ax=ax, label='Pixel count')
@@ -516,7 +552,6 @@ def analysis_transition(mask):
         ax.set_title(f'{label} — Class Transition Matrix\n'
                      f'(FAO row vs Observed column, mean 1999-2018)',
                      fontsize=11, fontweight='bold')
-        # Add diagonal line
         for i in range(5):
             ax.add_patch(plt.Rectangle((i-0.5, i-0.5), 1, 1,
                          fill=False, edgecolor='red', linewidth=1.5))
@@ -525,9 +560,8 @@ def analysis_transition(mask):
                     dpi=150, bbox_inches='tight')
         plt.close()
 
-        # Record summary stats
-        n_total   = int(valid.sum())
-        n_agree   = int(np.sum(obs_cls[valid] == fao_cls[valid]))
+        n_total      = int(valid.sum())
+        n_agree      = int(np.sum(obs_cls[valid] == fao_cls[valid]))
         n_obs_higher = int(np.sum(obs_cls[valid] > fao_cls[valid]))
         n_fao_higher = int(np.sum(obs_cls[valid] < fao_cls[valid]))
         all_results.append({
@@ -538,7 +572,6 @@ def analysis_transition(mask):
             'pct_fao_higher': round(100 * n_fao_higher / n_total, 1) if n_total else np.nan,
         })
 
-    # Overall transition (aggregate across crops)
     with warnings.catch_warnings():
         warnings.simplefilter('ignore', RuntimeWarning)
         obs_overall = np.nanmean(np.stack(list(obs_stacks.values())), axis=0)
@@ -601,7 +634,6 @@ def analysis_transition(mask):
 # ── Analysis 4: Permafrost drivers of methodology difference ──────────────────
 
 def analysis_perm_drivers(mask):
-    """Correlate the obs-FAO suitability difference with ALT and soil moisture."""
     print('\n[Analysis 4] Permafrost drivers of methodology difference ...')
     out_dir  = f'{OUT_ROOT}/4_perm_drivers'
     os.makedirs(out_dir, exist_ok=True)
@@ -617,7 +649,6 @@ def analysis_perm_drivers(mask):
          'label': 'Available Soil Moisture', 'agg': 'mean'},
     ]
 
-    # Load permafrost mean and change
     perm_data = {}
     for pv in PERM_VARS:
         stack, target = [], mask.shape
@@ -647,7 +678,6 @@ def analysis_perm_drivers(mask):
         }
         print(f'  {pv["name"]}: mean [{np.nanmin(mean_post):.3f}, {np.nanmax(mean_post):.3f}]')
 
-    # Load diff rasters
     diff_dir = f'{OUT_ROOT}/1_diff_maps'
     diff_arrays = {}
     for crop in CROPS:
@@ -665,7 +695,7 @@ def analysis_perm_drivers(mask):
     all_results = []
 
     for pv in PERM_VARS:
-        pname  = pv['name']
+        pname = pv['name']
         for metric, perm_arr, metric_label in [
             ('mean',   perm_data[pname]['mean_post'], f'Mean {perm_data[pname]["label"]} (1999-2018)'),
             ('change', perm_data[pname]['change'],    f'Delta {perm_data[pname]["label"]} (post minus pre)'),
@@ -707,11 +737,10 @@ def analysis_perm_drivers(mask):
     df = pd.DataFrame(all_results)
     df.to_csv(f'{out_dir}/driver_correlation_results.csv', index=False)
 
-    # Heatmaps
     crops_list = [c for c in df['crop'].unique() if c != 'OVERALL'] + ['OVERALL']
     perm_vs    = list(df['perm_var'].unique())
     for metric in ['mean', 'change']:
-        df_m = df[df['metric'] == metric]
+        df_m  = df[df['metric'] == metric]
         r_mat = pd.DataFrame(index=crops_list, columns=perm_vs, dtype=float)
         p_mat = pd.DataFrame(index=crops_list, columns=perm_vs, dtype=float)
         for _, row in df_m.iterrows():
@@ -745,13 +774,12 @@ def analysis_perm_drivers(mask):
         plt.close()
         print(f'  Saved driver heatmap ({metric})')
 
-    # Overall 2x2 scatter
     overall = diff_arrays['OVERALL'][mask]
     panels  = [
-        ('ALT',           'mean',   'Mean Active Layer Depth (m)',    'Mean (1999-2018)'),
-        ('soil_moisture', 'mean',   'Mean Available Soil Moisture',   'Mean (1999-2018)'),
-        ('ALT',           'change', 'Active Layer Depth Change (m)',  'Change (post minus pre)'),
-        ('soil_moisture', 'change', 'Soil Moisture Change',           'Change (post minus pre)'),
+        ('ALT',           'mean',   'Mean Active Layer Depth (m)',   'Mean (1999-2018)'),
+        ('soil_moisture', 'mean',   'Mean Available Soil Moisture',  'Mean (1999-2018)'),
+        ('ALT',           'change', 'Active Layer Depth Change (m)', 'Change (post minus pre)'),
+        ('soil_moisture', 'change', 'Soil Moisture Change',          'Change (post minus pre)'),
     ]
     fig, axes = plt.subplots(2, 2, figsize=(12, 10))
     axes = axes.flatten()
@@ -764,6 +792,7 @@ def analysis_perm_drivers(mask):
         xv, yv = x[valid], y[valid]
         r, p = spearmanr(xv, yv)
         sig = '*' if p < 0.05 else ''
+        from matplotlib.colors import TwoSlopeNorm as TSN
         norm = TSN(vmin=-vlim, vcenter=0, vmax=vlim)
         sc = ax.scatter(xv, yv, c=yv, cmap='RdBu', norm=norm, alpha=0.5, s=12, zorder=3)
         plt.colorbar(sc, ax=ax, shrink=0.75, label='Obs minus FAO')
@@ -793,11 +822,12 @@ def analysis_perm_drivers(mask):
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 if __name__ == '__main__':
-    mask = load_mask()
+    mask           = load_mask()
+    pixel_area_km2 = build_pixel_area_km2(mask)
 
-    analysis_diff_maps(mask)
-    analysis_time_series(mask)
-    analysis_transition(mask)
-    analysis_perm_drivers(mask)
+    # analysis_diff_maps(mask)
+    analysis_time_series(mask, pixel_area_km2)
+    # analysis_transition(mask)
+    # analysis_perm_drivers(mask)
 
     print(f'\nAll FAO comparison outputs saved to: {OUT_ROOT}/')

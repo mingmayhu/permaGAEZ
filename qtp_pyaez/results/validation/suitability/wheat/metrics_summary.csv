@@ -1,4 +1,9 @@
-Crop,Model,N pixels,Spearman r,Spearman p,TP,FP,FN,TN,Precision,Recall,F1,Accuracy
-Wheat,Permafrost Model,1746,-0.0154,0.5215,0,19,4,1723,0.0,0.0,0.0,0.9868
-Wheat,No-Thaw Model,1746,-0.0161,0.501,0,18,4,1724,0.0,0.0,0.0,0.9874
-Wheat,Original Model,1746,-0.0177,0.4606,0,43,4,1699,0.0,0.0,0.0,0.9731
+Crop,HA Source,Model,N pixels,Spearman r,Spearman p,TP,FP,FN,TN,Precision,Recall,F1,Accuracy
+Wheat,CROPGRIDS (1999–2018),Permafrost Model,1746,-0.0154,0.5215,0,19,4,1723,0.0,0.0,0.0,0.9868
+Wheat,CROPGRIDS (1999–2018),No-Thaw Model,1746,-0.0161,0.501,0,18,4,1724,0.0,0.0,0.0,0.9874
+Wheat,CROPGRIDS (1999–2018),Original Model,1746,-0.0177,0.4606,0,43,4,1699,0.0,0.0,0.0,0.9731
+Wheat,FAO Production (1999–2018),Permafrost Model,1746,0.1524,0.0,10,9,90,1637,0.5263,0.1,0.1681,0.9433
+Wheat,FAO Production (1999–2018),No-Thaw Model,1746,0.1338,0.0,11,7,89,1639,0.6111,0.11,0.1864,0.945
+Wheat,FAO Production (1999–2018),Original Model,1746,0.1313,0.0,10,33,90,1613,0.2326,0.1,0.1399,0.9296
+Wheat,Monfreda (2000) (1979–1998),Permafrost Model,1746,0.2224,0.0,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+Wheat,Monfreda (2000) (1979–1998),Original Model,1746,0.2376,0.0,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A

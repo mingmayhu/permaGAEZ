@@ -10,9 +10,10 @@ Analyses:
      — is Thaw suitability consistently above counterfactual?
   3. Mann-Kendall trend test on regional mean ΔSuitability (1999–2018)
      — is thaw's contribution growing over time?
-  4. 40-year trend analysis on mean suitability score and % suitable (>=2)
+  4. 40-year trend analysis on mean suitability score and suitable area (km²)
      — classes 0 and 1 combined into class 1, range 1-5
      — includes bootstrap slope difference test
+     — bootstrap 95% CI on overall aggregate slopes
 
 Outputs written to: ./results/permafrost_thaw_impact/thaw_vs_nothaw/outputs/
 """
@@ -60,7 +61,6 @@ for sub in ['1_delta_maps', '2_wilcoxon', '3_mk_delta', '4_trend_40yr']:
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
 def remap(arr_int):
-    """Combine class 0 into class 1. Returns array with values in 1-5."""
     out = arr_int.copy()
     out[out == 0] = 1
     return out
@@ -95,7 +95,6 @@ PERMAFROST_PATH = r'./data_input/permafrost_qilian.tif'
 def load_mask():
     arr, _ = load_raster(MASK_PATH)
     mask = arr.astype(bool)
-    # Exclude lake pixels (nodata or 0 in the permafrost map)
     pf_arr, _ = load_raster(PERMAFROST_PATH)
     if pf_arr is not None:
         lake_mask = ((pf_arr == 0) | ~np.isfinite(pf_arr)) & mask
@@ -103,16 +102,28 @@ def load_mask():
         print(f'  Excluded {lake_mask.sum()} lake/nodata pixels from mask')
     return mask
 
+def build_pixel_area_km2(mask):
+    ds  = gdal.Open(MASK_PATH)
+    gt  = ds.GetGeoTransform()
+    nrows, ncols = mask.shape
+    lats = gt[3] + gt[5] * (np.arange(nrows) + 0.5)
+    pixel_side_km = abs(gt[5]) * 111.32
+    area_2d = np.outer(
+        pixel_side_km * pixel_side_km * np.cos(np.deg2rad(lats)),
+        np.ones(ncols)
+    )
+    area_2d[~mask] = 0.0
+    return area_2d
+
 def obs_suit_path(tag, year):
     return f'./data_output/final_classification_fixed/{tag}/{year}_suitability_class.tif'
 
 def cf_suit_path(tag, year):
+    if tag == 'combined_oat':
+        tag = 'combined_spring_oat_NEW'
     return f'./data_output/final_classification_nothaw_fixed/{tag}/{year}_suitability_class.tif'
 
 def regional_mean_suit(arr, mask):
-    """Mean suitability across ALL mask pixels.
-    Classes 0 and 1 combined into class 1. Range is 1-5.
-    """
     arr_clean = arr.copy()
     arr_clean[arr_clean < 0] = np.nan
     arr_int = np.where(np.isfinite(arr_clean), arr_clean, np.nan)
@@ -122,19 +133,16 @@ def regional_mean_suit(arr, mask):
     valid = mask & np.isfinite(arr_int)
     return float(np.nanmean(arr_int[valid])) if valid.any() else np.nan
 
-def regional_pct_ge2(arr, mask):
-    """% of ALL mask pixels with class >= 2 (marginally suitable or better).
-    Computed over all mask pixels to capture spatial expansion.
-    """
-    arr_clean = arr.copy()
-    arr_clean[arr_clean < 0] = np.nan
-    arr_int = np.where(np.isfinite(arr_clean),
-                       np.where(np.isfinite(arr_clean), arr_clean, 0).astype(int),
-                       0).astype(int)
-    arr_int = np.clip(arr_int, 0, 5)
-    if not mask.any():
-        return np.nan
-    return float(np.mean(arr_int[mask] >= 2) * 100)
+def regional_area_ge2_km2(arr, mask, pixel_area_km2):
+    """Sum pixel areas where suitability class >= 2."""
+    arr_c = arr.copy()
+    arr_c[arr_c < 0] = np.nan
+    arr_int = np.clip(
+        np.where(np.isfinite(arr_c), arr_c, 0).astype(int), 0, 5
+    )
+    arr_int[arr_int == 0] = 1  # remap class 0 -> 1
+    suitable = mask & (arr_int >= 2)
+    return float(np.sum(pixel_area_km2[suitable]))
 
 def run_mk(series, years):
     s = np.array(series, dtype=float)
@@ -149,29 +157,34 @@ def run_mk(series, years):
         'tau'        : round(mk.Tau, 3),
         'p_value'    : round(mk.p, 4),
         'slope_sen'  : round(mk.slope, 6),
+        'intercept'  : mk.intercept,
         'trend'      : mk.trend,
         'significant': mk.p < 0.05,
         'n_years'    : int(valid.sum()),
         'sen_line'   : line,
     }
 
+def bootstrap_sen_ci(series, n_boot=1000, ci=95):
+    """Bootstrap 95% CI on Sen's slope; returns (lo, hi)."""
+    s         = np.array(series, dtype=float)
+    valid_idx = np.where(np.isfinite(s))[0]
+    if len(valid_idx) < 4:
+        return (np.nan, np.nan)
+    s_valid = s[valid_idx]
+    slopes  = []
+    rng     = np.random.default_rng(42)
+    for _ in range(n_boot):
+        idx = np.sort(rng.choice(len(s_valid), size=len(s_valid), replace=True))
+        slopes.append(mk_test(s_valid[idx]).slope)
+    lo = np.percentile(slopes, (100 - ci) / 2)
+    hi = np.percentile(slopes, 100 - (100 - ci) / 2)
+    return (lo, hi)
+
 def test_slope_difference(obs_s, cf_s, n_iter=1000):
-    """Bootstrap and permutation tests for whether slope difference
-    (obs - CF) is significantly different from zero.
-
-    Bootstrap: resamples years with replacement independently for each series.
-    Permutation: randomly swaps obs/cf labels for each year, preserving
-                 the paired temporal structure.
-
-    Returns dict with keys:
-        boot_mean, boot_ci_lo, boot_ci_hi, boot_p
-        perm_mean, perm_ci_lo, perm_ci_hi, perm_p
-    """
     obs = np.array(obs_s, dtype=float)
     cf  = np.array(cf_s,  dtype=float)
     valid = np.isfinite(obs) & np.isfinite(cf)
     if valid.sum() < 4:
-        nan6 = (np.nan, np.nan, np.nan, np.nan)
         return dict(boot_mean=np.nan, boot_ci_lo=np.nan, boot_ci_hi=np.nan, boot_p=np.nan,
                     perm_mean=np.nan, perm_ci_lo=np.nan, perm_ci_hi=np.nan, perm_p=np.nan)
 
@@ -180,7 +193,6 @@ def test_slope_difference(obs_s, cf_s, n_iter=1000):
     n     = len(obs_v)
     actual_diff = mk_test(obs_v).slope - mk_test(cf_v).slope
 
-    # ── Bootstrap (resample with replacement) ─────────────────────────────────
     boot_diffs = []
     for _ in range(n_iter):
         idx  = np.random.choice(n, size=n, replace=True)
@@ -190,7 +202,6 @@ def test_slope_difference(obs_s, cf_s, n_iter=1000):
     boot_diffs = np.array(boot_diffs)
     boot_p     = float(np.mean(np.abs(boot_diffs) >= np.abs(actual_diff)))
 
-    # ── Permutation (swap obs/cf labels per year) ─────────────────────────────
     perm_diffs = []
     for _ in range(n_iter):
         swap     = np.random.rand(n) > 0.5
@@ -244,7 +255,6 @@ def analysis_delta_maps(mask):
             obs[obs < 0] = np.nan
             cf[cf < 0]   = np.nan
 
-            # Remap class 0 -> 1 before computing delta
             obs_r = np.where(np.isfinite(obs),
                              remap(np.where(np.isfinite(obs), obs, 0).astype(int)).astype(float),
                              np.nan)
@@ -257,13 +267,11 @@ def analysis_delta_maps(mask):
             delta[~mask] = np.nan
             annual_deltas[year] = delta
 
-            # Save GeoTIFF
             out_arr = np.where(np.isfinite(delta), delta, -9999.0)
             crop_tif_dir = f'{tif_dir}/{tag}'
             os.makedirs(crop_tif_dir, exist_ok=True)
             save_raster(f'{crop_tif_dir}/{year}_delta_suit.tif', out_arr, geo_info)
 
-            # Regional mean ΔSuitability (all pixels)
             valid = mask & np.isfinite(delta)
             mean_delta = float(np.nanmean(delta[valid])) if valid.any() else np.nan
             pct_pos    = float(np.nanmean(delta[valid] > 0) * 100) if valid.any() else np.nan
@@ -282,7 +290,6 @@ def analysis_delta_maps(mask):
 
         all_ts.extend(ts_records)
 
-        # Consistent colour scale across all years
         all_vals = np.concatenate([
             d[mask & np.isfinite(d)] for d in annual_deltas.values()
         ])
@@ -290,7 +297,6 @@ def analysis_delta_maps(mask):
         if vlim == 0 or np.isnan(vlim):
             vlim = 0.5
 
-        # Small-multiples panel
         years_sorted = sorted(annual_deltas.keys())
         ncols = 5
         nrows = -(-len(years_sorted) // ncols)
@@ -319,7 +325,6 @@ def analysis_delta_maps(mask):
                     dpi=150, bbox_inches='tight')
         plt.close()
 
-        # Time series bar chart
         ts_df = pd.DataFrame(ts_records).sort_values('year')
         fig2, ax2 = plt.subplots(figsize=(10, 4))
         ax2.bar(ts_df['year'], ts_df['mean_delta'],
@@ -380,7 +385,6 @@ def analysis_wilcoxon(delta_df):
     df = pd.DataFrame(results)
     df.to_csv(f'{out_dir}/wilcoxon_suit_results.csv', index=False)
 
-    # Summary figure
     df_s = df.sort_values('median_delta')
     colors = ['#2166AC' if s else '#AAAAAA' for s in df_s['sig_positive']]
 
@@ -452,7 +456,6 @@ def analysis_mk_delta(delta_df, mask):
             'n_years'    : int(valid_mask.sum()),
         })
 
-        # Per-crop time series plot
         sen_line = mk.intercept + mk.slope * np.arange(len(valid_series))
         colors   = ['#2166AC' if v >= 0 else '#D6604D' for v in valid_series]
         fig, ax  = plt.subplots(figsize=(10, 4))
@@ -481,7 +484,6 @@ def analysis_mk_delta(delta_df, mask):
     df = pd.DataFrame(results)
     df.to_csv(f'{out_dir}/mk_delta_suit_results.csv', index=False)
 
-    # Summary bar chart
     df_s = df.sort_values('tau')
     colors = ['#2166AC' if s else '#AAAAAA' for s in df_s['significant']]
     fig, ax = plt.subplots(figsize=(10, 6))
@@ -507,10 +509,10 @@ def analysis_mk_delta(delta_df, mask):
     return df
 
 
-# ── Analysis 4: 40-year trend on mean suitability and % suitable ──────────────
+# ── Analysis 4: 40-year trend on mean suitability and suitable area ───────────
 
-def analysis_trend_40yr(mask):
-    print('\n[Analysis 4] 40-year trend on mean suitability and % suitable …')
+def analysis_trend_40yr(mask, pixel_area_km2):
+    print('\n[Analysis 4] 40-year trend on mean suitability and suitable area …')
     out_dir   = f'{OUT_ROOT}/4_trend_40yr'
     years_arr = np.array(YEARS_ALL)
     post_mask = years_arr >= DIVERGENCE_YEAR
@@ -522,32 +524,31 @@ def analysis_trend_40yr(mask):
 
         obs_suit_s = []
         cf_suit_s  = []
-        obs_pct_s  = []
-        cf_pct_s   = []
+        obs_area_s = []
+        cf_area_s  = []
 
         for year in YEARS_ALL:
             arr, _ = load_raster(obs_suit_path(tag, year))
-            obs_suit_s.append(regional_mean_suit(arr, mask) if arr is not None else np.nan)
-            obs_pct_s.append(regional_pct_ge2(arr, mask)   if arr is not None else np.nan)
+            obs_suit_s.append(regional_mean_suit(arr, mask)           if arr is not None else np.nan)
+            obs_area_s.append(regional_area_ge2_km2(arr, mask, pixel_area_km2) if arr is not None else np.nan)
 
             if year < DIVERGENCE_YEAR:
                 cf_suit_s.append(obs_suit_s[-1])
-                cf_pct_s.append(obs_pct_s[-1])
+                cf_area_s.append(obs_area_s[-1])
             else:
                 arr_cf, _ = load_raster(cf_suit_path(tag, year))
-                cf_suit_s.append(regional_mean_suit(arr_cf, mask) if arr_cf is not None else np.nan)
-                cf_pct_s.append(regional_pct_ge2(arr_cf, mask)   if arr_cf is not None else np.nan)
+                cf_suit_s.append(regional_mean_suit(arr_cf, mask)           if arr_cf is not None else np.nan)
+                cf_area_s.append(regional_area_ge2_km2(arr_cf, mask, pixel_area_km2) if arr_cf is not None else np.nan)
 
         obs_suit_s = np.array(obs_suit_s)
         cf_suit_s  = np.array(cf_suit_s)
-        obs_pct_s  = np.array(obs_pct_s)
-        cf_pct_s   = np.array(cf_pct_s)
+        obs_area_s = np.array(obs_area_s)
+        cf_area_s  = np.array(cf_area_s)
 
-        # MK + bootstrap for both metrics, both periods
         for period, idx in [('1979-2018', slice(None)), ('1999-2018', post_mask)]:
             for metric, obs_s, cf_s, unit in [
-                ('mean_suit', obs_suit_s, cf_suit_s, 'class/yr'),
-                ('pct_ge2',   obs_pct_s,  cf_pct_s,  '%/yr'),
+                ('mean_suit',      obs_suit_s, cf_suit_s, 'class/yr'),
+                ('area_ge2_km2',   obs_area_s, cf_area_s, 'km²/yr'),
             ]:
                 mk_obs = run_mk(obs_s[idx], years_arr[idx])
                 mk_cf  = run_mk(cf_s[idx],  years_arr[idx])
@@ -564,7 +565,7 @@ def analysis_trend_40yr(mask):
                         'obs_trend'         : mk_obs['trend'],
                         'obs_significant'   : mk_obs['significant'],
                         'cf_tau'            : mk_cf['tau'],
-                        'cf_p'             : mk_cf['p_value'],
+                        'cf_p'              : mk_cf['p_value'],
                         'cf_slope'          : mk_cf['slope_sen'],
                         'cf_trend'          : mk_cf['trend'],
                         'cf_significant'    : mk_cf['significant'],
@@ -579,19 +580,18 @@ def analysis_trend_40yr(mask):
                         'perm_sig'          : (not np.isnan(sd['perm_p'])) and sd['perm_p'] < 0.05,
                     })
 
-        # Per-crop plot: 2 panels
         mk_obs_suit = run_mk(obs_suit_s, years_arr)
         mk_cf_suit  = run_mk(cf_suit_s,  years_arr)
-        mk_obs_pct  = run_mk(obs_pct_s,  years_arr)
-        mk_cf_pct   = run_mk(cf_pct_s,   years_arr)
+        mk_obs_area = run_mk(obs_area_s, years_arr)
+        mk_cf_area  = run_mk(cf_area_s,  years_arr)
 
         fig, axes = plt.subplots(1, 2, figsize=(16, 5))
 
         for ax, obs_s, cf_s, mk_obs, mk_cf, ylabel, title, unit in [
             (axes[0], obs_suit_s, cf_suit_s, mk_obs_suit, mk_cf_suit,
              'Mean Suitability Score (1–5)', 'Mean Suitability', 'class/yr'),
-            (axes[1], obs_pct_s,  cf_pct_s,  mk_obs_pct,  mk_cf_pct,
-             '% Pixels with Class ≥ 2', '% Suitable Land', '%/yr'),
+            (axes[1], obs_area_s, cf_area_s, mk_obs_area, mk_cf_area,
+             'Suitable Land Area (km²)', 'Suitable Land Area (class ≥ 2)', 'km²/yr'),
         ]:
             ax.plot(years_arr, obs_s, color='#2166AC', linewidth=2,
                     marker='o', markersize=4, label='Thaw')
@@ -626,9 +626,8 @@ def analysis_trend_40yr(mask):
     df = pd.DataFrame(all_results)
     df.to_csv(f'{out_dir}/trend_suit_results.csv', index=False)
 
-    # Summary slope comparison figures — one per metric per period
-    for metric, ylabel in [('mean_suit', "Sen's Slope (class/yr)"),
-                            ('pct_ge2',  "Sen's Slope (%/yr)")]:
+    for metric, ylabel in [('mean_suit',    "Sen's Slope (class/yr)"),
+                            ('area_ge2_km2', "Sen's Slope (km²/yr)")]:
         for period in ['1979-2018', '1999-2018']:
             df_p = df[(df['period'] == period) & (df['metric'] == metric)].sort_values('obs_slope')
             if df_p.empty:
@@ -647,12 +646,8 @@ def analysis_trend_40yr(mask):
                         ax.text(bar.get_x() + bar.get_width() / 2,
                                 bar.get_height() + abs(bar.get_height()) * 0.02,
                                 '★', ha='center', va='bottom', fontsize=11)
-            # Mark bootstrap and permutation significant slope differences
             for xi, (_, row) in zip(x, df_p.iterrows()):
-                markers = []
-                if row.get('boot_sig', False): markers.append('b')
-                if row.get('perm_sig', False): markers.append('p')
-                if markers:
+                if row.get('boot_sig', False) or row.get('perm_sig', False):
                     ax.text(xi, max(row['obs_slope'], row['cf_slope']) + 0.0001,
                             '†', ha='center', va='bottom', fontsize=11, color='green')
             ax.axhline(0, color='black', linewidth=0.8)
@@ -670,8 +665,6 @@ def analysis_trend_40yr(mask):
                         dpi=150, bbox_inches='tight')
             plt.close()
 
-    # Print bootstrap and permutation results
-    # Note: overall is appended by analysis_trend_40yr_overall — reload after that call
     print('\nSlope difference results (1979-2018, per crop):')
     df_boot = df[df['period'] == '1979-2018'][
         ['crop', 'metric', 'slope_difference',
@@ -684,7 +677,7 @@ def analysis_trend_40yr(mask):
 
 # ── Overall aggregate for Analysis 4 ─────────────────────────────────────────
 
-def analysis_trend_40yr_overall(mask):
+def analysis_trend_40yr_overall(mask, pixel_area_km2):
     print('\n  [Overall Aggregate]')
     out_dir   = f'{OUT_ROOT}/4_trend_40yr'
     years_arr = np.array(YEARS_ALL)
@@ -692,45 +685,49 @@ def analysis_trend_40yr_overall(mask):
 
     obs_suit_all = []
     cf_suit_all  = []
-    obs_pct_all  = []
-    cf_pct_all   = []
+    obs_area_all = []
+    cf_area_all  = []
 
     for crop in CROPS:
         tag = crop['tag']
-        obs_s, cf_s, obs_p, cf_p = [], [], [], []
+        obs_s, cf_s, obs_a, cf_a = [], [], [], []
 
         for year in YEARS_ALL:
             arr, _ = load_raster(obs_suit_path(tag, year))
-            obs_s.append(regional_mean_suit(arr, mask) if arr is not None else np.nan)
-            obs_p.append(regional_pct_ge2(arr, mask)   if arr is not None else np.nan)
+            obs_s.append(regional_mean_suit(arr, mask)           if arr is not None else np.nan)
+            obs_a.append(regional_area_ge2_km2(arr, mask, pixel_area_km2) if arr is not None else np.nan)
 
             if year < DIVERGENCE_YEAR:
                 cf_s.append(obs_s[-1])
-                cf_p.append(obs_p[-1])
+                cf_a.append(obs_a[-1])
             else:
                 arr_cf, _ = load_raster(cf_suit_path(tag, year))
-                cf_s.append(regional_mean_suit(arr_cf, mask) if arr_cf is not None else np.nan)
-                cf_p.append(regional_pct_ge2(arr_cf, mask)   if arr_cf is not None else np.nan)
+                cf_s.append(regional_mean_suit(arr_cf, mask)           if arr_cf is not None else np.nan)
+                cf_a.append(regional_area_ge2_km2(arr_cf, mask, pixel_area_km2) if arr_cf is not None else np.nan)
 
         obs_suit_all.append(np.array(obs_s))
         cf_suit_all.append(np.array(cf_s))
-        obs_pct_all.append(np.array(obs_p))
-        cf_pct_all.append(np.array(cf_p))
+        obs_area_all.append(np.array(obs_a))
+        cf_area_all.append(np.array(cf_a))
 
     obs_suit_mean = np.nanmean(np.array(obs_suit_all), axis=0)
     cf_suit_mean  = np.nanmean(np.array(cf_suit_all),  axis=0)
-    obs_pct_mean  = np.nanmean(np.array(obs_pct_all),  axis=0)
-    cf_pct_mean   = np.nanmean(np.array(cf_pct_all),   axis=0)
+    obs_area_mean = np.nanmean(np.array(obs_area_all), axis=0)
+    cf_area_mean  = np.nanmean(np.array(cf_area_all),  axis=0)
 
     results = []
     for period, idx in [('1979-2018', slice(None)), ('1999-2018', post_mask)]:
-        for metric, obs_s, cf_s in [
-            ('mean_suit', obs_suit_mean, cf_suit_mean),
-            ('pct_ge2',   obs_pct_mean,  cf_pct_mean),
+        for metric, obs_s, cf_s, unit in [
+            ('mean_suit',    obs_suit_mean, cf_suit_mean, 'class/yr'),
+            ('area_ge2_km2', obs_area_mean, cf_area_mean, 'km²/yr'),
         ]:
             mk_obs = run_mk(obs_s[idx], years_arr[idx])
             mk_cf  = run_mk(cf_s[idx],  years_arr[idx])
-            sd = test_slope_difference(obs_s[idx], cf_s[idx])
+            sd     = test_slope_difference(obs_s[idx], cf_s[idx])
+
+            # Bootstrap CI on individual slopes
+            ci_obs = bootstrap_sen_ci(obs_s[idx])
+            ci_cf  = bootstrap_sen_ci(cf_s[idx])
 
             if mk_obs and mk_cf:
                 results.append({
@@ -739,10 +736,14 @@ def analysis_trend_40yr_overall(mask):
                     'obs_tau'          : mk_obs['tau'],
                     'obs_p'            : mk_obs['p_value'],
                     'obs_slope'        : mk_obs['slope_sen'],
+                    'obs_ci_lo'        : round(ci_obs[0], 6),
+                    'obs_ci_hi'        : round(ci_obs[1], 6),
                     'obs_significant'  : mk_obs['significant'],
                     'cf_tau'           : mk_cf['tau'],
                     'cf_p'             : mk_cf['p_value'],
                     'cf_slope'         : mk_cf['slope_sen'],
+                    'cf_ci_lo'         : round(ci_cf[0], 6),
+                    'cf_ci_hi'         : round(ci_cf[1], 6),
                     'cf_significant'   : mk_cf['significant'],
                     'slope_difference' : round(mk_obs['slope_sen'] - mk_cf['slope_sen'], 6),
                     'boot_ci_lo'       : sd['boot_ci_lo'],
@@ -754,39 +755,59 @@ def analysis_trend_40yr_overall(mask):
                     'perm_p'           : sd['perm_p'],
                     'perm_sig'         : (not np.isnan(sd['perm_p'])) and sd['perm_p'] < 0.05,
                 })
-                print(f'  [{period}] {metric}: obs slope={mk_obs["slope_sen"]:.5f} '
-                      f'(p={mk_obs["p_value"]:.4f}) | cf slope={mk_cf["slope_sen"]:.5f} '
-                      f'(p={mk_cf["p_value"]:.4f}) | Δslope={mk_obs["slope_sen"]-mk_cf["slope_sen"]:.5f} '
+                print(f'  [{period}] {metric}: '
+                      f'obs={mk_obs["slope_sen"]:.5f} (95% CI: {ci_obs[0]:.6f}–{ci_obs[1]:.6f}, '
+                      f'p={mk_obs["p_value"]:.4f}) | '
+                      f'cf={mk_cf["slope_sen"]:.5f} (95% CI: {ci_cf[0]:.6f}–{ci_cf[1]:.6f}, '
+                      f'p={mk_cf["p_value"]:.4f}) | '
+                      f'Δslope={mk_obs["slope_sen"]-mk_cf["slope_sen"]:.5f} '
                       f'boot_p={sd["boot_p"]} perm_p={sd["perm_p"]}')
 
-    # Overall plot: 2 panels
+    # Overall plot: 2 panels with CI bands
     mk_obs_suit = run_mk(obs_suit_mean, years_arr)
     mk_cf_suit  = run_mk(cf_suit_mean,  years_arr)
-    mk_obs_pct  = run_mk(obs_pct_mean,  years_arr)
-    mk_cf_pct   = run_mk(cf_pct_mean,   years_arr)
+    mk_obs_area = run_mk(obs_area_mean, years_arr)
+    mk_cf_area  = run_mk(cf_area_mean,  years_arr)
+
+    ci_obs_suit = bootstrap_sen_ci(obs_suit_mean)
+    ci_cf_suit  = bootstrap_sen_ci(cf_suit_mean)
+    ci_obs_area = bootstrap_sen_ci(obs_area_mean)
+    ci_cf_area  = bootstrap_sen_ci(cf_area_mean)
 
     fig, axes = plt.subplots(1, 2, figsize=(16, 5))
 
-    for ax, obs_s, cf_s, mk_obs, mk_cf, ylabel, title, unit in [
+    for ax, obs_s, cf_s, mk_obs, mk_cf, ci_obs, ci_cf, ylabel, title, unit in [
         (axes[0], obs_suit_mean, cf_suit_mean, mk_obs_suit, mk_cf_suit,
+         ci_obs_suit, ci_cf_suit,
          'Mean Suitability Score (1–5)', 'Overall Mean Suitability', 'class/yr'),
-        (axes[1], obs_pct_mean,  cf_pct_mean,  mk_obs_pct,  mk_cf_pct,
-         '% Pixels with Class ≥ 2', 'Overall % Suitable Land', '%/yr'),
+        (axes[1], obs_area_mean, cf_area_mean, mk_obs_area, mk_cf_area,
+         ci_obs_area, ci_cf_area,
+         'Suitable Land Area (km²)', 'Overall Suitable Land Area (class ≥ 2)', 'km²/yr'),
     ]:
         ax.plot(years_arr, obs_s, color='#2166AC', linewidth=2,
                 marker='o', markersize=4, label='Thaw')
         ax.plot(years_arr, cf_s, color='#D6604D', linewidth=2,
                 marker='s', markersize=4, linestyle='--', label='No-Thaw CF')
-        if mk_obs:
-            ax.plot(years_arr, mk_obs['sen_line'], color='#2166AC',
-                    linewidth=1.5, linestyle=':', alpha=0.8,
-                    label=f"Thaw slope: {mk_obs['slope_sen']:.5f} {unit} "
-                          f"(p={mk_obs['p_value']:.3f})")
-        if mk_cf:
-            ax.plot(years_arr, mk_cf['sen_line'], color='#D6604D',
-                    linewidth=1.5, linestyle=':', alpha=0.8,
-                    label=f"No-Thaw slope: {mk_cf['slope_sen']:.5f} {unit} "
-                          f"(p={mk_cf['p_value']:.3f})")
+
+        for mk, ci, color, lbl in [
+            (mk_obs, ci_obs, '#2166AC', 'Thaw'),
+            (mk_cf,  ci_cf,  '#D6604D', 'No-Thaw CF'),
+        ]:
+            if mk:
+                ax.plot(years_arr, mk['sen_line'], color=color,
+                        linewidth=1.5, linestyle=':', alpha=0.8,
+                        label=f"{lbl} slope: {mk['slope_sen']:.5f} {unit} "
+                              f"(p={mk['p_value']:.3f})")
+                if not np.isnan(ci[0]):
+                    valid = np.isfinite(obs_s if color == '#2166AC' else cf_s)
+                    x_idx = np.arange(valid.sum())
+                    lo_line = np.full(len(years_arr), np.nan)
+                    hi_line = np.full(len(years_arr), np.nan)
+                    lo_line[valid] = mk['intercept'] + ci[0] * x_idx
+                    hi_line[valid] = mk['intercept'] + ci[1] * x_idx
+                    ax.fill_between(years_arr, lo_line, hi_line,
+                                    color=color, alpha=0.10)
+
         ax.axvline(DIVERGENCE_YEAR, color='grey', linestyle='--',
                    linewidth=1.2, label='Divergence (1999)')
         ax.axvspan(DIVERGENCE_YEAR, YEARS_ALL[-1], alpha=0.04, color='grey')
@@ -807,7 +828,6 @@ def analysis_trend_40yr_overall(mask):
     df_overall.insert(0, 'crop', 'OVERALL')
     df_overall.to_csv(f'{out_dir}/overall_suit_trend_results.csv', index=False)
 
-    # Append overall to main trend results CSV
     main_csv = f'{out_dir}/trend_suit_results.csv'
     if os.path.exists(main_csv):
         df_main = pd.read_csv(main_csv)
@@ -819,10 +839,6 @@ def analysis_trend_40yr_overall(mask):
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def plot_slope_diff(out_dir):
-    """Plot bootstrap and permutation dot plots including overall.
-    Called after both analysis_trend_40yr and analysis_trend_40yr_overall
-    so the CSV contains per-crop + overall rows.
-    """
     main_csv = f'{out_dir}/trend_suit_results.csv'
     if not os.path.exists(main_csv):
         print('  ⚠ trend_suit_results.csv not found, skipping dot plots')
@@ -834,8 +850,8 @@ def plot_slope_diff(out_dir):
          'boot_ci_lo', 'boot_ci_hi', 'boot_p', 'boot_sig',
          'perm_ci_lo', 'perm_ci_hi', 'perm_p', 'perm_sig']]
 
-    title_map = {'mean_suit': 'Mean Suitability Score',
-                 'pct_ge2':   '% Suitable Land (≥ Class 2)'}
+    title_map = {'mean_suit':    'Mean Suitability Score',
+                 'area_ge2_km2': 'Suitable Land Area (km²)'}
 
     for test, ci_lo, ci_hi, p_col, sig_col, fname in [
         ('Bootstrap',   'boot_ci_lo', 'boot_ci_hi', 'boot_p', 'boot_sig', 'bootstrap_slope_diff.png'),
@@ -843,12 +859,12 @@ def plot_slope_diff(out_dir):
     ]:
         fig, axes = plt.subplots(1, 2, figsize=(14, 8))
         for ax, metric, xlabel in [
-            (axes[0], 'mean_suit', "Sen's Slope Difference (class/yr)"),
-            (axes[1], 'pct_ge2',   "Sen's Slope Difference (%/yr)"),
+            (axes[0], 'mean_suit',    "Sen's Slope Difference (class/yr)"),
+            (axes[1], 'area_ge2_km2', "Sen's Slope Difference (km²/yr)"),
         ]:
-            df_crops   = df_boot[(df_boot['metric'] == metric) & (df_boot['crop'] != 'OVERALL')].copy()
-            df_ov      = df_boot[(df_boot['metric'] == metric) & (df_boot['crop'] == 'OVERALL')].copy()
-            df_m       = pd.concat([df_ov, df_crops.sort_values('slope_difference')], ignore_index=True)
+            df_crops = df_boot[(df_boot['metric'] == metric) & (df_boot['crop'] != 'OVERALL')].copy()
+            df_ov    = df_boot[(df_boot['metric'] == metric) & (df_boot['crop'] == 'OVERALL')].copy()
+            df_m     = pd.concat([df_ov, df_crops.sort_values('slope_difference')], ignore_index=True)
 
             y      = np.arange(len(df_m))
             colors = ['#000000' if c == 'OVERALL' else ('#2166AC' if s else '#AAAAAA')
@@ -870,10 +886,10 @@ def plot_slope_diff(out_dir):
             ax.set_yticks(y)
             ax.set_yticklabels(df_m['crop'], fontsize=10)
             ax.set_xlabel(xlabel, fontsize=11)
-            ax.set_title(title_map[metric], fontsize=12, fontweight='bold')
+            ax.set_title(title_map.get(metric, metric), fontsize=12, fontweight='bold')
 
-        fig.suptitle(f"Does Permafrost Thaw Amplify the Suitability Trend?"
-                     f"{test} Test on Sen's Slope Difference (Thaw - No-Thaw)"
+        fig.suptitle(f"Does Permafrost Thaw Amplify the Suitability Trend? "
+                     f"{test} Test on Sen's Slope Difference (Thaw - No-Thaw)\n"
                      f"Black = Overall, Blue = significant crop, Grey = not significant",
                      fontsize=12, fontweight='bold')
         plt.tight_layout(rect=[0, 0, 1, 0.91])
@@ -882,15 +898,50 @@ def plot_slope_diff(out_dir):
         print(f'  ✓ {test} dot plot saved')
 
 
+def print_post1999_area(mask, pixel_area_km2):
+    """Print mean suitable land area (km²) after 1999 for obs and CF scenarios."""
+    print('\n[Post-1999 Mean Suitable Area]')
+
+    obs_area_all = []
+    cf_area_all  = []
+
+    for crop in CROPS:
+        tag = crop['tag']
+        obs_a, cf_a = [], []
+        for year in YEARS_CF:
+            arr, _    = load_raster(obs_suit_path(tag, year))
+            arr_cf, _ = load_raster(cf_suit_path(tag, year))
+            obs_a.append(regional_area_ge2_km2(arr,    mask, pixel_area_km2) if arr    is not None else np.nan)
+            cf_a.append( regional_area_ge2_km2(arr_cf, mask, pixel_area_km2) if arr_cf is not None else np.nan)
+        obs_area_all.append(np.array(obs_a))
+        cf_area_all.append( np.array(cf_a))
+
+    # Per-crop means
+    print(f'\n  {"Crop":<20} {"Obs mean (km²)":>16} {"CF mean (km²)":>16} {"Δ (km²)":>12}')
+    print('  ' + '-' * 66)
+    for i, crop in enumerate(CROPS):
+        obs_mean = float(np.nanmean(obs_area_all[i]))
+        cf_mean  = float(np.nanmean(cf_area_all[i]))
+        print(f'  {crop["label"]:<20} {obs_mean:>16.1f} {cf_mean:>16.1f} {obs_mean - cf_mean:>12.1f}')
+
+    # Overall (mean across crops)
+    obs_overall = float(np.nanmean([np.nanmean(a) for a in obs_area_all]))
+    cf_overall  = float(np.nanmean([np.nanmean(a) for a in cf_area_all]))
+    print('  ' + '-' * 66)
+    print(f'  {"OVERALL":<20} {obs_overall:>16.1f} {cf_overall:>16.1f} {obs_overall - cf_overall:>12.1f}')
+
+
 if __name__ == '__main__':
     np.random.seed(42)
-    mask = load_mask()
+    mask           = load_mask()
+    pixel_area_km2 = build_pixel_area_km2(mask)
 
     delta_df = analysis_delta_maps(mask)
     analysis_wilcoxon(delta_df)
     analysis_mk_delta(delta_df, mask)
-    analysis_trend_40yr(mask)
-    analysis_trend_40yr_overall(mask)
+    analysis_trend_40yr(mask, pixel_area_km2)
+    analysis_trend_40yr_overall(mask, pixel_area_km2)
     plot_slope_diff(f'{OUT_ROOT}/4_trend_40yr')
+    print_post1999_area(mask, pixel_area_km2)
 
     print(f'\n✓ All analyses complete. Outputs in: {OUT_ROOT}/')

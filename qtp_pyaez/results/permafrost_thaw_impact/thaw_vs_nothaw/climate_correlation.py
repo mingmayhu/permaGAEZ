@@ -122,6 +122,8 @@ def obs_suit_path(tag, year):
     return f'./data_output/final_classification_fixed/{tag}/{year}_suitability_class.tif'
 
 def cf_suit_path(tag, year):
+    if tag == "combined_oat":
+        tag = "combined_spring_oat_NEW"
     return f'./data_output/final_classification_nothaw_fixed/{tag}/{year}_suitability_class.tif'
 
 def load_mean_delta(tag, mask):

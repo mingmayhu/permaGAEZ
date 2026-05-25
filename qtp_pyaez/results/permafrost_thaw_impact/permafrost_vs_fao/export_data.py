@@ -3,7 +3,7 @@ Export data for FAO comparison figures
 =======================================
 Exports:
   1. overall_mean_suitability_timeseries.csv   — annual mean suitability and
-     % suitable land for obs and FAO scenarios, 1979-2018 (time series figure)
+     suitable land area (km²) for obs and FAO scenarios, 1979-2018
 
   2. overall_diff_map_1979_2018.tif            — overall mean suitability
      difference (obs minus FAO), averaged over full 40-year period 1979-2018
@@ -15,16 +15,8 @@ Exports:
      delta suitability vs ALT and soil moisture, full 40-year period,
      permafrost pixels only (seasonally frozen excluded)
 
-Period rationale:
-  - Time series (1): full 1979-2018 annual series, no aggregation needed
-  - Difference maps (2, 3): mean over full 40 years — captures methodology
-    difference across the complete range of thaw conditions, not just the
-    more-thawed post-1999 period
-  - Permafrost drivers (4): full 40-year mean permafrost state — uses the
-    same period as the diff map so x and y axes are comparable
-
 All outputs written to:
-  ./results/permafrost_thaw_impact/fao_comparison/figure_exports/
+  ./results/permafrost_thaw_impact/permafrost_vs_fao/outputs/
 """
 
 import os
@@ -112,6 +104,19 @@ def load_mask():
         print(f'  Excluded {lake_mask.sum()} lake/nodata pixels from mask')
     return mask
 
+def build_pixel_area_km2(mask):
+    ds  = gdal.Open(MASK_PATH)
+    gt  = ds.GetGeoTransform()
+    nrows, ncols = mask.shape
+    lats = gt[3] + gt[5] * (np.arange(nrows) + 0.5)
+    pixel_side_km = abs(gt[5]) * 111.32
+    area_2d = np.outer(
+        pixel_side_km * pixel_side_km * np.cos(np.deg2rad(lats)),
+        np.ones(ncols)
+    )
+    area_2d[~mask] = 0.0
+    return area_2d
+
 def obs_path(tag, year):
     return f'./data_output/final_classification_fixed/{tag}/{year}_suitability_class.tif'
 
@@ -119,7 +124,6 @@ def fao_path(tag, year):
     return f'./data_output/original/final_classification_fixed/{tag}/{year}_suitability_class.tif'
 
 def apply_remap(arr, mask):
-    """Mask, remap class 0 -> 1, return float array."""
     arr_c = arr.copy()
     arr_c[arr_c < 0] = np.nan
     arr_c[~mask] = np.nan
@@ -132,45 +136,48 @@ def regional_mean_suit(arr, mask):
     valid = mask & np.isfinite(arr_r)
     return float(np.nanmean(arr_r[valid])) if valid.any() else np.nan
 
-def regional_pct_ge2(arr, mask):
+def regional_area_ge2_km2(arr, mask, pixel_area_km2):
+    """Sum pixel areas where suitability class >= 2."""
     arr_c = arr.copy()
     arr_c[arr_c < 0] = np.nan
     arr_int = np.clip(
         np.where(np.isfinite(arr_c), arr_c, 0).astype(int), 0, 5
     )
-    return float(np.mean(arr_int[mask] >= 2) * 100) if mask.any() else np.nan
+    arr_int[arr_int == 0] = 1  # remap class 0 -> 1
+    suitable = mask & (arr_int >= 2)
+    return float(np.sum(pixel_area_km2[suitable]))
 
 
 # ── 1. Time series CSV (1979-2018, annual) ────────────────────────────────────
 
-def export_timeseries(mask):
+def export_timeseries(mask, pixel_area_km2):
     print('\n[1] Exporting time series CSV (1979-2018) ...')
 
     obs_mean_all, fao_mean_all = [], []
-    obs_ge2_all,  fao_ge2_all  = [], []
+    obs_area_all, fao_area_all = [], []
 
     for crop in CROPS:
         tag = crop['tag']
-        obs_ms, fao_ms, obs_g2, fao_g2 = [], [], [], []
+        obs_ms, fao_ms, obs_ar, fao_ar = [], [], [], []
         for year in YEARS_ALL:
             obs, _ = load_raster(obs_path(tag, year))
             fao, _ = load_raster(fao_path(tag, year))
-            obs_ms.append(regional_mean_suit(obs, mask) if obs is not None else np.nan)
-            fao_ms.append(regional_mean_suit(fao, mask) if fao is not None else np.nan)
-            obs_g2.append(regional_pct_ge2(obs, mask)   if obs is not None else np.nan)
-            fao_g2.append(regional_pct_ge2(fao, mask)   if fao is not None else np.nan)
+            obs_ms.append(regional_mean_suit(obs, mask)          if obs is not None else np.nan)
+            fao_ms.append(regional_mean_suit(fao, mask)          if fao is not None else np.nan)
+            obs_ar.append(regional_area_ge2_km2(obs, mask, pixel_area_km2) if obs is not None else np.nan)
+            fao_ar.append(regional_area_ge2_km2(fao, mask, pixel_area_km2) if fao is not None else np.nan)
         obs_mean_all.append(obs_ms)
         fao_mean_all.append(fao_ms)
-        obs_ge2_all.append(obs_g2)
-        fao_ge2_all.append(fao_g2)
+        obs_area_all.append(obs_ar)
+        fao_area_all.append(fao_ar)
         print(f'  {crop["label"]} done')
 
     with warnings.catch_warnings():
         warnings.simplefilter('ignore', RuntimeWarning)
         obs_mean_agg = np.nanmean(obs_mean_all, axis=0)
         fao_mean_agg = np.nanmean(fao_mean_all, axis=0)
-        obs_ge2_agg  = np.nanmean(obs_ge2_all,  axis=0)
-        fao_ge2_agg  = np.nanmean(fao_ge2_all,  axis=0)
+        obs_area_agg = np.nanmean(obs_area_all, axis=0)
+        fao_area_agg = np.nanmean(fao_area_all, axis=0)
 
     # Overall annual series
     rows = []
@@ -180,9 +187,9 @@ def export_timeseries(mask):
             'obs_mean_suit' : float(obs_mean_agg[i]),
             'fao_mean_suit' : float(fao_mean_agg[i]),
             'diff_mean_suit': float(obs_mean_agg[i] - fao_mean_agg[i]),
-            'obs_pct_ge2'   : float(obs_ge2_agg[i]),
-            'fao_pct_ge2'   : float(fao_ge2_agg[i]),
-            'diff_pct_ge2'  : float(obs_ge2_agg[i] - fao_ge2_agg[i]),
+            'obs_area_km2'  : float(obs_area_agg[i]),
+            'fao_area_km2'  : float(fao_area_agg[i]),
+            'diff_area_km2' : float(obs_area_agg[i] - fao_area_agg[i]),
         })
 
     # Per-crop annual series
@@ -194,8 +201,8 @@ def export_timeseries(mask):
                 'year'         : year,
                 'obs_mean_suit': float(obs_mean_all[ci][i]),
                 'fao_mean_suit': float(fao_mean_all[ci][i]),
-                'obs_pct_ge2'  : float(obs_ge2_all[ci][i]),
-                'fao_pct_ge2'  : float(fao_ge2_all[ci][i]),
+                'obs_area_km2' : float(obs_area_all[ci][i]),
+                'fao_area_km2' : float(fao_area_all[ci][i]),
             })
 
     pd.DataFrame(rows).to_csv(
@@ -278,7 +285,6 @@ def export_perm_drivers(mask, overall_diff):
     ]
     target = mask.shape
 
-    # Exclude seasonally frozen ground (keep only permafrost pixels)
     pf_arr, _ = load_raster(PERMAFROST_PATH)
     if pf_arr is not None:
         pf_mask = mask & np.isin(np.round(pf_arr).astype(int), [1, 2])
@@ -287,7 +293,6 @@ def export_perm_drivers(mask, overall_diff):
         pf_mask = mask
         print('  WARNING: could not load permafrost raster, using full mask')
 
-    # Full 40-year mean for each permafrost variable
     perm_data = {}
     for pv in PERM_VARS:
         stack = []
@@ -298,7 +303,7 @@ def export_perm_drivers(mask, overall_diff):
                 continue
             arr = np.load(path).astype(float)
             if arr.ndim == 3:
-                arr = (np.nanmax(arr, axis=2)  if pv['agg'] == 'max'
+                arr = (np.nanmax(arr, axis=2) if pv['agg'] == 'max'
                        else np.nanmean(arr, axis=2))
             if arr.shape != target:
                 stack.append(np.full(target, np.nan))
@@ -315,7 +320,6 @@ def export_perm_drivers(mask, overall_diff):
         valid_vals = mean_all[pf_mask & np.isfinite(mean_all)]
         print(f'  {pv["name"]}: range [{valid_vals.min():.3f}, {valid_vals.max():.3f}]')
 
-    # Pixel-level DataFrame — permafrost pixels with all data present
     valid = (pf_mask
              & np.isfinite(overall_diff)
              & np.isfinite(perm_data['ALT'])
@@ -334,7 +338,6 @@ def export_perm_drivers(mask, overall_diff):
     df.to_csv(out_path, index=False)
     print(f'  Saved: permafrost_drivers_overall_1979_2018.csv  ({len(df)} pixels)')
 
-    # Quick Spearman summary
     r_alt, p_alt = spearmanr(df['mean_ALT_m'],            df['mean_delta_suitability'])
     r_sm,  p_sm  = spearmanr(df['mean_soil_moisture_mm'], df['mean_delta_suitability'])
     print(f'\n  Spearman r (ALT vs ΔSuit):           {r_alt:.3f}  (p={p_alt:.4f})')
@@ -345,9 +348,10 @@ def export_perm_drivers(mask, overall_diff):
 
 if __name__ == '__main__':
     print('Loading mask ...')
-    mask = load_mask()
+    mask           = load_mask()
+    pixel_area_km2 = build_pixel_area_km2(mask)
 
-    export_timeseries(mask)
+    export_timeseries(mask, pixel_area_km2)
     overall_diff, geo_info = export_diff_maps(mask)
     export_perm_drivers(mask, overall_diff)
 

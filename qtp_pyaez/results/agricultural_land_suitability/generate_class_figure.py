@@ -26,7 +26,7 @@ from pymannkendall import original_test as mk_test
 
 # ── Configuration ─────────────────────────────────────────────────────────────
 WORK_DIR  = r'/Users/ming-mayhu/Desktop/毕业论文/qtp-pyaez/qtp_pyaez'
-CSV_PATH  = r'./results/agricultural_land_suitability/outputs/csv/overall_class_distribution.csv'
+CSV_PATH  = r'./results/agricultural_land_suitability/outputs/csv/overall_class_area_km2.csv'
 OUT_PATH  = r'./results/agricultural_land_suitability/outputs/overall_class_distribution.png'
 
 ALPHA = 0.05
@@ -53,7 +53,6 @@ sns.set_theme(
         'ytick.major.size':  4,
         'axes.edgecolor':    '#000000',
         'axes.linewidth':    0.8,
-        'axes.facecolor':     '#fffcce',
     }
 )
 
@@ -62,7 +61,6 @@ CLASS_COLORS = {
     3: '#78c679',
     4: '#31a354',
     5: '#006837',
-    6:  '#fffcce',
 }
 # Darker versions of each class colour for the trend lines
 TREND_COLORS = {
@@ -101,7 +99,7 @@ years_arr = df['Year'].values.astype(int)
 # ── Run MK per class ──────────────────────────────────────────────────────────
 mk_results = {}
 for c in [2, 3, 4, 5]:
-    mk_results[c] = run_mk(df[f'pct_class_{c}'].values)
+    mk_results[c] = run_mk(df[f'area_class_{c}'].values)
 
 # ── Figure ────────────────────────────────────────────────────────────────────
 fig, ax = plt.subplots(figsize=(13, 7))
@@ -114,7 +112,7 @@ fp_legend = FontProperties(fname=REG_PATH,  size=14)
 bottom = np.zeros(len(years_arr))
 cumulative = {}  # store cumulative bottom for each class to position trend lines
 for c in [2, 3, 4, 5]:
-    vals = df[f'pct_class_{c}'].values
+    vals = df[f'area_class_{c}'].values
     vals = np.where(np.isfinite(vals), vals, 0.0)
     cumulative[c] = bottom + vals / 2  # midpoint of each band for trend line
     ax.fill_between(years_arr, bottom, bottom + vals,
@@ -124,7 +122,7 @@ for c in [2, 3, 4, 5]:
 # Trend lines — drawn at the cumulative top of each class band
 cumulative_top = np.zeros(len(years_arr))
 for c in [2, 3, 4, 5]:
-    vals = df[f'pct_class_{c}'].values
+    vals = df[f'area_class_{c}'].values
     vals = np.where(np.isfinite(vals), vals, 0.0)
     cumulative_top = cumulative_top + vals
     mk = mk_results[c]
@@ -145,7 +143,7 @@ xtick_years = years_arr[::5]
 ax.set_xticks(xtick_years)
 ax.set_xticklabels([str(y) for y in xtick_years],
                    rotation=45, ha='right', fontsize=16)
-ax.set_ylabel('% Land with class \u2265 2', fontsize=16, labelpad=6)
+ax.set_ylabel('Suitable land area (km²)', fontsize=16, labelpad=6)
 ax.set_xlabel('Year', fontsize=16, labelpad=4)
 ax.tick_params(which='major', labelsize=16, length=4,
                color='#000000', width=0.8)
@@ -165,7 +163,7 @@ trend_handles = []
 for c in [2, 3, 4, 5]:
     mk = mk_results[c]
     if mk:
-        lbl = f"Class {c} sen's slope: {mk['slope']:+.4f}%/yr ({mk['pstr']})"
+        lbl = f"Class {c} Sen's slope: {mk['slope']:+.1f} km² yr⁻¹ ({mk['pstr']})"
     else:
         lbl = f'Class {c} trend: n/a'
     trend_handles.append(

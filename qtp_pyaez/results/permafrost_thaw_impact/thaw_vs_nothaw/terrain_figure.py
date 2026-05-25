@@ -37,7 +37,7 @@ REG_PATH  = '/System/Library/Fonts/Helvetica.ttc'
 
 MIN_PIXELS  = 10
 COLOR_ELEV  = "#9B4F23"   # blue for elevation
-COLOR_SLOPE = "#FFC2DB"   # red for slope
+COLOR_SLOPE = "#FE94C0"   # red for slope
 
 os.chdir(WORK_DIR)
 os.makedirs(OUT_DIR, exist_ok=True)
@@ -90,18 +90,18 @@ l1, = ax_elev.plot(
     label='Elevation', zorder=4
 )
 
-ax_elev.set_ylabel('Elevation (m)', fontsize=12,
+ax_elev.set_ylabel('Elevation (m)', fontsize=14,
                    color='black', fontproperties=fp_reg)
-ax_elev.tick_params(axis='y', labelcolor='black', labelsize=12)
+ax_elev.tick_params(axis='y', labelcolor=COLOR_ELEV, labelsize=14)
 ax_elev.set_yticks(df_elev['bin_mid'].values)
 ax_elev.set_yticklabels([f'{int(m)} m' for m in df_elev['bin_mid'].values],
-                        fontsize=12)
+                        fontsize=14)
 
 # ── Right y-axis: slope ───────────────────────────────────────────────────────
 ax_slope = ax_elev.twinx()
 # Re-enable right spine for the slope axis
 ax_slope.spines['right'].set_visible(True)
-ax_slope.spines['right'].set_color('#000000')
+ax_slope.spines['right'].set_color('black')
 ax_slope.spines['right'].set_linewidth(0.8)
 
 l2, = ax_slope.plot(
@@ -112,23 +112,23 @@ l2, = ax_slope.plot(
     label='Slope', zorder=3
 )
 
-ax_slope.set_ylabel('Slope (°)', fontsize=12,
+ax_slope.set_ylabel('Slope (°)', fontsize=14,
                     color='black')
-ax_slope.tick_params(axis='y', labelcolor='black', labelsize=12)
+ax_slope.tick_params(axis='y', labelcolor=COLOR_SLOPE, labelsize=14)
 ax_slope.set_yticks(df_slope['bin_mid'].values)
 ax_slope.set_yticklabels([f'{m:.1f}°' for m in df_slope['bin_mid'].values],
-                         fontsize=12)
+                         fontsize=14)
 
 # ── x-axis ────────────────────────────────────────────────────────────────────
 ax_elev.set_xlabel('Mean Δsuitability',
-                   fontsize=12, fontproperties=fp_reg)
-ax_elev.tick_params(axis='x', labelsize=12)
+                   fontsize=14, fontproperties=fp_reg)
+ax_elev.tick_params(axis='x', labelsize=14)
 
 # ── Legend ────────────────────────────────────────────────────────────────────
 ax_elev.legend(
     handles=[l1, l2],
     labels=['Elevation', 'Slope'],
-    fontsize=12, frameon=False, loc='upper right'
+    fontsize=14, frameon=False, loc='upper right'
 )
 
 plt.tight_layout()

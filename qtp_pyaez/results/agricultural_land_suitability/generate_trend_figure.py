@@ -3,10 +3,11 @@ Overall Agricultural Land Suitability Trends — Chapter 5
 ==========================================================
 Reads pre-computed CSVs and produces a two-panel figure:
   (a) Mean suitability score (1–5) across all crops
-  (b) % suitable land (class >= 2) across all crops
+  (b) Suitable land area (km²) across all crops
 
 Individual crop lines shown in muted colours; overall mean in black.
 Sen's slope shown as a text box annotation per panel.
+95% bootstrap CI shown as shaded band around Sen's slope line.
 Single shared legend for crops + overall below both panels.
 """
 
@@ -45,8 +46,6 @@ sns.set_theme(
     rc={
         'font.family':        'sans-serif',
         'font.sans-serif':    [FONT],
-        # 'axes.spines.top':    False,
-        # 'axes.spines.right':  False,
         'xtick.direction':    'out',
         'ytick.direction':    'out',
         'xtick.major.size':   4,
@@ -69,24 +68,44 @@ def run_mk(series):
     line = np.full(len(s), np.nan)
     line[valid] = mk.intercept + mk.slope * np.arange(valid.sum())
     pstr = 'p < 0.001' if mk.p < 0.001 else f'p = {mk.p:.3f}'
-    print(np.max(series), np.min(series))
+    print(np.max(series), np.min(series), np.mean(series))
     return {
         'tau': mk.Tau, 'p': mk.p, 'pstr': pstr,
-        'slope': mk.slope, 'significant': mk.p < ALPHA,
+        'slope': mk.slope, 'intercept': mk.intercept,
+        'significant': mk.p < ALPHA,
         'sen_line': line,
     }
 
+def bootstrap_sen_ci(series, n_boot=1000, ci=95):
+    """Bootstrap 95% CI on Sen's slope; returns (lo, hi)."""
+    s = np.array(series, dtype=float)
+    valid_idx = np.where(np.isfinite(s))[0]
+    if len(valid_idx) < 4:
+        return (np.nan, np.nan)
+    s_valid = s[valid_idx]
+    slopes = []
+    rng = np.random.default_rng(42)
+    for _ in range(n_boot):
+        idx = np.sort(rng.choice(len(s_valid), size=len(s_valid), replace=True))
+        slopes.append(mk_test(s_valid[idx]).slope)
+    lo = np.percentile(slopes, (100 - ci) / 2)
+    hi = np.percentile(slopes, 100 - (100 - ci) / 2)
+    return (lo, hi)
+
 # ── Load data ─────────────────────────────────────────────────────────────────
 df_mean = pd.read_csv(f'{CSV_DIR}/per_crop_mean_suitability.csv')
-df_pct  = pd.read_csv(f'{CSV_DIR}/per_crop_pct_suitable.csv')
+df_area = pd.read_csv(f'{CSV_DIR}/per_crop_area_suitable_km2.csv')
 
 years_arr    = df_mean['Year'].values.astype(int)
 crop_cols    = [c for c in df_mean.columns if c not in ('Year', 'Overall')]
 mean_overall = df_mean['Overall'].values
-pct_overall  = df_pct['Overall'].values
+area_overall = df_area['Overall'].values
 
 mk_mean = run_mk(mean_overall)
-mk_pct  = run_mk(pct_overall)
+mk_area = run_mk(area_overall)
+
+ci_mean = bootstrap_sen_ci(mean_overall)
+ci_area = bootstrap_sen_ci(area_overall)
 
 # ── Crop colour palette ───────────────────────────────────────────────────────
 crop_colors = [
@@ -106,15 +125,15 @@ fp_textbox   = FontProperties(fname=REG_PATH,  size=20)
 xtick_years = years_arr[::5]
 
 panels = [
-    (axes[0], df_mean, mean_overall, mk_mean,
+    (axes[0], df_mean, mean_overall, mk_mean, ci_mean,
      'Mean suitability score (1–5)',
      'Mean suitability across all crops', 'a'),
-    (axes[1], df_pct,  pct_overall,  mk_pct,
-     'Percent suitable land',
-     'Percent suitable land across all crops', 'b'),
+    (axes[1], df_area, area_overall, mk_area, ci_area,
+     'Suitable land area (km²)',
+     'Suitable land area across all crops', 'b'),
 ]
 
-for ax, df, overall, mk, ylabel, title, letter in panels:
+for ax, df, overall, mk, ci, ylabel, title, letter in panels:
 
     # Individual crop lines
     for i, crop in enumerate(crop_cols):
@@ -127,24 +146,36 @@ for ax, df, overall, mk, ylabel, title, letter in panels:
             color=OVERALL_COLOR, linewidth=4,
             zorder=5)
 
-    # Sen's slope line (no legend label — shown as text box instead)
+    # Sen's slope line + CI band
     if mk:
         ax.plot(years_arr, mk['sen_line'],
                 color=TREND_COLOR, linewidth=1.8,
                 linestyle='--', dashes=(6, 3),
                 zorder=6)
 
-        # Sen's slope text box in upper left
-        slope_txt = (f"Sen's slope: {mk['slope']:+.5f}/yr ({mk['pstr']})")
+        # CI band around Sen's slope
+        if not np.isnan(ci[0]):
+            valid = np.isfinite(overall)
+            x_idx = np.arange(valid.sum())
+            lo_line = np.full(len(overall), np.nan)
+            hi_line = np.full(len(overall), np.nan)
+            lo_line[valid] = mk['intercept'] + ci[0] * x_idx
+            hi_line[valid] = mk['intercept'] + ci[1] * x_idx
+            ax.fill_between(years_arr, lo_line, hi_line,
+                            color=TREND_COLOR, alpha=0.12,
+                            zorder=5)
+
+        # Sen's slope text box
+        slope_txt = (f"Sen's slope: {mk['slope']:+.5f} yr⁻¹ ({mk['pstr']})")
         ax.text(0.01, 1.12, slope_txt,
                 transform=ax.transAxes,
                 va='top', ha='left',
                 fontproperties=fp_textbox,
                 bbox=dict(
-                          facecolor='white',
-                          edgecolor='#cccccc',
-                          linewidth=0.8,
-                          alpha=0.9)
+                    facecolor='white',
+                    edgecolor='#cccccc',
+                    linewidth=0.8,
+                    alpha=0.9)
                 )
 
     # Axis formatting
@@ -156,13 +187,9 @@ for ax, df, overall, mk, ylabel, title, letter in panels:
     ax.set_xlabel('Year', fontsize=20, labelpad=4)
     ax.tick_params(which='major', labelsize=20, length=4,
                    color='#000000', width=0.8)
-    # ax.tick_params(which='minor', color='#999999', width=0.6)
     ax.spines['left'].set_color('#000000')
     ax.spines['bottom'].set_color('#000000')
-    # ax.yaxis.set_minor_locator(AutoMinorLocator(4))
-    # ax.xaxis.set_minor_locator(AutoMinorLocator(4))
 
-    # Bold panel title
     ax.text(-0.07, 1.15, f'({letter})',
             transform=ax.transAxes,
             va='bottom', ha='left',
@@ -178,7 +205,7 @@ sen_handle     = Line2D([0], [0], color=TREND_COLOR, linewidth=2.5,
                         linestyle='--', dashes=(6, 3))
 
 handles = crop_handles + [overall_handle, sen_handle]
-labels  = list(crop_cols) + ["Overall mean", "Sen's slope"]
+labels  = list(crop_cols) + ["Overall mean", "Sen's slope (95% CI)"]
 
 leg = fig.legend(handles=handles, labels=labels,
                  loc='lower center',
@@ -195,7 +222,7 @@ for handle in leg.legend_handles:
         pass
 
 plt.tight_layout()
-plt.subplots_adjust(wspace=0.2, bottom=0.22)
+plt.subplots_adjust(wspace=0.25, bottom=0.22)
 fig.savefig(OUT_PATH, dpi=DPI, bbox_inches='tight',
             facecolor='white', edgecolor='none')
 plt.close()

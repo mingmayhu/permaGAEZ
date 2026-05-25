@@ -3,20 +3,20 @@ Figure: Overall Mean Suitability Comparison (Obs vs FAO)
 =========================================================
 Reads pre-computed CSV and produces a 2-panel figure:
   Left  — Overall mean suitability score (1-5), obs vs FAO, 1979-2018
-  Right — Overall % suitable land (class >= 2), obs vs FAO, 1979-2018
+  Right — Overall suitable land area (km²), obs vs FAO, 1979-2018
 
 Both panels show:
   - Annual series for obs (blue) and FAO (red dashed)
   - Sen's slope trend lines with MK stats in legend
+  - 95% bootstrap CI band around each Sen's slope line
   - Shaded region where obs > FAO (blue) and FAO > obs (red)
-  - 1999 divergence line
 
 Input:
-  ./results/permafrost_thaw_impact/fao_comparison/figure_exports/
+  ./results/permafrost_thaw_impact/permafrost_vs_fao/outputs/
       overall_mean_suitability_timeseries.csv
 
 Output:
-  ./results/permafrost_thaw_impact/fao_comparison/figures/
+  ./results/permafrost_thaw_impact/permafrost_vs_fao/outputs/
       fig_fao_timeseries.png
 """
 
@@ -75,7 +75,7 @@ sns.set_theme(
 df    = pd.read_csv(CSV_PATH)
 years = df['year'].values
 
-# ── MK trend helper ───────────────────────────────────────────────────────────
+# ── Helpers ───────────────────────────────────────────────────────────────────
 def run_mk(series):
     s = np.array(series, dtype=float)
     valid = np.isfinite(s)
@@ -85,29 +85,59 @@ def run_mk(series):
     line = np.full(len(s), np.nan)
     idx  = np.where(valid)[0]
     line[idx] = mk.intercept + mk.slope * np.arange(valid.sum())
+    print(mk.Tau, mk.p, mk.slope)
     return {
         'tau': mk.Tau, 'p': mk.p, 'slope': mk.slope,
-        'sig': mk.p < 0.05, 'line': line
+        'intercept': mk.intercept,
+        'sig': mk.p < 0.05, 'line': line,
     }
+
+def bootstrap_sen_ci(series, n_boot=1000, ci=95):
+    s         = np.array(series, dtype=float)
+    valid_idx = np.where(np.isfinite(s))[0]
+    if len(valid_idx) < 4:
+        return (np.nan, np.nan)
+    s_valid = s[valid_idx]
+    slopes  = []
+    rng     = np.random.default_rng(42)
+    for _ in range(n_boot):
+        idx = np.sort(rng.choice(len(s_valid), size=len(s_valid), replace=True))
+        slopes.append(mk_test(s_valid[idx]).slope)
+    lo = np.percentile(slopes, (100 - ci) / 2)
+    hi = np.percentile(slopes, 100 - (100 - ci) / 2)
+    return (lo, hi)
+
+def draw_ci_band(ax, years, series, mk, ci, color):
+    """Draw 95% CI band around Sen's slope line."""
+    if mk is None or np.isnan(ci[0]):
+        return
+    valid = np.isfinite(series)
+    x_idx = np.arange(valid.sum())
+    lo_line = np.full(len(series), np.nan)
+    hi_line = np.full(len(series), np.nan)
+    lo_line[valid] = mk['intercept'] + ci[0] * x_idx
+    hi_line[valid] = mk['intercept'] + ci[1] * x_idx
+    ax.fill_between(years, lo_line, hi_line,
+                    color=color, alpha=0.12, zorder=5)
 
 # ── Build panels ──────────────────────────────────────────────────────────────
 panels = [
     {
         'obs':    df['obs_mean_suit'].values,
         'fao':    df['fao_mean_suit'].values,
-        'ylabel': 'Mean Suitability Score (1–5)',
+        'ylabel': 'Mean suitability (1–5)',
         'title':  '(a)',
     },
     {
-        'obs':    df['obs_pct_ge2'].values,
-        'fao':    df['fao_pct_ge2'].values,
-        'ylabel': '% Pixels with Class ≥ 2',
+        'obs':    df['obs_area_km2'].values,
+        'fao':    df['fao_area_km2'].values,
+        'ylabel': 'Suitable land area (km²)',
         'title':  '(b)',
     },
 ]
 
 # ── Figure ────────────────────────────────────────────────────────────────────
-fig, axes = plt.subplots(1, 2, figsize=(14, 5.5))
+fig, axes = plt.subplots(1, 2, figsize=(14, 7))
 fig.patch.set_facecolor('white')
 
 for ax, panel in zip(axes, panels):
@@ -115,6 +145,8 @@ for ax, panel in zip(axes, panels):
     fao_s = panel['fao']
     mk_obs = run_mk(obs_s)
     mk_fao = run_mk(fao_s)
+    ci_obs = bootstrap_sen_ci(obs_s)
+    ci_fao = bootstrap_sen_ci(fao_s)
 
     # Shaded difference regions
     ax.fill_between(years, obs_s, fao_s,
@@ -127,33 +159,37 @@ for ax, panel in zip(axes, panels):
     # Annual series
     ax.plot(years, fao_s, color=COLOR_FAO, linewidth=1.8,
             marker='s', markersize=3.5, zorder=4, linestyle='--',
-            label='Original FAO methodology')
+            label='PyAEZ')
     ax.plot(years, obs_s, color=COLOR_OBS, linewidth=1.8,
-        marker='o', markersize=3.5, zorder=4,
-        label='Updated permafrost methodology')
+            marker='o', markersize=3.5, zorder=4,
+            label='PermaGAEZ')
 
     # Sen's slope trend lines
     if mk_obs:
         ax.plot(years, mk_obs['line'], color=COLOR_OBS,
-                linewidth=1.4, linestyle=':', zorder=5,
-                label=(f"Permafrost sen's slope: {mk_obs['slope']:.5f}/yr "
+                linewidth=1.4, linestyle=':', zorder=6,
+                label=(f"PermaGAEZ Sen's slope: {mk_obs['slope']:.5f} yr⁻¹ "
                        f"(p < 0.001)"))
     if mk_fao:
         ax.plot(years, mk_fao['line'], color=COLOR_FAO,
-                linewidth=1.4, linestyle=':', zorder=5,
-                label=(f"FAO sen's slope: {mk_fao['slope']:.5f}/yr "
+                linewidth=1.4, linestyle=':', zorder=6,
+                label=(f"PyAEZ Sen's slope: {mk_fao['slope']:.5f} yr⁻¹ "
                        f"(p < 0.001)"))
 
+    # 95% CI bands around Sen's slope lines
+    # draw_ci_band(ax, years, obs_s, mk_obs, ci_obs, COLOR_OBS)
+    # draw_ci_band(ax, years, fao_s, mk_fao, ci_fao, COLOR_FAO)
+
     # Axes
-    ax.set_xlabel('Year', fontsize=12, fontproperties=fp_reg)
-    ax.set_ylabel(panel['ylabel'], fontsize=12, fontproperties=fp_reg)
-    ax.set_title(panel['title'], fontsize=12, fontproperties=fp_reg, pad=8, loc='left')
+    ax.set_xlabel('Year', fontsize=14, fontproperties=fp_reg)
+    ax.set_ylabel(panel['ylabel'], fontsize=14, fontproperties=fp_reg)
+    ax.set_title(panel['title'], fontsize=14, pad=14, loc='left')
     ax.set_xticks(years[::4])
-    ax.set_xticklabels(years[::4], rotation=45, ha='right', fontsize=12)
-    ax.tick_params(axis='y', labelsize=12)
-    ax.legend(fontsize=12, loc='upper left', 
-                              bbox_to_anchor=(0.2, -0.25),
-                bbox_transform=ax.transAxes,frameon=False)
+    ax.set_xticklabels(years[::4], rotation=45, ha='right', fontsize=14)
+    ax.tick_params(axis='y', labelsize=14)
+    ax.legend(fontsize=14, loc='upper left',
+              bbox_to_anchor=(0.06, -0.26),
+              bbox_transform=ax.transAxes, frameon=False)
 
 plt.tight_layout()
 fig.savefig(OUT_PATH, dpi=DPI, bbox_inches='tight', facecolor='white')

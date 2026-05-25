@@ -1,0 +1,3 @@
+Model,N pixels,False Negatives (n),False Negatives (%),Mean Actual (kg/ha),Mean Modelled (kg/ha),Pearson r,Pearson p,Spearman r,Spearman p,RMSE (kg/ha),MAE (kg/ha),Mean Bias (kg/ha),Mean Bias (%),Yield Gap Ratio (actual/mod),Crop,Source,Model Period
+Permafrost Model,1397,1375,98.4,0.38,0.23,0.2325,0.0,0.0814,0.0023,2.0,0.55,-0.15,-39.77,0.1259,Dry Pea,Monfreda (2000),1979–1998
+Original Model,1397,1372,98.2,0.38,0.2,0.2152,0.0,0.074,0.0056,1.73,0.52,-0.19,-48.63,0.1413,Dry Pea,Monfreda (2000),1979–1998

@@ -1,0 +1,12 @@
+Permafrost Classification Comparison — 2010
+============================================================
+Reference: permafrost_qilian.tif (1 = permafrost)
+Valid pixels: 1746
+
+    model  n_valid  TP  FP  FN  TN  accuracy  precision  recall     f1
+FAO PyAEZ     1746 758 161 160 667    0.8162     0.8248  0.8257 0.8253
+   P-GAEZ     1746 744 203 174 625    0.7841     0.7856  0.8105 0.7979
+
+Observed permafrost pixels:   918
+FAO permafrost pixels:        919
+P-GAEZ permafrost pixels:     947

@@ -40,12 +40,12 @@ BOLD_PATH = '/Users/ming-mayhu/Library/Fonts/Helvetica LT 75 Bold.ttf'
 REG_PATH  = '/System/Library/Fonts/Helvetica.ttc'
 
 CROP_ORDER = [
-    'Winter Barley', 'Spring Barley', 'Winter Wheat', 'Spring Wheat',
-    'Silage Maize', 'White Potato', 'Oat', 'Dry Pea',
-    'Winter Rape', 'Spring Rape', 'Overall',
+    'Winter barley', 'Spring barley', 'Winter wheat', 'Spring wheat',
+    'Silage maize', 'White potato', 'Spring oat', 'Dry pea',
+    'Winter rapeseed', 'Spring rapeseed', 'Overall',
 ]
 
-VAR_ORDER = ['Active Layer Depth', 'Soil Moisture']
+VAR_ORDER = ['Active layer thickness', 'Available soil moisture']
 
 os.chdir(WORK_DIR)
 os.makedirs(OUT_DIR, exist_ok=True)
@@ -98,10 +98,6 @@ fig, ax = plt.subplots(figsize=(fig_w, fig_h))
 fig.patch.set_facecolor('white')
 
 im = ax.imshow(r_vals, cmap='RdBu', vmin=-vmax, vmax=vmax, aspect='auto')
-
-# Colourbar
-# cbar = plt.colorbar(im, ax=ax, shrink=.9, pad=0.02)
-# cbar = plt.colorbar(im, ax=ax, shrink=0.8, pad=0.02, fraction=0.05)
 
 
 divider = make_axes_locatable(ax)

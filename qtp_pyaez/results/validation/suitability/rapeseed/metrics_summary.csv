@@ -1,4 +1,9 @@
-Crop,Model,N pixels,Spearman r,Spearman p,TP,FP,FN,TN,Precision,Recall,F1,Accuracy
-Rapeseed,Permafrost Model,1746,0.3704,0.0,113,55,259,1319,0.6726,0.3038,0.4185,0.8202
-Rapeseed,No-Thaw Model,1746,0.3911,0.0,102,45,270,1329,0.6939,0.2742,0.3931,0.8196
-Rapeseed,Original Model,1746,0.3237,0.0,119,68,253,1306,0.6364,0.3199,0.4258,0.8162
+Crop,HA Source,Model,N pixels,Spearman r,Spearman p,TP,FP,FN,TN,Precision,Recall,F1,Accuracy
+Rapeseed,CROPGRIDS (1999–2018),Permafrost Model,1746,0.3704,0.0,113,55,259,1319,0.6726,0.3038,0.4185,0.8202
+Rapeseed,CROPGRIDS (1999–2018),No-Thaw Model,1746,0.3911,0.0,102,45,270,1329,0.6939,0.2742,0.3931,0.8196
+Rapeseed,CROPGRIDS (1999–2018),Original Model,1746,0.3237,0.0,119,68,253,1306,0.6364,0.3199,0.4258,0.8162
+Rapeseed,FAO Production (1999–2018),Permafrost Model,1746,0.1302,0.0,29,139,75,1503,0.1726,0.2788,0.2132,0.8774
+Rapeseed,FAO Production (1999–2018),No-Thaw Model,1746,0.1293,0.0,26,121,78,1521,0.1769,0.25,0.2072,0.886
+Rapeseed,FAO Production (1999–2018),Original Model,1746,0.0871,0.0003,27,160,77,1482,0.1444,0.2596,0.1856,0.8643
+Rapeseed,Monfreda (2000) (1979–1998),Permafrost Model,1746,0.2993,0.0,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+Rapeseed,Monfreda (2000) (1979–1998),Original Model,1746,0.2822,0.0,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A

@@ -1,0 +1,4 @@
+Model,N pixels,False Negatives (n),False Negatives (%),Mean Actual (kg/ha),Mean Modelled (kg/ha),Pearson r,Pearson p,Spearman r,Spearman p,RMSE (kg/ha),MAE (kg/ha),Mean Bias (kg/ha),Mean Bias (%),Yield Gap Ratio (actual/mod),Crop,Source,Model Period
+Permafrost Model,100,74,74.0,73.14,81.71,0.3013,0.0023,0.2935,0.003,152.54,97.2,8.58,11.73,0.478,Wheat,FAO Production,1999–2018
+No-Thaw Model,100,75,75.0,73.14,71.5,0.3861,0.0001,0.3235,0.001,137.97,86.08,-1.64,-2.24,0.4401,Wheat,FAO Production,1999–2018
+Original Model,100,72,72.0,73.14,83.71,0.3276,0.0009,0.2938,0.003,145.23,93.87,10.57,14.46,0.423,Wheat,FAO Production,1999–2018

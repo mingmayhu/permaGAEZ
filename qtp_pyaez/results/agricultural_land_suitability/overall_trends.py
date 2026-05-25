@@ -9,7 +9,7 @@ Suitable land threshold is class >= 2.
 Mean suitability ranges from 1-5.
 
 Section 5.1 — 40-Year Suitability Trends (1979–2018):
-  - Overall aggregate time series: mean suitability, % class >=2
+  - Overall aggregate time series: mean suitability, suitable area (km²)
   - Stacked class distribution chart (overall, classes 2-5 only)
   - MK trend results table
   - Per-crop time series (supplementary)
@@ -115,6 +115,27 @@ def load_mask():
         print(f'  Excluded {lake_mask.sum()} lake/nodata pixels from mask')
     return mask
 
+def build_pixel_area_km2(mask):
+    """
+    Build per-pixel area array (km²) using cosine latitude correction.
+    Resolution is 0.1°. Area = (0.1 * 111.32)^2 * cos(lat_rad).
+    Returns array same shape as mask; non-mask pixels are 0.
+    """
+    ds = gdal.Open(MASK_PATH)
+    gt = ds.GetGeoTransform()
+    # gt[3] = top-left latitude, gt[5] = pixel height (negative)
+    nrows, ncols = mask.shape
+    # latitude at centre of each row
+    lats = gt[3] + gt[5] * (np.arange(nrows) + 0.5)
+    deg_to_km = 111.32
+    pixel_side_km = abs(gt[5]) * deg_to_km          # ~11.132 km at equator
+    area_2d = np.outer(
+        pixel_side_km * pixel_side_km * np.cos(np.deg2rad(lats)),
+        np.ones(ncols)
+    )
+    area_2d[~mask] = 0.0
+    return area_2d
+
 def obs_suit_path(tag, year):
     return f'./data_output/final_classification_fixed/{tag}/{year}_suitability_class.tif'
 
@@ -130,21 +151,21 @@ def remap(arr_int):
     out[out == 0] = 1
     return out
 
-def compute_metrics(arr, mask):
+def compute_metrics(arr, mask, pixel_area_km2):
     """Compute suitability metrics. Classes 0 and 1 combined into class 1.
-    Mean suitability ranges 1-5. Suitable land = class >= 2.
+    Mean suitability ranges 1-5. Suitable land = class >= 2 (area in km²).
     """
     arr_int = np.where(mask & np.isfinite(clean(arr, mask)), arr, 0).astype(int)
     arr_int = np.clip(arr_int, 0, 5)
     arr_int = remap(arr_int)
     return {
-        'mean_suit': float(np.nanmean(arr_int[mask])),
-        'pct_ge2'  : float(np.mean(arr_int[mask] >= 2) * 100),
-        'pct_1'    : float(np.mean(arr_int[mask] == 1) * 100),
-        'pct_2'    : float(np.mean(arr_int[mask] == 2) * 100),
-        'pct_3'    : float(np.mean(arr_int[mask] == 3) * 100),
-        'pct_4'    : float(np.mean(arr_int[mask] == 4) * 100),
-        'pct_5'    : float(np.mean(arr_int[mask] == 5) * 100),
+        'mean_suit'    : float(np.nanmean(arr_int[mask])),
+        'area_ge2_km2' : float(np.sum(pixel_area_km2[arr_int >= 2])),
+        'pct_1'        : float(np.mean(arr_int[mask] == 1) * 100),
+        'pct_2'        : float(np.mean(arr_int[mask] == 2) * 100),
+        'pct_3'        : float(np.mean(arr_int[mask] == 3) * 100),
+        'pct_4'        : float(np.mean(arr_int[mask] == 4) * 100),
+        'pct_5'        : float(np.mean(arr_int[mask] == 5) * 100),
     }
 
 def run_mk(series):
@@ -159,11 +180,28 @@ def run_mk(series):
         'tau': round(mk.Tau, 3), 'p': round(mk.p, 4),
         'slope': round(mk.slope, 6), 'significant': mk.p < ALPHA,
         'trend': mk.trend, 'sen_line': line,
+        'intercept': mk.intercept,
     }
 
+def bootstrap_sen_ci(series, n_boot=1000, ci=95):
+    """Bootstrap 95% CI on Sen's slope; returns (lo, hi)."""
+    s = np.array(series, dtype=float)
+    valid_idx = np.where(np.isfinite(s))[0]
+    if len(valid_idx) < 4:
+        return (np.nan, np.nan)
+    s_valid = s[valid_idx]
+    slopes = []
+    rng = np.random.default_rng(42)
+    for _ in range(n_boot):
+        idx = np.sort(rng.choice(len(s_valid), size=len(s_valid), replace=True))
+        slopes.append(mk_test(s_valid[idx]).slope)
+    lo = np.percentile(slopes, (100 - ci) / 2)
+    hi = np.percentile(slopes, 100 - (100 - ci) / 2)
+    return (lo, hi)
+
 def plot_metric_obs(ax, years, series, mk_result, ylabel, title,
-                    color='#2166AC'):
-    """Plot observed-only time series with Sen's slope."""
+                    color='#2166AC', ci=None):
+    """Plot observed-only time series with Sen's slope and optional CI band."""
     ax.plot(years, series, color=color, linewidth=2,
             marker='o', markersize=3, label='Observed')
     if mk_result:
@@ -172,6 +210,17 @@ def plot_metric_obs(ax, years, series, mk_result, ylabel, title,
                 linewidth=2, linestyle='--',
                 label=f"Sen's slope: {mk_result['slope']:.5f}/yr "
                       f"(p={mk_result['p']:.3f}){sig}")
+        # CI band around Sen's slope line
+        if ci is not None and not np.isnan(ci[0]):
+            valid = np.isfinite(series)
+            x_idx = np.arange(valid.sum())
+            lo_line = np.full(len(series), np.nan)
+            hi_line = np.full(len(series), np.nan)
+            lo_line[valid] = mk_result['intercept'] + ci[0] * x_idx
+            hi_line[valid] = mk_result['intercept'] + ci[1] * x_idx
+            ax.fill_between(years, lo_line, hi_line,
+                            color='#D6604D', alpha=0.15,
+                            label='95% CI (bootstrap)')
     ax.set_xlabel('Year', fontsize=FONTSIZE_LABEL)
     ax.set_ylabel(ylabel, fontsize=FONTSIZE_LABEL)
     ax.set_title(title, fontsize=FONTSIZE_TITLE, fontweight='bold')
@@ -203,15 +252,15 @@ def plot_stacked_class(ax, years, cls_data, title):
 
 # ── Build annual series per crop ──────────────────────────────────────────────
 
-def build_crop_series(tag, mask):
+def build_crop_series(tag, mask, pixel_area_km2):
     """Build annual observed suitability metrics for one crop."""
-    metrics = ['mean_suit', 'pct_ge2',
+    metrics = ['mean_suit', 'area_ge2_km2',
                'pct_1', 'pct_2', 'pct_3', 'pct_4', 'pct_5']
     data = {m: [] for m in metrics}
 
     for year in YEARS_ALL:
         arr = load_raster(obs_suit_path(tag, year))
-        m   = compute_metrics(arr, mask) if arr is not None else \
+        m   = compute_metrics(arr, mask, pixel_area_km2) if arr is not None else \
               {k: np.nan for k in metrics}
         for k in metrics:
             data[k].append(m[k])
@@ -221,29 +270,29 @@ def build_crop_series(tag, mask):
 
 # ── Section 5.1: 40-Year Suitability Trends ───────────────────────────────────
 
-def section_trends(mask):
+def section_trends(mask, pixel_area_km2):
     print('\n[5.1] 40-year suitability trends …')
     years_arr = np.array(YEARS_ALL)
     mk_results = []
 
-    all_mean = []
-    all_ge2  = []
-    all_cls  = {c: [] for c in [1, 2, 3, 4, 5]}
+    all_mean     = []
+    all_area_ge2 = []
+    all_cls      = {c: [] for c in [1, 2, 3, 4, 5]}
 
     for crop in CROPS:
         tag, label = crop['tag'], crop['label']
         print(f'  Loading {label} …')
-        data = build_crop_series(tag, mask)
+        data = build_crop_series(tag, mask, pixel_area_km2)
 
         all_mean.append(data['mean_suit'])
-        all_ge2.append(data['pct_ge2'])
+        all_area_ge2.append(data['area_ge2_km2'])
         for c in [1, 2, 3, 4, 5]:
             all_cls[c].append(data[f'pct_{c}'])
 
         mk_ms = run_mk(data['mean_suit'])
-        mk_g2 = run_mk(data['pct_ge2'])
+        mk_a2 = run_mk(data['area_ge2_km2'])
 
-        for metric, mk in [('mean_suit', mk_ms), ('pct_ge2', mk_g2)]:
+        for metric, mk in [('mean_suit', mk_ms), ('area_ge2_km2', mk_a2)]:
             if mk:
                 mk_results.append({
                     'crop': label, 'metric': metric,
@@ -256,8 +305,8 @@ def section_trends(mask):
         fig, axes = plt.subplots(1, 2, figsize=(21, 5))
         plot_metric_obs(axes[0], years_arr, data['mean_suit'], mk_ms,
                         'Mean Suitability Score (1–5)', 'Mean Suitability (all pixels)')
-        plot_metric_obs(axes[1], years_arr, data['pct_ge2'], mk_g2,
-                        '% Pixels with Class ≥ 2', '% Any Suitable Land')
+        plot_metric_obs(axes[1], years_arr, data['area_ge2_km2'], mk_a2,
+                        'Suitable Land Area (km²)', 'Suitable Land Area (class ≥ 2)')
         fig.suptitle(f'{label} — Suitability Trends (1979–2018)',
                      fontsize=14, fontweight='bold')
         plt.tight_layout()
@@ -279,14 +328,19 @@ def section_trends(mask):
         plt.close()
 
     # ── Overall aggregate ──────────────────────────────────────────────────────
-    obs_mean_agg = np.nanmean(all_mean, axis=0)
-    obs_ge2_agg  = np.nanmean(all_ge2,  axis=0)
+    obs_mean_agg     = np.nanmean(all_mean,     axis=0)
+    obs_area_ge2_agg = np.nanmean(all_area_ge2, axis=0)
     cls_agg = {f'pct_{c}': np.nanmean(all_cls[c], axis=0) for c in [1, 2, 3, 4, 5]}
 
     mk_ms_agg = run_mk(obs_mean_agg)
-    mk_g2_agg = run_mk(obs_ge2_agg)
+    mk_a2_agg = run_mk(obs_area_ge2_agg)
 
-    for metric, mk in [('mean_suit', mk_ms_agg), ('pct_ge2', mk_g2_agg)]:
+    # Bootstrap CIs on overall aggregates
+    print('  Bootstrapping Sen slope CIs …')
+    ci_ms_agg = bootstrap_sen_ci(obs_mean_agg)
+    ci_a2_agg = bootstrap_sen_ci(obs_area_ge2_agg)
+
+    for metric, mk in [('mean_suit', mk_ms_agg), ('area_ge2_km2', mk_a2_agg)]:
         if mk:
             mk_results.append({
                 'crop': 'OVERALL', 'metric': metric,
@@ -299,11 +353,11 @@ def section_trends(mask):
     fig, axes = plt.subplots(1, 2, figsize=(18, 6))
     colors = plt.cm.tab10(np.linspace(0, 1, len(CROPS)))
 
-    for ax, metric, all_data, agg_data, ylabel, title in [
-        (axes[0], 'mean_suit', all_mean, obs_mean_agg,
-         'Mean Suitability Score (1–5)', '(a) Mean suitability across all crops'),
-        (axes[1], 'pct_ge2',  all_ge2,  obs_ge2_agg,
-         '% Land with Class ≥ 2',     '(b) Percent of suitable land across all crops'),
+    for ax, metric, all_data, agg_data, mk, ylabel, title in [
+        (axes[0], 'mean_suit',    all_mean,     obs_mean_agg,     mk_ms_agg,
+         'Mean Suitability Score (1–5)',  '(a) Mean suitability across all crops'),
+        (axes[1], 'area_ge2_km2', all_area_ge2, obs_area_ge2_agg, mk_a2_agg,
+         'Suitable Land Area (km²)',      '(b) Suitable land area across all crops'),
     ]:
         ax.set_title(title, fontsize=FONTSIZE_TITLE, fontweight='bold')
         ax.set_xlabel('Year', fontsize=FONTSIZE_LABEL)
@@ -313,7 +367,6 @@ def section_trends(mask):
                     alpha=0.6, label=crop['label'])
         ax.plot(years_arr, agg_data, color='black', linewidth=2.5,
                 label='Overall mean', zorder=5)
-        mk = mk_ms_agg if metric == 'mean_suit' else mk_g2_agg
         if mk:
             sig = '★' if mk['significant'] else ''
             ax.plot(years_arr, mk['sen_line'], color='black', linewidth=1.5,
@@ -337,10 +390,12 @@ def section_trends(mask):
     fig, axes = plt.subplots(1, 2, figsize=(21, 5))
     plot_metric_obs(axes[0], years_arr, obs_mean_agg, mk_ms_agg,
                     'Mean Suitability Score (1–5)',
-                    'Overall Mean Suitability Score\n(all pixels, all crops)')
-    plot_metric_obs(axes[1], years_arr, obs_ge2_agg, mk_g2_agg,
-                    '% Pixels with Class ≥ 2',
-                    'Overall % Any Suitable Land\n(all crops)')
+                    'Overall Mean Suitability Score\n(all pixels, all crops)',
+                    ci=ci_ms_agg)
+    plot_metric_obs(axes[1], years_arr, obs_area_ge2_agg, mk_a2_agg,
+                    'Suitable Land Area (km²)',
+                    'Overall Suitable Land Area\n(class ≥ 2, all crops)',
+                    ci=ci_a2_agg)
     fig.suptitle('Qilian Mountain Region — Agricultural Suitability Trends (1979–2018)',
                  fontsize=14, fontweight='bold')
     plt.tight_layout()
@@ -348,6 +403,8 @@ def section_trends(mask):
                 dpi=DPI, bbox_inches='tight')
     plt.close()
     print('  ✓ Overall trend figure saved')
+    print(f'  Mean suitability CI: [{ci_ms_agg[0]:.6f}, {ci_ms_agg[1]:.6f}]')
+    print(f'  Suitable area CI:    [{ci_a2_agg[0]:.3f}, {ci_a2_agg[1]:.3f}] km²/yr')
 
     # ── Figure 2: Overall stacked class distribution ──────────────────────────
     fig, ax = plt.subplots(figsize=(12, 6))
@@ -371,7 +428,7 @@ def section_trends(mask):
 
 # ── Section 5.2: Spatial Hotspots ────────────────────────────────────────────
 
-def section_hotspots(mask):
+def section_hotspots(mask, pixel_area_km2):
     print('\n[5.2] Spatial hotspots …')
 
     suit_pre_all  = []
@@ -389,7 +446,7 @@ def section_hotspots(mask):
             arr = clean(arr, mask)
             arr_int = np.where(mask & np.isfinite(arr), arr, 0).astype(int)
             arr_int = np.clip(arr_int, 0, 5)
-            arr_int = remap(arr_int)  # combine class 0 into class 1
+            arr_int = remap(arr_int)
             arr_flt = arr_int.astype(float)
             arr_flt[~mask] = np.nan
             if year in YEARS_PRE:
@@ -462,11 +519,8 @@ def section_hotspots(mask):
         post_cls = np.round(post).astype(int)
         valid    = mask & np.isfinite(pre) & np.isfinite(post)
 
-        # Expansion: pixels crossing <=1 -> >=2
         newly_suitable   = valid & (pre_cls <= 1) & (post_cls >= 2)
         lost_suitable    = valid & (pre_cls >= 2) & (post_cls <= 1)
-
-        # Intensification: pixels already suitable (>=2) in both periods
         already_suitable = valid & (pre_cls >= 2) & (post_cls >= 2)
 
         if already_suitable.sum() > 0:
@@ -485,10 +539,8 @@ def section_hotspots(mask):
 
         expansion_units = float(np.nansum(post[newly_suitable] - pre[newly_suitable])) \
                           if newly_suitable.sum() > 0 else 0.0
-
         intensification_units = float(np.nansum(post[already_suitable] - pre[already_suitable])) \
                                  if already_suitable.sum() > 0 else 0.0
-
         lost_units = float(np.nansum(post[lost_suitable] - pre[lost_suitable])) \
                      if lost_suitable.sum() > 0 else 0.0
 
@@ -653,8 +705,9 @@ def section_hotspots(mask):
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 if __name__ == '__main__':
-    mask = load_mask()
-    section_trends(mask)
-    section_hotspots(mask)
+    mask           = load_mask()
+    pixel_area_km2 = build_pixel_area_km2(mask)
+    section_trends(mask, pixel_area_km2)
+    section_hotspots(mask, pixel_area_km2)
     print(f'\n✓ All Chapter 5 figures saved to: {OUT_ROOT}/')
     print(f'  Supplementary figures in: {SUPP_DIR}/')

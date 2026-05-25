@@ -1,0 +1,8 @@
+Crop,Monfreda mean quality,Monfreda % county (1.0),Monfreda % state (0.75),Monfreda % interp (0.50),Monfreda % country (0.25),Monfreda % missing (0.0),Monfreda assessment,CROPGRIDS mean quality,CROPGRIDS % high,CROPGRIDS % moderate,CROPGRIDS % low,CROPGRIDS % very low,CROPGRIDS assessment
+Barley,0.172,0.0,0.0,0.0,68.9,31.1,VERY LOW,0.484,0.0,0.0,100.0,0.0,LOW
+Spring Oat,0.172,0.0,0.0,0.0,68.9,31.1,VERY LOW,0.415,0.0,0.0,100.0,0.0,LOW
+Dry Pea,0.172,0.0,0.0,0.0,68.9,31.1,VERY LOW,0.713,0.0,100.0,0.0,0.0,MODERATE
+Rapeseed,0.688,68.6,0.0,0.3,0.0,31.1,MODERATE,0.793,100.0,0.0,0.0,0.0,HIGH
+Wheat,0.688,68.6,0.0,0.3,0.0,31.1,MODERATE,0.888,100.0,0.0,0.0,0.0,HIGH
+White Potato,0.688,68.6,0.0,0.3,0.0,31.1,MODERATE,0.738,0.0,100.0,0.0,0.0,MODERATE
+Silage Maize,0.0,0.0,0.0,0.0,0.0,100.0,VERY LOW,0.42,0.0,0.0,100.0,0.0,LOW
