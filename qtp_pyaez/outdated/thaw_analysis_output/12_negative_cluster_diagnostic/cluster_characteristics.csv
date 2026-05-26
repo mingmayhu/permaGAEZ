@@ -1,6 +1,0 @@
-variable,cluster_mean,cluster_median,other_mean,other_median,mannwhitney_p,significant
-Elevation (m),3230.0258,3199.4872,3755.0114,3767.4526,0.0,True
-Slope (°),13.1822,14.6442,25.8967,23.7323,0.0,True
-ASM baseline 1979-1998,374.3473,399.2327,183.1496,163.1374,0.0,True
-ASM comparison 1999-2018,436.6761,458.8896,211.7386,185.4225,0.0,True
-ΔASM (obs − baseline),62.3288,56.9322,28.5889,21.8361,0.0,True

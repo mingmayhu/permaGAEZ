@@ -50,9 +50,10 @@ CROPS = [
     # {'label': 'Dry Pea',       'tag': 'combined_dry_pea'},
     # {'label': 'Winter Rape',   'tag': 'combined_winter_rape'},
     # {'label': 'Spring Rape',   'tag': 'combined_spring_rape'},
-    {'label': 'Barley',   'tag': 'combined_barley'},
-    {'label': 'Rape',   'tag': 'combined_rape'},
-    {'label': 'Wheat',   'tag': 'combined_wheat'},
+    # {'label': 'Barley',   'tag': 'combined_barley'},
+    # {'label': 'Rape',   'tag': 'combined_rape'},
+    # {'label': 'Wheat',   'tag': 'combined_wheat'},
+    {'label': 'Spring Oat',   'tag': 'combined_spring_oat_NEW'},
 ]
 
 os.chdir(WORK_DIR)
