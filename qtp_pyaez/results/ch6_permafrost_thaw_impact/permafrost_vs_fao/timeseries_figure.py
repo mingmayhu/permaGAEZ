@@ -32,9 +32,9 @@ from pymannkendall import original_test as mk_test
 
 # ── Configuration ─────────────────────────────────────────────────────────────
 WORK_DIR = r'/Users/ming-mayhu/Desktop/毕业论文/qtp-pyaez/qtp_pyaez'
-CSV_PATH = (r'./results/permafrost_thaw_impact/permafrost_vs_fao/outputs/'
+CSV_PATH = (r'./results/ch6_permafrost_thaw_impact/permafrost_vs_fao/outputs/'
             r'overall_mean_suitability_timeseries.csv')
-OUT_DIR  = r'./results/permafrost_thaw_impact/permafrost_vs_fao/outputs'
+OUT_DIR  = r'./results/ch6_permafrost_thaw_impact/permafrost_vs_fao/outputs'
 OUT_PATH = f'{OUT_DIR}/fig_fao_timeseries.png'
 DPI      = 300
 
@@ -127,12 +127,14 @@ panels = [
         'fao':    df['fao_mean_suit'].values,
         'ylabel': 'Mean suitability (1–5)',
         'title':  '(a)',
+        'unit': '',
     },
     {
         'obs':    df['obs_area_km2'].values,
         'fao':    df['fao_area_km2'].values,
         'ylabel': 'Suitable land area (km²)',
         'title':  '(b)',
+        'unit': 'km²',
     },
 ]
 
@@ -165,15 +167,16 @@ for ax, panel in zip(axes, panels):
             label='PermaGAEZ')
 
     # Sen's slope trend lines
+    unit = panel['unit']
     if mk_obs:
         ax.plot(years, mk_obs['line'], color=COLOR_OBS,
                 linewidth=1.4, linestyle=':', zorder=6,
-                label=(f"PermaGAEZ Sen's slope: {mk_obs['slope']:.5f} yr⁻¹ "
+                label=(f"PermaGAEZ Sen's slope: {mk_obs['slope']:.5f} {unit} yr⁻¹ "
                        f"(p < 0.001)"))
     if mk_fao:
         ax.plot(years, mk_fao['line'], color=COLOR_FAO,
                 linewidth=1.4, linestyle=':', zorder=6,
-                label=(f"PyAEZ Sen's slope: {mk_fao['slope']:.5f} yr⁻¹ "
+                label=(f"PyAEZ Sen's slope: {mk_fao['slope']:.5f} {unit} yr⁻¹ "
                        f"(p < 0.001)"))
 
     # 95% CI bands around Sen's slope lines
