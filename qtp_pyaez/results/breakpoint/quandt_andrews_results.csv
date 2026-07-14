@@ -1,0 +1,5 @@
+"Variable","Break_year","Years_from_1999","supF","p_value","Significant"
+"Mean Temperature (°C)",1997,2,82.7509,0,TRUE
+"Total Precipitation (mm yr⁻¹)",2001,2,56.8635,0,TRUE
+"Active Layer Thickness (m)",1990,9,14.0055,0.004009,TRUE
+"Available Soil Moisture (mm)",1996,3,128.3466,0,TRUE

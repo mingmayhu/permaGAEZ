@@ -1,7 +1,7 @@
 """
 2-panel regional climate trends figure for Chapter 4
 Panels: (a) Mean Temperature  (b) Total Precipitation
-Matches style of four_panel_trends.py exactly.
+Publication-quality using seaborn theming + Helvetica
 """
 
 import os
@@ -33,7 +33,7 @@ FONT      = 'Helvetica'
 BOLD_PATH = '/Users/ming-mayhu/Library/Fonts/Helvetica LT 75 Bold.ttf'
 REG_PATH  = '/System/Library/Fonts/Helvetica.ttc'
 
-# ── Seaborn theme — identical to four_panel_trends.py ────────────────────────
+# ── Seaborn theme ─────────────────────────────────────────────────────────────
 sns.set_theme(
     style='ticks',
     rc={
@@ -51,10 +51,10 @@ sns.set_theme(
 )
 
 units_map = {'a': ' °C yr⁻¹ ', 'b': ' mm yr⁻¹ '}
-OBS_BLUE  = '#1f77b4'
-TREND_RED = '#ED2A7F'
+OBS_BLUE  = "#5789df"
+TREND_RED = "#f390cb"
 
-# ── Helpers — identical to four_panel_trends.py ───────────────────────────────
+# ── Helpers ───────────────────────────────────────────────────────────────────
 def load_raster(path):
     ds = gdal.Open(path)
     if ds is None:
@@ -133,41 +133,41 @@ ci_tmean = bootstrap_sen_ci(tmean_ann)
 ci_prec  = bootstrap_sen_ci(prec_ann)
 
 panels = [
-    (tmean_ann, mk_tmean, ci_tmean, 'Temperature (°C)',   'a', OBS_BLUE),
-    (prec_ann,  mk_prec,  ci_prec,  'Precipitation (mm)', 'b', OBS_BLUE),
+    (tmean_ann, mk_tmean, ci_tmean, 'Mean regional temperature (°C)',  'a'),
+    (prec_ann,  mk_prec,  ci_prec,  'Total annual precipitation (mm)', 'b'),
 ]
 
-# ── Figure — same panel loop as four_panel_trends.py ─────────────────────────
-fig, axes = plt.subplots(1, 2, figsize=(13, 4.5))
+# ── Figure ────────────────────────────────────────────────────────────────────
+fig, axes = plt.subplots(1, 2, figsize=(13, 4))
 fig.patch.set_facecolor('white')
 
-fp_normal   = FontProperties(fname=REG_PATH, size=18)
+fp_normal   = FontProperties(fname=REG_PATH, size=14)
 xtick_years = years_arr[::5]
 
-for ax, (series, mk, ci, ylabel, letter, obs_col) in zip(axes, panels):
+for ax, (series, mk, ci, ylabel, letter) in zip(axes, panels):
 
     # Fill under series
     ax.fill_between(years_arr, np.nanmin(series), series,
-                    color=obs_col, alpha=0.12, zorder=1)
+                    color=OBS_BLUE, alpha=0.12, zorder=1)
 
     # Observed line
     ax.plot(years_arr, series,
-            color=obs_col, linewidth=1.6, zorder=3,
+            color=OBS_BLUE, linewidth=1.6, zorder=3,
             marker='o', markersize=3.2,
-            markerfacecolor=obs_col, markeredgewidth=0)
+            markerfacecolor=OBS_BLUE, markeredgewidth=0)
 
     # Sen's slope + 95% CI band
     if mk:
         pstring   = 'p < 0.001' if mk['p'] < 0.001 else f'p = {mk["p"]:.3f}'
-        slope_lbl = f"Sen's slope: {mk['slope']:+.3f}{units_map[letter]}, ({pstring})"
+        slope_lbl = f"Sen's slope: {mk['slope']:+.3f}{units_map[letter]}({pstring})"
         ax.plot(years_arr, mk['sen_line'],
                 color=TREND_RED, linewidth=1.8,
                 linestyle='--', dashes=(6, 3),
                 zorder=4, label=slope_lbl)
 
         if not np.isnan(ci[0]):
-            valid   = np.isfinite(series)
-            x_idx   = np.arange(valid.sum())
+            valid = np.isfinite(series)
+            x_idx = np.arange(valid.sum())
             lo_line = np.full(len(series), np.nan)
             hi_line = np.full(len(series), np.nan)
             lo_line[valid] = mk['intercept'] + ci[0] * x_idx
@@ -176,37 +176,42 @@ for ax, (series, mk, ci, ylabel, letter, obs_col) in zip(axes, panels):
                             color=TREND_RED, alpha=0.15, zorder=3,
                             label='95% CI')
 
-    # Axis formatting — identical to four_panel_trends.py
+    # Axis formatting
     pad = (np.nanmax(series) - np.nanmin(series)) * 0.1
     ax.set_ylim(np.nanmin(series) - pad / 3, np.nanmax(series) + pad)
     ax.set_xlim(1978.5, 2018.5)
     ax.set_xticks(xtick_years)
     ax.set_xticklabels([str(y) for y in xtick_years],
-                       rotation=45, ha='right', fontsize=18)
+                       rotation=45, ha='right', fontsize=14)
     ax.yaxis.set_minor_locator(AutoMinorLocator(4))
     ax.xaxis.set_minor_locator(AutoMinorLocator(4))
-    ax.set_ylabel(ylabel, fontsize=18, labelpad=6)
-    ax.set_xlabel('Year', fontsize=18, labelpad=4)
-    ax.tick_params(labelsize=18)
+    ax.set_ylabel(ylabel, fontsize=14, labelpad=6)
+    ax.set_xlabel('Year', fontsize=14, labelpad=4)
+    ax.tick_params(labelsize=14)
     ax.tick_params(which='minor', color='#999999', width=0.6)
     ax.spines['left'].set_color('#000000')
     ax.spines['bottom'].set_color('#000000')
 
-    ax.text(-0.05, 1.08, f'({letter})',
-            transform=ax.transAxes,
-            va='bottom', ha='left',
-            fontproperties=fp_normal)
+    # ax.text(-0.05, 1.08, f'({letter})',
+    #         transform=ax.transAxes,
+    #         va='bottom', ha='left',
+    #         fontproperties=fp_normal)
 
     leg = ax.legend(loc='upper left',
-                    bbox_to_anchor=(0, 1.3),
+                    bbox_to_anchor=(0, 1.08),
                     bbox_transform=ax.transAxes,
                     edgecolor='none',
                     handlelength=2.5, borderpad=0.5)
-    for text in leg.get_texts():
-        text.set_fontproperties(fp_normal)
+    # leg = ax.legend(loc='upper left',
+    #             bbox_to_anchor=(0.01, 1.1),
+    #             bbox_transform=ax.transAxes,
+    #             edgecolor='none',
+    #             handlelength=2.5, borderpad=0.5)
+    # for text in leg.get_texts():
+    #     text.set_fontproperties(fp_normal)
 
 plt.tight_layout()
-plt.subplots_adjust(hspace=0.85, wspace=0.4)
+plt.subplots_adjust(hspace=0.85, wspace=0.2)
 fig.savefig(OUT_PATH, dpi=DPI, bbox_inches='tight',
             facecolor='white', edgecolor='none')
 plt.close()

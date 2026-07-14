@@ -1,0 +1,5 @@
+Variable,Units,Break_year,Years_from_1999,Chow_F,Chow_p,Chow_significant,CUSUM_stat,CUSUM_p,CUSUM_significant,Hansen_Lc,Hansen_crit_5pct,Hansen_significant
+Mean Temperature,°C,1999,0,1.255,0.2972,False,0.6543,0.7853,False,0.2175,1.9,False
+Total Precipitation,mm yr⁻¹,1999,0,2.5856,0.0893,False,0.8206,0.511,False,0.4035,1.9,False
+Active Layer Thickness,m,1989,10,4.9687,0.0124,True,1.2614,0.083,False,1.704,1.9,False
+Available Soil Moisture,mm,1994,5,1.0994,0.344,False,0.6238,0.8313,False,0.3337,1.9,False
