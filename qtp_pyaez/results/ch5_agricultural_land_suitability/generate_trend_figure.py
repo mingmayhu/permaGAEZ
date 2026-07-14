@@ -26,8 +26,8 @@ from matplotlib.ticker import AutoMinorLocator
 
 # ── Configuration ─────────────────────────────────────────────────────────────
 WORK_DIR  = r'/Users/ming-mayhu/Desktop/毕业论文/qtp-pyaez/qtp_pyaez'
-CSV_DIR   = r'./results/agricultural_land_suitability/outputs/csv'
-OUT_PATH  = r'./results/agricultural_land_suitability/outputs/overall_suitability_trends.png'
+CSV_DIR   = r'./results/ch5_agricultural_land_suitability/outputs/csv'
+OUT_PATH  = r'./results/ch5_agricultural_land_suitability/outputs/overall_suitability_trends.png'
 
 ALPHA = 0.05
 DPI   = 300
@@ -127,13 +127,13 @@ xtick_years = years_arr[::5]
 panels = [
     (axes[0], df_mean, mean_overall, mk_mean, ci_mean,
      'Mean suitability score (1–5)',
-     'Mean suitability across all crops', 'a'),
+     'Mean suitability across all crops', 'a', ''),
     (axes[1], df_area, area_overall, mk_area, ci_area,
      'Suitable land area (km²)',
-     'Suitable land area across all crops', 'b'),
+     'Suitable land area across all crops', 'b', 'km²'),
 ]
 
-for ax, df, overall, mk, ci, ylabel, title, letter in panels:
+for ax, df, overall, mk, ci, ylabel, title, letter, unit in panels:
 
     # Individual crop lines
     for i, crop in enumerate(crop_cols):
@@ -166,7 +166,7 @@ for ax, df, overall, mk, ci, ylabel, title, letter in panels:
                             zorder=5)
 
         # Sen's slope text box
-        slope_txt = (f"Sen's slope: {mk['slope']:+.5f} yr⁻¹ ({mk['pstr']})")
+        slope_txt = (f"Sen's slope: {mk['slope']:+.5f} {unit} yr⁻¹ ({mk['pstr']})")
         ax.text(0.01, 1.12, slope_txt,
                 transform=ax.transAxes,
                 va='top', ha='left',
