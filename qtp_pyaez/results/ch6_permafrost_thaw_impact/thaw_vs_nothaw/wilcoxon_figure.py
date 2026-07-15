@@ -26,11 +26,11 @@ from matplotlib.font_manager import FontProperties
 
 # ── Configuration ─────────────────────────────────────────────────────────────
 WORK_DIR      = r'/Users/ming-mayhu/Desktop/毕业论文/qtp-pyaez/qtp_pyaez'
-WILCOXON_CSV  = (r'./results/permafrost_thaw_impact/thaw_vs_nothaw/figure_exports/'
+WILCOXON_CSV  = (r'./results/ch6_permafrost_thaw_impact/thaw_vs_nothaw/figure_exports/'
                  r'wilcoxon_results.csv')
-PERM_CSV      = (r'./results/permafrost_thaw_impact/thaw_vs_nothaw/figure_exports/'
+PERM_CSV      = (r'./results/ch6_permafrost_thaw_impact/thaw_vs_nothaw/figure_exports/'
                  r'permutation_slope_diff.csv')
-OUT_DIR       = r'./results/permafrost_thaw_impact/thaw_vs_nothaw/figures'
+OUT_DIR       = r'./results/ch6_permafrost_thaw_impact/thaw_vs_nothaw/figures'
 OUT_PATH      = f'{OUT_DIR}/fig_thaw_wilcoxon.png'
 DPI           = 300
 

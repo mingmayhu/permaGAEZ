@@ -32,9 +32,9 @@ from pymannkendall import original_test as mk_test
 
 # ── Configuration ─────────────────────────────────────────────────────────────
 WORK_DIR   = r'/Users/ming-mayhu/Desktop/毕业论文/qtp-pyaez/qtp_pyaez'
-CSV_PATH   = (r'./results/permafrost_thaw_impact/thaw_vs_nothaw/figure_exports/'
+CSV_PATH   = (r'./results/ch6_permafrost_thaw_impact/thaw_vs_nothaw/figure_exports/'
               r'overall_suitability_timeseries.csv')
-OUT_DIR    = r'./results/permafrost_thaw_impact/thaw_vs_nothaw/figures'
+OUT_DIR    = r'./results/ch6_permafrost_thaw_impact/thaw_vs_nothaw/figures'
 OUT_PATH   = f'{OUT_DIR}/fig_thaw_timeseries.png'
 DPI        = 300
 DIVERGENCE = 1999
@@ -95,12 +95,14 @@ panels = [
         'cf':     df['cf_mean_suit'].values,
         'ylabel': 'Mean suitability score (1-5)',
         'title':  '(a)',
+        'unit': '',
     },
     {
         'obs':    df['obs_area_km2'].values,
         'cf':     df['cf_area_km2'].values,
-        'ylabel': 'Suitable land (%)',
+        'ylabel': 'Suitable land area (km²)',
         'title':  '(b)',
+        'unit': 'km²',
     },
 
 ]
@@ -137,16 +139,17 @@ for ax, panel in zip(axes, panels):
             label='No-Thaw')
 
     # Sen's slope trend lines
+    unit = panel['unit']
     if mk_obs:
     
         ax.plot(years, mk_obs['line'], color=COLOR_THAW,
                 linewidth=1.4, linestyle=':', zorder=5,
-                label=(f"Thaw slope: {mk_obs['slope']:.5f} yr⁻¹ "
+                label=(f"Thaw slope: {mk_obs['slope']:.5f} {unit} yr⁻¹ "
                        f"(p < 0.001)"))
     if mk_cf:
         ax.plot(years, mk_cf['line'], color=COLOR_CF,
                 linewidth=1.4, linestyle=':', zorder=5,
-                label=(f"No-Thaw slope: {mk_cf['slope']:.5f} yr⁻¹ "
+                label=(f"No-Thaw slope: {mk_cf['slope']:.5f} {unit} yr⁻¹ "
                        f"(p < 0.001)"))
 
     # 1999 divergence line
