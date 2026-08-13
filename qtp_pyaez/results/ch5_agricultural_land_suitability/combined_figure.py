@@ -94,8 +94,8 @@ def draw_trend(ax, years_arr, overall, mk, ci, color=TREND_COLOR):
         ax.fill_between(years_arr, lo, hi, color=color, alpha=0.12, zorder=5)
 
 # ── Load data ─────────────────────────────────────────────────────────────────
-df_mean  = pd.read_csv(f'{CSV_DIR}/per_crop_mean_suitability.csv')
-df_area  = pd.read_csv(f'{CSV_DIR}/per_crop_area_suitable_km2.csv')
+df_mean  = pd.read_csv(f'{CSV_DIR}/per_crop_mean_suitability new.csv')
+df_area  = pd.read_csv(f'{CSV_DIR}/per_crop_area_suitable_km2 new.csv')
 
 def try_csv(name):
     try:
@@ -119,9 +119,13 @@ ci_area  = bootstrap_sen_ci(area_overall)
 xtick_years = years_arr[::5]
 
 # ── Colours ───────────────────────────────────────────────────────────────────
+# crop_colors = [
+#     '#1f77b4', '#ff9e0d', '#7cd67c', '#e84444', '#42d6e7',
+#     '#ff68af', '#ffcf3e', '#7f7f7f', '#8c564b', '#be87f1'
+# ]
 crop_colors = [
-    '#1f77b4', '#ff9e0d', '#7cd67c', '#e84444', '#42d6e7',
-    '#ff68af', '#ffcf3e', '#7f7f7f', '#8c564b', '#be87f1'
+    '#ff9e0d', '#42d6e7', '#1f77b4',
+    '#ff68af', '#ffcf3e','#be87f1'
 ]
 
 CLASS_COLORS = {2: '#c2e699', 3: '#78c679', 4: '#31a354', 5: '#006837'}
@@ -133,10 +137,10 @@ CLASS_LABELS = {
     5: 'Class 5 (very suitable)',
 }
 
-EXPAND_LIGHT  = "#F2C4C0"   # light pink — expansion, individual crops
-INTENS_LIGHT  = "#B0C8D8" # light purple — intensification, individual crops
-EXPAND_DARK   = "#C97B75"   # dark pink — expansion, overall
-INTENS_DARK   = "#5E8FA8" 
+EXPAND_LIGHT  = "#fdd1d1ff"   # light pink — expansion, individual crops
+INTENS_LIGHT  = "#e6cbeeff"   # light purple — intensification, individual crops
+EXPAND_DARK   = "#ff9c9f"   # dark pink — expansion, overall
+INTENS_DARK   = "#cca1d7" 
 
 # ── Font properties ───────────────────────────────────────────────────────────
 fp_normal  = FontProperties(fname=REG_PATH, size=16)
@@ -176,14 +180,15 @@ for ax in [ax_leg1, ax_leg2, ax_leg3]:
 # Panel (a) — Mean suitability
 # ═══════════════════════════════════════════════════════════════════════════════
 for i, crop in enumerate(crop_cols):
+    width = 1.4 if crop != 'Winter barley' else 3
     ax_a.plot(years_arr, df_mean[crop].values,
-              color=crop_colors[i], linewidth=1.4, alpha=0.5)
+              color=crop_colors[i], linewidth=width, alpha=0.5)
 ax_a.plot(years_arr, mean_overall, color=OVERALL_COLOR, linewidth=3.5, zorder=5)
 draw_trend(ax_a, years_arr, mean_overall, mk_mean, ci_mean)
 
 if mk_mean:
     ax_a.text(0.02, 0.97,
-              f"Sen's slope: {mk_mean['slope']:+.5f} yr⁻¹ ({mk_mean['pstr']})",
+              f"Sen's slope: {mk_mean['slope']*10:+.3f} decade⁻¹ ({mk_mean['pstr']})",
               transform=ax_a.transAxes, va='top', ha='left',
               fontproperties=fp_textbox,)
             #   bbox=dict(facecolor='white', edgecolor='#cccccc', linewidth=0.8, alpha=0.9))
@@ -201,14 +206,15 @@ ax_a.text(-0.10, 1.04, '(a)', transform=ax_a.transAxes,
 # Panel (b) — Suitable land area
 # ═══════════════════════════════════════════════════════════════════════════════
 for i, crop in enumerate(crop_cols):
+    width = 1.4 if crop != 'Winter barley' else 3
     ax_b.plot(years_arr, df_area[crop].values,
-              color=crop_colors[i], linewidth=1.4, alpha=0.5)
+              color=crop_colors[i], linewidth=width, alpha=0.5)
 ax_b.plot(years_arr, area_overall, color=OVERALL_COLOR, linewidth=3.5, zorder=5)
 draw_trend(ax_b, years_arr, area_overall, mk_area, ci_area)
 
 if mk_area:
     ax_b.text(0.02, 0.97,
-              f"Sen's slope: {mk_area['slope']:+.1f} km² yr⁻¹ ({mk_area['pstr']})",
+              f"Sen's slope: {mk_area['slope']*10:+.0f} km² decade⁻¹ ({mk_area['pstr']})",
               transform=ax_b.transAxes, va='top', ha='left',
               fontproperties=fp_textbox)
             #   bbox=dict(facecolor='white', edgecolor='#cccccc', linewidth=0.8, alpha=0.9))
@@ -216,7 +222,7 @@ if mk_area:
 ax_b.set_xlim(1978.5, 2018.5)
 ax_b.set_xticks(xtick_years)
 ax_b.set_xticklabels([str(y) for y in xtick_years], rotation=45, ha='right', fontsize=TICK_FS)
-ax_b.set_ylabel('Suitable land area (km²)', fontsize=AXIS_FS, labelpad=5)
+ax_b.set_ylabel('Suitable land (km²)', fontsize=AXIS_FS, labelpad=5)
 ax_b.set_xlabel('Year', fontsize=AXIS_FS, labelpad=3)
 ax_b.tick_params(which='major', labelsize=TICK_FS, length=4)
 ax_b.text(-0.10, 1.04, '(b)', transform=ax_b.transAxes,
@@ -236,7 +242,7 @@ labels_crop  = list(crop_cols) + ['Overall mean', "Sen's slope (95% CI)"]
 
 leg1 = ax_leg1.legend(
     handles=handles_crop, labels=labels_crop,
-    loc='center', ncol=6,
+    loc='center', ncol=4,
     frameon=False,
     handlelength=2.5, handletextpad=0.5, columnspacing=1.2,
     borderpad=0
@@ -274,7 +280,7 @@ ax_c.set_xticks(xtick_years)
 ax_c.set_ylim(0, 9000)
 ax_c.margins(y=0.02)  # reduce from default 0.05
 ax_c.set_xticklabels([str(y) for y in xtick_years], rotation=45, ha='right', fontsize=TICK_FS)
-ax_c.set_ylabel('Suitable land area (km²)', fontsize=AXIS_FS, labelpad=5)
+ax_c.set_ylabel('Suitable land (km²)', fontsize=AXIS_FS, labelpad=5)
 ax_c.set_xlabel('Year', fontsize=AXIS_FS, labelpad=3)
 ax_c.tick_params(which='major', labelsize=TICK_FS, length=4)
 ax_c.text(-0.10, 1.04, '(e)', transform=ax_c.transAxes,
@@ -321,7 +327,7 @@ fill_handles_c = [mpatches.Patch(color=CLASS_COLORS[c], alpha=0.85, label=CLASS_
 trend_handles_c = []
 for c in [5, 4, 3, 2]:
     mk_c_solo = run_mk(df_class[f'area_class_{c}'].values)
-    lbl = (f"Class {c} Sen's slope: {mk_c_solo['slope']:+.1f} km² yr⁻¹ ({mk_c_solo['pstr']})"
+    lbl = (f"Class {c} Sen's slope: {mk_c_solo['slope']*10:+.0f} km² decade⁻¹ ({mk_c_solo['pstr']})"
            if mk_c_solo else f'Class {c} trend: n/a')
     trend_handles_c.append(
         Line2D([0], [0], color=TREND_COLORS_CLASS[c], linewidth=2,
